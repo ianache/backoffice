@@ -29,7 +29,13 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. La sesión persiste con JWT válido entre recargas de página y navegación interna
   3. Los roles del usuario (PlatformAdmin, TenantAdmin, etc.) son visibles y correctamente aplicados en el frontend
   4. Un usuario sin los permisos correctos no puede acceder a rutas protegidas
-**Plans**: TBD
+**Plans**: 4 plans
+
+Plans:
+- [ ] 01-01-PLAN.md — Monorepo scaffold (pnpm workspaces) + Keycloak Docker Compose with pre-configured backoffice realm
+- [ ] 01-02-PLAN.md — BFF Node.js/Express: jose JWT validation middleware, /auth/me endpoint, role enforcement
+- [ ] 01-03-PLAN.md — Vue 3 portal shell: keycloak-js, Pinia auth store, Vue Router guards, login/dashboard views
+- [ ] 01-04-PLAN.md — End-to-end integration verification (automated smoke tests + human checkpoint)
 
 ### Phase 2: Tenant Management
 **Goal**: PlatformAdmin puede gestionar el ciclo de vida completo de tenants — crear, configurar, filtrar, suspender y asociar productos
@@ -84,7 +90,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation & Auth | 0/TBD | Not started | - |
+| 1. Foundation & Auth | 0/4 | Planning done | - |
 | 2. Tenant Management | 0/TBD | Not started | - |
 | 3. User Management | 0/TBD | Not started | - |
 | 4. Feature Flags | 0/TBD | Not started | - |

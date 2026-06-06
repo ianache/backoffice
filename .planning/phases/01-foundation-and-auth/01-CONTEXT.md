@@ -25,18 +25,36 @@ Phase 1 entrega la capa de autenticación completa que habilita el resto del sis
 <decisions>
 ## Implementation Decisions
 
-### Stack (Locked — PRD §15)
-- Frontend: Vue 3 + Pinia
-- BFF: Node.js
-- Backend: Python
+### Stack (Locked — PRD §15 + DrawIO architecture diagram)
+- Frontend: Vue 3 + Pinia — arquitectura **micro-frontend** (ver abajo)
+- BFF: Node.js + Redis (caching layer visible en drawio)
+- Backend: Python / **FastAPI** (confirmado en drawio: "backend (api) [Python / FastAPI]")
 - Auth/IdP: Keycloak
 - Tokens: JWT emitidos por Keycloak
+- DB: PostgreSQL schema: backoffice
 
-### Arquitectura Auth (Locked — PRD §3.5, §15, §17)
+### Arquitectura Auth (Locked — PRD §3.5, §15, §17 + DrawIO)
 - Keycloak es el único IdP — no hay auth custom
 - El BFF actúa como intermediario: recibe tokens de Keycloak, los valida, extrae roles
 - El frontend Vue obtiene el JWT via BFF (no habla directamente con Keycloak en producción)
 - Las rutas BFF relevantes según PRD ICD: BFF → Keycloak para crear usuario, asignar roles, resetear MFA
+- **PKCS/PKCE flow**: DrawIO muestra conexión BFF → Keycloak etiquetada "PKCS" — usar PKCE (Proof Key for Code Exchange) como OAuth2 flow
+
+### Arquitectura Micro-Frontend (Locked — DrawIO architecture diagram)
+El sistema usa una arquitectura micro-frontend:
+- `portal (shell)` [Vue + Pinia] — shell app principal, monta los micro-UIs
+- `microuis` — contenedor de micro-frontends montados por el shell:
+  - **`mui security`** — micro-UI de auth/seguridad (Phase 1 vive aquí)
+  - `mui tenants` — gestión de tenants (Phase 2)
+  - `mui feature-flags` — feature flags (Phase 4)
+- El shell comunica con BFF via `http` (requests) y recibe via `ws/sse` (WebSocket/SSE para real-time)
+- **Phase 1 entrega**: portal shell funcional + mui security con login + propagación de roles
+
+### Modelo de Datos Adicional (DrawIO Página 3)
+- `Tenant`: guid, name, created_at, created_by, state {active, inactive}
+- `Product`: guid, name, description, created_at, created_by, state {active, inactive}
+- `Product → ProductModule [+] → ProductFeature [+]` (jerarquía de módulos y features)
+- Esta estructura es de Phase 2, pero informa el modelo de datos que el BFF debe conocer para propagar permisos por producto
 
 ### Roles (Locked — PRD §3)
 Los roles que deben propagarse al frontend en Phase 1:
@@ -57,12 +75,13 @@ Los roles que deben propagarse al frontend en Phase 1:
 4. Explicar POR QUÉ antes de generar cambios grandes
 
 ### Claude's Discretion
-Los siguientes aspectos de implementación no están prescritos en el PRD y quedan a criterio técnico:
+Los siguientes aspectos de implementación no están prescritos en el PRD/DrawIO y quedan a criterio técnico:
+- Tecnología de micro-frontend federation (Module Federation / Vite Federation / monorepo con lazy-load)
 - Estructura del store Pinia para auth (token, user, roles)
 - Estrategia de refresh de JWT (interceptor axios, vue-router guard)
-- Implementación de route guards en Vue Router
-- Cómo el BFF valida el JWT de Keycloak (middleware, biblioteca)
-- Estructura de carpetas del proyecto (frontend y BFF)
+- Implementación de route guards en Vue Router (shell-level vs MUI-level)
+- Cómo el BFF valida el JWT de Keycloak (middleware con `jose`)
+- Estructura de carpetas del monorepo (shell + microuis)
 - Manejo de errores de autenticación en el frontend
 
 </decisions>

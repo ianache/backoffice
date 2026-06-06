@@ -10,27 +10,27 @@ See: .planning/PROJECT.md (updated 2026-06-06)
 ## Current Position
 
 Phase: 1 of 5 (Foundation & Auth)
-Plan: 0 of TBD in current phase
-Status: Ready to plan
-Last activity: 2026-06-06 — Roadmap created; 24 v1 requirements mapped across 5 phases
+Plan: 1 of 4 in current phase
+Status: Executing
+Last activity: 2026-06-06 — Plan 01-01 completed (monorepo bootstrap + Keycloak dev env)
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [█░░░░░░░░░] 5%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 0
-- Average duration: -
-- Total execution time: 0 hours
+- Total plans completed: 1
+- Average duration: 7 min
+- Total execution time: 0.12 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| - | - | - | - |
+| 01-foundation-and-auth | 1 | 7 min | 7 min |
 
 **Recent Trend:**
-- Last 5 plans: -
+- Last 5 plans: 7 min
 - Trend: -
 
 *Updated after each plan completion*
@@ -45,17 +45,21 @@ Recent decisions affecting current work:
 - Stack cerrado: Vue 3 + Pinia / Node.js BFF / Python Backend / PostgreSQL / Keycloak
 - Multi-tenant lógico (no físico) — decisión de arquitectura
 - Feature flags son el core value; sin evaluación determinista el sistema no diferencia
+- pnpm workspaces monorepo (bff, portal, microuis/*) with single root install [01-01]
+- Keycloak realm roles (not client roles) for all app roles — realm_access.roles simpler in BFF JWT [01-01]
+- lightweightAccessTokenEnabled=false on both clients to preserve JWT role claims [01-01]
+- esbuild + vue-demi build scripts approved in pnpm-workspace.yaml (pnpm 11.x security policy) [01-01]
 
 ### Pending Todos
 
-None yet.
+- Start Docker Desktop and run `docker compose up -d` to complete Keycloak runtime verification
 
 ### Blockers/Concerns
 
-None yet.
+- Docker Desktop not in PATH during plan execution — Keycloak runtime verification deferred to user
 
 ## Session Continuity
 
 Last session: 2026-06-06
-Stopped at: Roadmap created — ready to run /gsd:plan-phase 1
+Stopped at: Completed 01-01-PLAN.md (monorepo bootstrap + Keycloak dev env)
 Resume file: None

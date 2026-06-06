@@ -28,8 +28,8 @@ Requirements para la Fase 1 (Tenants + Usuarios + Feature Flags). Cada uno mapea
 ### Authentication
 
 - [x] **AUTH-01**: Usuario puede autenticarse con email/password via Keycloak como IdP
-- [ ] **AUTH-02**: Sesión persiste con tokens JWT emitidos por Keycloak
-- [ ] **AUTH-03**: Roles del usuario se propagan desde Keycloak al BFF y respetados en el frontend
+- [x] **AUTH-02**: Sesión persiste con tokens JWT emitidos por Keycloak
+- [x] **AUTH-03**: Roles del usuario se propagan desde Keycloak al BFF y respetados en el frontend
 
 ### Feature Flags
 
@@ -95,8 +95,8 @@ Cual fase cubre cuáles requerimientos. Actualizado durante creación del roadma
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | AUTH-01 | Phase 1 | Complete |
-| AUTH-02 | Phase 1 | Pending |
-| AUTH-03 | Phase 1 | Pending |
+| AUTH-02 | Phase 1 | Complete |
+| AUTH-03 | Phase 1 | Complete |
 | TNNT-01 | Phase 2 | Pending |
 | TNNT-02 | Phase 2 | Pending |
 | TNNT-03 | Phase 2 | Pending |

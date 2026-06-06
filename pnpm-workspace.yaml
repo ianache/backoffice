@@ -1,0 +1,7 @@
+packages:
+  - 'bff'
+  - 'portal'
+  - 'microuis/*'
+allowBuilds:
+  esbuild: true
+  vue-demi: true

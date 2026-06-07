@@ -41,7 +41,7 @@ const routes: RouteRecordRaw[] = [
     path: '/users',
     name: 'users',
     component: () => import('../views/UsersView.vue'),
-    meta: { requiresAuth: true, roles: ['PlatformAdmin', 'TenantAdmin', 'TenantOwner'], layout: 'main', title: 'Access Management' },
+    meta: { requiresAuth: true, roles: ['TenantAdmin', 'TenantOwner'], layout: 'main', title: 'Access Management' },
   },
 ]
 

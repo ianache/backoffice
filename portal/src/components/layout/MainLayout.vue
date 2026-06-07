@@ -1,129 +1,214 @@
 <template>
-  <div class="flex h-screen w-full overflow-hidden bg-background transition-colors duration-300">
-    <!-- Navigation Rail -->
-    <aside class="flex w-[72px] flex-col border-r border-outline-variant bg-surface-container-low z-20">
-      <div class="flex h-16 items-center justify-center">
-        <div class="h-10 w-10 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/20">
-          <md-icon class="text-on-primary">shield</md-icon>
+  <div class="min-h-screen bg-background text-on-background">
+    <!-- ─── Top Header ──────────────────────────────────────────────────────── -->
+    <header class="fixed top-0 left-0 right-0 flex items-center h-16 w-full bg-surface-container-lowest border-b border-outline-variant shadow-sm z-50">
+      <!-- Brand block — same width as sidebar -->
+      <div class="flex items-center h-full w-64 px-2 border-r border-outline-variant bg-surface-container-low shrink-0">
+        <div class="flex items-center gap-2 px-2">
+          <div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-on-primary text-[22px]">corporate_fare</span>
+          </div>
+          <div class="min-w-0">
+            <h2 class="text-[15px] font-black text-on-surface truncate leading-tight">BackOffice CC</h2>
+            <p class="text-xs text-on-surface-variant truncate">Global Admin</p>
+          </div>
         </div>
       </div>
-      
-      <nav class="flex flex-1 flex-col items-center gap-2 pt-4">
-        <md-navigation-tab
-          label="Tenants"
-          @click="router.push('/tenants')"
-          :active="route.path.startsWith('/tenants') || route.path === '/'"
-        >
-          <md-icon slot="active-icon">business</md-icon>
-          <md-icon slot="inactive-icon">business</md-icon>
-        </md-navigation-tab>
-        
-        <md-navigation-tab
-          label="Users"
-          @click="router.push('/users')"
-          :active="route.path.startsWith('/users')"
-        >
-          <md-icon slot="active-icon">group</md-icon>
-          <md-icon slot="inactive-icon">group</md-icon>
-        </md-navigation-tab>
 
-        <md-navigation-tab
-          label="Audit"
-          @click="router.push('/audit')"
-          :active="route.path.startsWith('/audit')"
-        >
-          <md-icon slot="active-icon">history</md-icon>
-          <md-icon slot="inactive-icon">history</md-icon>
-        </md-navigation-tab>
-      </nav>
+      <!-- Header content -->
+      <div class="flex flex-1 items-center justify-between px-6 h-full">
+        <!-- Breadcrumb -->
+        <nav class="flex items-center gap-2 text-on-surface-variant text-sm">
+          <a
+            href="#"
+            class="flex items-center hover:text-primary transition-colors"
+            @click.prevent="router.push('/dashboard')"
+          >
+            <span class="material-symbols-outlined text-[20px]">home</span>
+          </a>
+          <span class="material-symbols-outlined text-secondary text-[16px]">chevron_right</span>
+          <span class="text-on-surface font-semibold">{{ breadcrumbLabel }}</span>
+        </nav>
 
-      <div class="pb-6 flex flex-col items-center gap-2">
-        <md-navigation-tab
-          label="Settings"
-          @click="router.push('/settings')"
-          :active="route.path.startsWith('/settings')"
-        >
-          <md-icon slot="active-icon">settings</md-icon>
-          <md-icon slot="inactive-icon">settings</md-icon>
-        </md-navigation-tab>
-      </div>
-    </aside>
-
-    <!-- Main Content Area -->
-    <div class="flex flex-1 flex-col overflow-hidden">
-      <!-- App Bar -->
-      <header class="flex h-16 items-center justify-between border-b border-outline-variant px-8 bg-surface z-10">
+        <!-- Right controls -->
         <div class="flex items-center gap-4">
-          <h2 class="text-xl font-semibold text-on-surface tracking-tight">
-            {{ pageTitle }}
-          </h2>
-        </div>
+          <!-- Search bar -->
+          <div class="hidden md:flex items-center bg-surface-container-low px-4 py-1.5 rounded-full border border-outline-variant gap-1">
+            <span class="material-symbols-outlined text-on-surface-variant text-[20px]">search</span>
+            <input
+              type="text"
+              placeholder="Search tenants..."
+              class="bg-transparent border-none focus:ring-0 text-sm w-48 outline-none placeholder:text-on-surface-variant"
+            />
+          </div>
 
-        <div class="flex items-center gap-2">
-          <!-- Theme Toggle -->
-          <md-icon-button @click="uiStore.toggleTheme">
-            <md-icon>{{ uiStore.theme === 'dark' ? 'light_mode' : 'dark_mode' }}</md-icon>
-          </md-icon-button>
-
-          <div class="h-8 w-px bg-outline-variant mx-2"></div>
-
-          <!-- User Profile -->
-          <div class="flex items-center gap-4">
-            <div class="flex flex-col items-end">
-              <span class="text-sm font-bold text-on-surface leading-none">{{ authStore.user?.name || 'User' }}</span>
-              <span class="text-[10px] text-on-surface-variant uppercase tracking-widest font-bold mt-1">
-                {{ authStore.roles.find(r => r.includes('Admin')) || 'Viewer' }}
+          <div class="flex items-center gap-0.5">
+            <!-- Theme toggle -->
+            <button
+              @click="uiStore.toggleTheme"
+              class="p-2 rounded-full hover:bg-surface-container transition-colors active:scale-95 duration-150"
+              title="Toggle Theme"
+            >
+              <span class="material-symbols-outlined text-secondary text-[20px]">
+                {{ uiStore.theme === 'dark' ? 'dark_mode' : 'light_mode' }}
               </span>
-            </div>
-            
-            <div class="flex items-center">
-              <div class="h-10 w-10 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container font-bold border border-outline-variant overflow-hidden">
+            </button>
+
+            <!-- Notifications -->
+            <button class="p-2 rounded-full hover:bg-surface-container transition-colors active:scale-95 duration-150">
+              <span class="material-symbols-outlined text-secondary text-[20px]">notifications</span>
+            </button>
+
+            <!-- Help -->
+            <button class="p-2 rounded-full hover:bg-surface-container transition-colors active:scale-95 duration-150">
+              <span class="material-symbols-outlined text-secondary text-[20px]">help</span>
+            </button>
+
+            <!-- Apps -->
+            <button class="p-2 rounded-full hover:bg-surface-container transition-colors active:scale-95 duration-150">
+              <span class="material-symbols-outlined text-secondary text-[20px]">apps</span>
+            </button>
+
+            <!-- User avatar + logout -->
+            <div class="flex items-center gap-1 ml-2">
+              <div
+                class="w-8 h-8 rounded-full bg-secondary-container border border-outline-variant flex items-center justify-center text-on-secondary-container font-bold text-sm cursor-pointer"
+                :title="authStore.user?.name || 'User'"
+              >
                 {{ (authStore.user?.name || 'U').charAt(0).toUpperCase() }}
               </div>
-              
-              <md-icon-button @click="authStore.logout" class="ml-1">
-                <md-icon>logout</md-icon>
-              </md-icon-button>
+              <button
+                @click="authStore.logout"
+                class="p-1.5 rounded-full hover:bg-surface-container transition-colors active:scale-95 duration-150"
+                title="Sign out"
+              >
+                <span class="material-symbols-outlined text-secondary text-[18px]">logout</span>
+              </button>
             </div>
           </div>
         </div>
-      </header>
+      </div>
+    </header>
 
-      <!-- Page Content -->
-      <main class="flex-1 overflow-y-auto p-8 bg-background scroll-smooth">
-        <div class="max-w-7xl mx-auto">
-          <slot />
+    <!-- ─── Left Sidebar ───────────────────────────────────────────────────── -->
+    <aside class="fixed left-0 top-16 bottom-0 w-64 bg-surface-container-low border-r border-outline-variant flex flex-col z-40">
+      <nav class="flex-1 flex flex-col gap-0.5 overflow-y-auto p-2 pt-3">
+        <!-- Tenants — only for PlatformAdmin -->
+        <button
+          v-if="authStore.hasRole('PlatformAdmin')"
+          @click="router.push('/tenants')"
+          :class="[
+            'w-full flex items-center gap-4 px-4 py-2 rounded-lg transition-all duration-200 text-left',
+            isActive('/tenants')
+              ? 'bg-primary text-on-primary font-semibold'
+              : 'text-on-surface-variant hover:bg-surface-container-high'
+          ]"
+        >
+          <span class="material-symbols-outlined text-[22px]">corporate_fare</span>
+          <span class="text-sm">Tenants</span>
+        </button>
+
+        <!-- Users — only for TenantAdmin and TenantOwner -->
+        <button
+          v-if="authStore.hasRole('TenantAdmin') || authStore.hasRole('TenantOwner')"
+          @click="router.push('/users')"
+          :class="[
+            'w-full flex items-center gap-4 px-4 py-2 rounded-lg transition-all duration-200 text-left',
+            isActive('/users')
+              ? 'bg-primary text-on-primary font-semibold'
+              : 'text-on-surface-variant hover:bg-surface-container-high'
+          ]"
+        >
+          <span class="material-symbols-outlined text-[22px]">people</span>
+          <span class="text-sm">Users</span>
+        </button>
+
+        <!-- Products (placeholder) -->
+        <button
+          class="w-full flex items-center gap-4 px-4 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all duration-200 text-left cursor-not-allowed opacity-70"
+          disabled
+        >
+          <span class="material-symbols-outlined text-[22px]">inventory_2</span>
+          <span class="text-sm">Products</span>
+        </button>
+
+        <!-- WhiteLabels (placeholder) -->
+        <button
+          class="w-full flex items-center gap-4 px-4 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all duration-200 text-left cursor-not-allowed opacity-70"
+          disabled
+        >
+          <span class="material-symbols-outlined text-[22px]">branding_watermark</span>
+          <span class="text-sm">WhiteLabels</span>
+        </button>
+
+        <!-- Feature Flags (placeholder) -->
+        <button
+          class="w-full flex items-center gap-4 px-4 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all duration-200 text-left cursor-not-allowed opacity-70"
+          disabled
+        >
+          <span class="material-symbols-outlined text-[22px]">toggle_on</span>
+          <span class="text-sm">Feature Flags</span>
+        </button>
+
+        <!-- Audit Log (placeholder) -->
+        <button
+          class="w-full flex items-center gap-4 px-4 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all duration-200 text-left cursor-not-allowed opacity-70"
+          disabled
+        >
+          <span class="material-symbols-outlined text-[22px]">history_edu</span>
+          <span class="text-sm">Audit Log</span>
+        </button>
+
+        <!-- Platform Settings (placeholder) -->
+        <button
+          class="w-full flex items-center gap-4 px-4 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all duration-200 text-left cursor-not-allowed opacity-70"
+          disabled
+        >
+          <span class="material-symbols-outlined text-[22px]">settings</span>
+          <span class="text-sm">Platform Settings</span>
+        </button>
+      </nav>
+
+      <!-- Status footer -->
+      <div class="border-t border-outline-variant p-2">
+        <div class="flex items-center justify-between px-4 py-2">
+          <div class="flex items-center gap-2">
+            <div class="w-2 h-2 rounded-full bg-green-500 shrink-0"></div>
+            <span class="material-symbols-outlined text-secondary text-[20px]">cloud_done</span>
+            <span class="text-xs text-on-surface-variant">All systems operational</span>
+          </div>
+          <span class="text-xs text-on-surface-variant font-mono">v2.4.12</span>
         </div>
-      </main>
-    </div>
+      </div>
+    </aside>
+
+    <!-- ─── Page Content ───────────────────────────────────────────────────── -->
+    <main class="ml-64 pt-16 min-h-screen bg-background">
+      <div class="p-6 max-w-[1440px] mx-auto">
+        <slot />
+      </div>
+    </main>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
-import { useAuthStore } from '../../stores/auth';
-import { useUIStore } from '../../stores/ui';
+import { computed } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { useAuthStore } from '../../stores/auth'
+import { useUIStore } from '../../stores/ui'
 
-const route = useRoute();
-const router = useRouter();
-const authStore = useAuthStore();
-const uiStore = useUIStore();
+const route = useRoute()
+const router = useRouter()
+const authStore = useAuthStore()
+const uiStore = useUIStore()
 
-const pageTitle = computed(() => {
-  return (route.meta.title as string) || 'Dashboard';
-});
-</script>
+const breadcrumbLabel = computed(() => {
+  const segment = route.path.split('/').filter(Boolean)[0]
+  if (!segment || segment === 'dashboard') return 'Dashboard'
+  return segment.charAt(0).toUpperCase() + segment.slice(1)
+})
 
-<style scoped>
-md-navigation-tab {
-  --md-navigation-tab-container-height: 64px;
-  --md-navigation-tab-icon-size: 24px;
-  --md-navigation-tab-label-text-size: 11px;
-  --md-navigation-tab-active-indicator-color: var(--primary-container);
-  --md-navigation-tab-active-icon-color: var(--on-primary-container);
-  --md-navigation-tab-active-label-text-color: var(--on-surface);
-  --md-navigation-tab-inactive-icon-color: var(--on-surface-variant);
-  --md-navigation-tab-inactive-label-text-color: var(--on-surface-variant);
+function isActive(path: string): boolean {
+  return route.path.startsWith(path) || (path === '/tenants' && route.path === '/')
 }
-</style>
+</script>

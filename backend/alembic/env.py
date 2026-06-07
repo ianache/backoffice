@@ -8,15 +8,11 @@ from alembic import context
 from app.config import settings
 
 # Import all models so Alembic can detect them
-# (Domain models imported here once they exist)
-# from app.domains.tenants.models import Base  # uncommented in Plan 02
+from app.domains.tenants.models import Base
+target_metadata = Base.metadata
 
 config = context.config
 fileConfig(config.config_file_name)
-
-# target_metadata will be set to Base.metadata in Plan 02
-# For now, use None so initial bootstrap migration is empty
-target_metadata = None
 
 
 def run_migrations_offline() -> None:

@@ -16,4 +16,6 @@ export const config = {
   },
   frontendUrl: process.env.FRONTEND_URL ?? 'http://localhost:5173',
   nodeEnv: process.env.NODE_ENV ?? 'development',
+  backendUrl: requireEnv('BACKEND_URL'),
+  internalSecret: requireEnv('INTERNAL_SECRET'),
 }

@@ -16,7 +16,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 2: Tenant Management** - PlatformAdmin puede crear, configurar y gestionar el ciclo de vida completo de tenants
 - [x] **Phase 2.1: UI System & Brand Alignment** (INSERTED) - Alineación con Google Stitch y sistema de temas Light/Dark
 - [x] **Phase 3: User Management** - TenantAdmin puede gestionar usuarios dentro de su tenant con audit completo
-- [x] **Phase 4: Feature Flags** - Flags configurables en 4 niveles con evaluación jerárquica determinista (completed 2026-06-07)
+- [ ] **Phase 4: Feature Flags** - Flags configurables en 4 niveles con evaluación jerárquica determinista (5/5 plans done; 2 gap-closure plans in progress for FLAG-06)
 - [ ] **Phase 5: Rule Builder** - Usuarios pueden crear, ordenar y previsualizar reglas de evaluación visualmente
 - [ ] **Phase 6: Stitch UI Implementation** - Implementación de la página de login y ajuste de páginas internas según Google Stitch
 
@@ -90,14 +90,16 @@ Plans:
   3. La evaluación de un flag sigue el orden determinista Empresa > Producto > Tenant > Global — el nivel más específico gana siempre
   4. Las reglas de evaluación funcionan con los operadores equals, in, notIn, contains y regex
   5. Un segmento de usuarios puede definirse una vez y aplicarse a múltiples flags en distintos niveles
-**Plans**: 5 plans
+**Plans**: 7 plans
 
 Plans:
 - [x] 04-01-PLAN.md — Backend domain: feature_flags + segments models, evaluate_flag() engine, FastAPI router
 - [x] 04-02-PLAN.md — TDD: evaluation engine unit tests (hierarchy + all 5 operators)
-- [ ] 04-03-PLAN.md — BFF /flags proxy route with multi-role guard
-- [ ] 04-04-PLAN.md — Portal service (TypeScript interfaces) + Pinia useFeatureFlagsStore
-- [ ] 04-05-PLAN.md — Portal UI: FlagsView + FlagTable + FlagDrawer + wiring + E2E checkpoint
+- [x] 04-03-PLAN.md — BFF /flags proxy route with multi-role guard
+- [x] 04-04-PLAN.md — Portal service (TypeScript interfaces) + Pinia useFeatureFlagsStore
+- [x] 04-05-PLAN.md — Portal UI: FlagsView + FlagTable + FlagDrawer + wiring + E2E checkpoint
+- [ ] 04-06-PLAN.md — Gap closure (FLAG-06): backend routing fix + flag-segment link endpoints + evaluate_flag() segment expansion
+- [ ] 04-07-PLAN.md — Gap closure (FLAG-06): portal SegmentPicker wiring into FlagForm/FlagDrawer + E2E human verify
 
 ### Phase 5: Rule Builder
 **Goal**: Los usuarios pueden crear, ordenar y previsualizar reglas de evaluación visualmente sin escribir código
@@ -136,6 +138,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 2. Tenant Management | 4/4 | Complete | 2026-06-07 |
 | 2.1. UI System & Brand Alignment | 1/1 | Complete | 2026-06-07 |
 | 3. User Management | 6/6 | Complete | 2026-06-07 |
-| 4. Feature Flags | 5/5 | Complete   | 2026-06-07 |
+| 4. Feature Flags | 5/7 | In Progress (gap closure) | - |
 | 5. Rule Builder | 0/TBD | Not started | - |
 | 6. Stitch UI Implementation | 4/4 | Complete | 2026-06-06 |

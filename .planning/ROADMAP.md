@@ -90,7 +90,14 @@ Plans:
   3. La evaluación de un flag sigue el orden determinista Empresa > Producto > Tenant > Global — el nivel más específico gana siempre
   4. Las reglas de evaluación funcionan con los operadores equals, in, notIn, contains y regex
   5. Un segmento de usuarios puede definirse una vez y aplicarse a múltiples flags en distintos niveles
-**Plans**: TBD
+**Plans**: 5 plans
+
+Plans:
+- [ ] 04-01-PLAN.md — Backend domain: feature_flags + segments models, evaluate_flag() engine, FastAPI router
+- [ ] 04-02-PLAN.md — TDD: evaluation engine unit tests (hierarchy + all 5 operators)
+- [ ] 04-03-PLAN.md — BFF /flags proxy route with multi-role guard
+- [ ] 04-04-PLAN.md — Portal service (TypeScript interfaces) + Pinia useFeatureFlagsStore
+- [ ] 04-05-PLAN.md — Portal UI: FlagsView + FlagTable + FlagDrawer + wiring + E2E checkpoint
 
 ### Phase 5: Rule Builder
 **Goal**: Los usuarios pueden crear, ordenar y previsualizar reglas de evaluación visualmente sin escribir código

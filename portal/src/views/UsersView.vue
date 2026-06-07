@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useUsersStore } from '../stores/users'
+import { useToastStore, extractErrorMessage } from '../stores/toast'
 import type { KcUser, UserPayload } from '../services/users'
 import UserTable from '../components/users/UserTable.vue'
 import UserDrawer from '../components/users/UserDrawer.vue'
@@ -8,6 +9,7 @@ import ConfirmDialog from '../components/tenants/ConfirmDialog.vue'
 import StitchButton from '../components/ui/StitchButton.vue'
 
 const usersStore = useUsersStore()
+const toast = useToastStore()
 
 const showDrawer = ref(false)
 const selectedUser = ref<KcUser | null>(null)
@@ -39,12 +41,14 @@ const handleSave = async (payload: UserPayload) => {
   try {
     if (selectedUser.value) {
       await usersStore.updateUser(selectedUser.value.id, payload)
+      toast.success('Member updated successfully')
     } else {
       await usersStore.createUser(payload)
+      toast.success('Member invited successfully')
     }
     showDrawer.value = false
   } catch (err: any) {
-    alert(`Error: ${err.message}`)
+    toast.error(extractErrorMessage(err))
   }
 }
 
@@ -52,7 +56,7 @@ const handleDisable = (user: KcUser) => {
   confirmDialog.value = {
     show: true,
     title: 'Disable Member',
-    message: `Are you sure you want to disable ${user.firstName} ${user.lastName}? They will lose access to all products.`,
+    message: `Are you sure you want to disable ${user.first_name} ${user.last_name}? They will lose access to all products.`,
     confirmText: 'Disable',
     type: 'danger',
     action: async () => {
@@ -64,8 +68,9 @@ const handleDisable = (user: KcUser) => {
 const handleEnable = async (user: KcUser) => {
   try {
     await usersStore.toggleUserStatus(user.id, true)
+    toast.success(`${user.first_name} ${user.last_name} enabled`)
   } catch (err: any) {
-    alert(`Error: ${err.message}`)
+    toast.error(extractErrorMessage(err))
   }
 }
 
@@ -73,7 +78,7 @@ const handleResetMfa = (user: KcUser) => {
   confirmDialog.value = {
     show: true,
     title: 'Reset MFA',
-    message: `Reset MFA for ${user.firstName} ${user.lastName}? They will need to re-enroll on next login.`,
+    message: `Reset MFA for ${user.first_name} ${user.last_name}? They will need to re-enroll on next login.`,
     confirmText: 'Reset MFA',
     type: 'danger',
     action: async () => {
@@ -87,8 +92,10 @@ const handleConfirm = async () => {
     try {
       await confirmDialog.value.action()
       confirmDialog.value.show = false
+      toast.success(`${confirmDialog.value.title} completed`)
     } catch (err: any) {
-      alert(`Error: ${err.message}`)
+      confirmDialog.value.show = false
+      toast.error(extractErrorMessage(err))
     }
   }
 }

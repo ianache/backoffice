@@ -15,7 +15,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 1: Foundation & Auth** - Autenticación funciona; PlatformAdmin puede entrar al sistema con roles propagados
 - [x] **Phase 2: Tenant Management** - PlatformAdmin puede crear, configurar y gestionar el ciclo de vida completo de tenants
 - [x] **Phase 2.1: UI System & Brand Alignment** (INSERTED) - Alineación con Google Stitch y sistema de temas Light/Dark
-- [x] **Phase 3: User Management** - TenantAdmin puede gestionar usuarios dentro de su tenant con audit completo (completed 2026-06-07)
+- [ ] **Phase 3: User Management** - TenantAdmin puede gestionar usuarios dentro de su tenant con audit completo (gap closure in progress)
 - [ ] **Phase 4: Feature Flags** - Flags configurables en 4 niveles con evaluación jerárquica determinista
 - [ ] **Phase 5: Rule Builder** - Usuarios pueden crear, ordenar y previsualizar reglas de evaluación visualmente
 - [ ] **Phase 6: Stitch UI Implementation** - Implementación de la página de login y ajuste de páginas internas según Google Stitch
@@ -70,7 +70,7 @@ Plans:
   3. TenantAdmin puede activar y desactivar usuarios — los desactivados no pueden autenticarse
   4. TenantAdmin puede resetear los dispositivos MFA de un usuario
   5. Toda acción sobre usuarios aparece en el audit log con actor, acción, timestamp y contexto
-**Plans**: 5 plans
+**Plans**: 6 plans
 
 Plans:
 - [x] 03-01-PLAN.md — Backend: UserEvent model + Alembic migration + Keycloak Admin service + users domain (CRUD, roles, MFA reset, audit)
@@ -78,6 +78,7 @@ Plans:
 - [x] 03-03-PLAN.md — Portal: users service (TypeScript interfaces + API calls) + useUsersStore Pinia store
 - [x] 03-04-PLAN.md — Portal UI: UserTable + UserDrawer + UserForm + UserRolesForm (radio cards) + UserActivityTab + UsersView
 - [x] 03-05-PLAN.md — Portal wiring: /users route + role-guarded nav item + end-to-end human verification
+- [ ] 03-06-PLAN.md — Gap closure: AuthUser.tenantId from JWT claim + Keycloak protocol mapper setup + tenant isolation verification
 
 ### Phase 4: Feature Flags
 **Goal**: Los feature flags funcionan con evaluación jerárquica determinista en 4 niveles, con soporte completo de operadores de reglas y segmentos reutilizables
@@ -127,7 +128,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 1. Foundation & Auth | 4/4 | Complete | 2026-06-07 |
 | 2. Tenant Management | 4/4 | Complete | 2026-06-07 |
 | 2.1. UI System & Brand Alignment | 1/1 | Complete | 2026-06-07 |
-| 3. User Management | 5/5 | Complete   | 2026-06-07 |
+| 3. User Management | 5/6 | Gap closure | - |
 | 4. Feature Flags | 0/TBD | Not started | - |
 | 5. Rule Builder | 0/TBD | Not started | - |
 | 6. Stitch UI Implementation | 4/4 | Complete | 2026-06-06 |

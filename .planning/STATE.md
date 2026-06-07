@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-last_updated: "2026-06-07T17:28:47.386Z"
+last_updated: "2026-06-07T17:34:09.473Z"
 progress:
   total_phases: 6
-  completed_phases: 5
+  completed_phases: 6
   total_plans: 26
-  completed_plans: 25
+  completed_plans: 26
 ---
 
 # Project State
@@ -66,6 +66,7 @@ Progress: [██████████] 100% (of phase 04 core plans) | [█�
 | Phase 04-feature-flags P04 | 6 | 2 tasks | 2 files |
 | Phase 04-feature-flags P05 | 15m | 3 tasks | 7 files |
 | Phase 04-feature-flags P06 | 4 | 2 tasks | 3 files |
+| Phase 04-feature-flags P07 | 2 | 1 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -124,6 +125,7 @@ Recent decisions affecting current work:
 - [Phase 04-feature-flags]: [Phase 04-05]: FlagsView filter bar is visual-only in Phase 4 — filter logic deferred to Phase 5 to keep scope focused
 - [Phase 04-feature-flags]: [Phase 04-05]: FlagTable emits disable(flag)/enable(flag) separately — parent FlagsView decides confirm dialog vs direct toggleFlag call
 - [Phase 04-feature-flags]: segment_members keyed by flag_id dict for O(1) lookup in evaluate_flag(); any-match semantics; user_id dual key fallback (id/sub) [04-06]
+- [Phase 04-feature-flags]: FlagDrawer takes ownership of save flow (store calls + segment linking) — emits @saved(flag); FlagsView shows toast only [04-07]
 
 ### Pending Todos
 

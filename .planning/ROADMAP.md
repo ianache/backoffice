@@ -102,7 +102,13 @@ Plans:
   1. La página de login refleja fielmente el diseño de Google Stitch (node-id: 501bb1...)
   2. Todas las páginas internas (excepto login) se ajustan al diseño de 'Tenant Management' de Google Stitch (node-id: acc51e...)
   3. El flujo de autenticación y la funcionalidad de negocio se mantienen intactos tras el rediseño
-**Plans**: TBD
+**Plans**: 4 plans
+
+Plans:
+- [ ] 06-01-PLAN.md — Foundation & Base Components (Tailwind + @material/web)
+- [ ] 06-02-PLAN.md — Layout & Navigation Shell (Rail + App Bar)
+- [ ] 06-03-PLAN.md — Stitch Login Implementation
+- [ ] 06-04-PLAN.md — Internal Pages Refactoring (Tenants View)
 
 ## Progress
 
@@ -117,4 +123,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 3. User Management | 0/TBD | Not started | - |
 | 4. Feature Flags | 0/TBD | Not started | - |
 | 5. Rule Builder | 0/TBD | Not started | - |
-| 6. Stitch UI Implementation | 0/TBD | Not started | - |
+| 6. Stitch UI Implementation | 0/4 | In progress | - |

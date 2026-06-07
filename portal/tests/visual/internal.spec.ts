@@ -1,0 +1,212 @@
+import { test, expect } from '@playwright/test';
+
+/**
+ * Internal Pages Visual Regression Tests
+ * Covers Tenant Management UI (UI-04): Stitch high-density layout validation.
+ *
+ * Strategy:
+ * - Mock BFF /api/tenants/ to avoid server dependency
+ * - Inject auth state via sessionStorage to bypass Keycloak
+ * - Validate Stitch component presence before screenshot comparison
+ */
+
+const MOCK_TENANTS = [
+  {
+    id: 1,
+    name: 'Acme Corp',
+    country: 'USA',
+    status: 'active',
+    default_language: 'en',
+    default_currency: 'USD',
+    default_units: 'imperial',
+    products: ['Core', 'Analytics'],
+    logo_url: null,
+    primary_color: '#1a73e8',
+    secondary_color: '#5f6368',
+    accent_color: '#34a853',
+    font_family: 'Inter',
+    font_weight: '400',
+    domain: 'acme.backoffice.dev',
+    created_at: '2023-01-01T00:00:00Z'
+  },
+  {
+    id: 2,
+    name: 'Globex',
+    country: 'Spain',
+    status: 'suspended',
+    default_language: 'es',
+    default_currency: 'EUR',
+    default_units: 'metric',
+    products: ['Core'],
+    logo_url: null,
+    primary_color: '#e8371a',
+    secondary_color: '#5f6368',
+    accent_color: '#fbbc04',
+    font_family: 'Roboto',
+    font_weight: '400',
+    domain: '',
+    created_at: '2023-02-01T00:00:00Z'
+  }
+];
+
+test.describe('Internal Pages — Stitch Design (UI-04)', () => {
+  test.beforeEach(async ({ page }) => {
+    // Mock BFF tenants endpoint
+    await page.route('**/api/tenants/**', async route => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(MOCK_TENANTS)
+      });
+    });
+
+    // Inject auth session to bypass Keycloak initialization
+    await page.addInitScript(() => {
+      const mockAuth = {
+        token: 'mock-jwt-token',
+        user: { name: 'Test Admin', email: 'admin@test.com', sub: 'mock-sub' },
+        roles: ['PlatformAdmin'],
+        isAuthenticated: true,
+        isLoading: false
+      };
+      window.sessionStorage.setItem('auth', JSON.stringify(mockAuth));
+    });
+
+    await page.goto('/tenants');
+    await page.waitForLoadState('networkidle');
+  });
+
+  // ----- Layout: Light Mode -----
+
+  test('Tenants View — Light Mode layout', async ({ page }) => {
+    await page.evaluate(() => {
+      document.documentElement.setAttribute('data-theme', 'light');
+      document.documentElement.classList.remove('dark');
+    });
+    await page.waitForTimeout(400);
+
+    // Assert Stitch structural elements are present
+    await expect(page.locator('table')).toBeVisible();
+    await expect(page.locator('text=Acme Corp')).toBeVisible();
+    await expect(page.locator('text=Globex')).toBeVisible();
+
+    // High-density table: verify md-checkbox is rendered (not native input)
+    const checkboxes = page.locator('md-checkbox');
+    await expect(checkboxes.first()).toBeVisible();
+
+    // Action menu anchors present for each row
+    const actionButtons = page.locator('md-icon-button[title="More actions"]');
+    await expect(actionButtons.first()).toBeVisible();
+
+    // Page header with Stitch title typography
+    await expect(page.locator('.page-title')).toBeVisible();
+    await expect(page.locator('.page-title')).toContainText('Tenants');
+
+    await expect(page).toHaveScreenshot('tenants-view-light.png', {
+      maxDiffPixelRatio: 0.1,
+      fullPage: true,
+    });
+  });
+
+  // ----- Layout: Dark Mode -----
+
+  test('Tenants View — Dark Mode layout', async ({ page }) => {
+    await page.evaluate(() => {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      document.documentElement.classList.add('dark');
+    });
+    await page.waitForTimeout(400);
+
+    await expect(page.locator('table')).toBeVisible();
+
+    // Verify status chips are present (both active and suspended)
+    const statusChips = page.locator('.status-chip');
+    await expect(statusChips.first()).toBeVisible();
+
+    await expect(page).toHaveScreenshot('tenants-view-dark.png', {
+      maxDiffPixelRatio: 0.1,
+      fullPage: true,
+    });
+  });
+
+  // ----- Drawer: Create Mode -----
+
+  test('Tenant Drawer — Create mode (General Info tab)', async ({ page }) => {
+    await page.evaluate(() => {
+      document.documentElement.setAttribute('data-theme', 'light');
+      document.documentElement.classList.remove('dark');
+    });
+
+    // Open create drawer via Stitch button
+    await page.click('text=Create Tenant');
+    await page.waitForSelector('.drawer-content', { state: 'visible' });
+    await page.waitForTimeout(400);
+
+    // Verify drawer Stitch structure
+    await expect(page.locator('.drawer-title')).toContainText('Create Tenant');
+    await expect(page.locator('.drawer-subtitle')).toBeVisible();
+
+    // Verify md-tabs are rendered
+    await expect(page.locator('md-tabs')).toBeVisible();
+
+    // Verify StitchTextField (md-outlined-text-field) is rendered in form
+    await expect(page.locator('md-outlined-text-field').first()).toBeVisible();
+
+    // Verify StitchButton for footer actions
+    await expect(page.locator('md-filled-button').first()).toBeVisible();
+
+    await expect(page).toHaveScreenshot('tenant-drawer-create.png', {
+      maxDiffPixelRatio: 0.1,
+    });
+  });
+
+  // ----- Drawer: Whitelabel Tab -----
+
+  test('Tenant Drawer — Whitelabel tab', async ({ page }) => {
+    await page.evaluate(() => {
+      document.documentElement.setAttribute('data-theme', 'light');
+      document.documentElement.classList.remove('dark');
+    });
+
+    await page.click('text=Create Tenant');
+    await page.waitForSelector('.drawer-content', { state: 'visible' });
+
+    // Navigate to Whitelabel tab
+    await page.click('md-primary-tab:has-text("Whitelabel")');
+    await page.waitForTimeout(300);
+
+    // Verify section labels are present (Stitch form-section-label)
+    await expect(page.locator('.form-section-label').first()).toBeVisible();
+
+    // Verify color inputs and text fields are rendered
+    await expect(page.locator('md-outlined-text-field').first()).toBeVisible();
+
+    // Verify preview card is present
+    await expect(page.locator('.preview-card')).toBeVisible();
+
+    await expect(page).toHaveScreenshot('tenant-drawer-whitelabel.png', {
+      maxDiffPixelRatio: 0.1,
+    });
+  });
+
+  // ----- Drawer: Dark Mode -----
+
+  test('Tenant Drawer — Dark Mode elevation', async ({ page }) => {
+    await page.evaluate(() => {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      document.documentElement.classList.add('dark');
+    });
+    await page.waitForTimeout(400);
+
+    await page.click('text=Create Tenant');
+    await page.waitForSelector('.drawer-content', { state: 'visible' });
+    await page.waitForTimeout(400);
+
+    // Verify drawer uses tonal surface (background should differ from page background)
+    await expect(page.locator('.drawer-content')).toBeVisible();
+
+    await expect(page).toHaveScreenshot('tenant-drawer-dark.png', {
+      maxDiffPixelRatio: 0.1,
+    });
+  });
+});

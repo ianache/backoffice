@@ -18,6 +18,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [ ] **Phase 3: User Management** - TenantAdmin puede gestionar usuarios dentro de su tenant con audit completo
 - [ ] **Phase 4: Feature Flags** - Flags configurables en 4 niveles con evaluación jerárquica determinista
 - [ ] **Phase 5: Rule Builder** - Usuarios pueden crear, ordenar y previsualizar reglas de evaluación visualmente
+- [ ] **Phase 6: Stitch Login Page** - Implementación de la página de login según diseño de Google Stitch
 
 ## Phase Details
 
@@ -93,10 +94,19 @@ Plans:
   3. Un usuario puede previsualizar el resultado de evaluación de una regla antes de activarla en producción
 **Plans**: TBD
 
+### Phase 6: Stitch Login Page
+**Goal**: Implementar la página de login siguiendo estrictamente los diseños de Google Stitch para asegurar una primera impresión profesional y coherente
+**Depends on**: Phase 2.1
+**Requirements**: UI-03
+**Success Criteria** (what must be TRUE):
+  1. La página de login refleja fielmente el diseño de Google Stitch en tipografía, colores y disposición
+  2. El flujo de autenticación con Keycloak sigue funcionando correctamente tras el rediseño
+**Plans**: TBD
+
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
+Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
@@ -106,3 +116,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 3. User Management | 0/TBD | Not started | - |
 | 4. Feature Flags | 0/TBD | Not started | - |
 | 5. Rule Builder | 0/TBD | Not started | - |
+| 6. Stitch Login Page | 0/TBD | Not started | - |

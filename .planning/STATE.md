@@ -2,13 +2,13 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: in-progress
-last_updated: "2026-06-07T12:00:00Z"
+status: unknown
+last_updated: "2026-06-07T14:32:06.220Z"
 progress:
-  total_phases: 4
-  completed_phases: 3
-  total_plans: 13
-  completed_plans: 10
+  total_phases: 5
+  completed_phases: 5
+  total_plans: 19
+  completed_plans: 19
 ---
 
 # Project State
@@ -59,6 +59,7 @@ Progress: [██████████] 100% (of phase 03 plans) | [███
 | Phase 03-user-management P01 | 20m | 2 tasks | 12 files |
 | Phase 03-user-management P04 | 5m | 2 tasks | 7 files |
 | Phase 03-user-management P05 | 10m | 2 tasks (1 auto + 1 human-verify) | 2 files |
+| Phase 03-user-management P06 | 15 | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -102,6 +103,7 @@ Recent decisions affecting current work:
 - [Phase 03-04]: UserActivityTab calls usersService.listEvents() directly on mount, not through store (per-user transient data pattern)
 - [Phase 03-05]: Router /users roles narrowed to TenantAdmin + TenantOwner only — PlatformAdmin removed (was permissive in 03-04)
 - [Phase 03-05]: Tenants nav button gained explicit v-if PlatformAdmin guard — TenantAdmins no longer see Tenants nav item
+- [Phase 03-user-management]: Dual JWT claim name fallback (tenant_id / tenantId) in requireAuth covers both Keycloak mapper emission styles [03-06]
 
 ### Pending Todos
 

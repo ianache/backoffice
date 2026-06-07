@@ -23,9 +23,9 @@ See: .planning/PROJECT.md (updated 2026-06-06)
 ## Current Position
 
 Phase: 03-user-management IN PROGRESS
-Plan: 02 COMPLETE — 03-01 (backend), 03-02 (BFF layer) both done
-Status: 03-02 COMPLETE — BFF /users proxy route + Keycloak admin token cache + backoffice-admin-svc provisioned
-Last activity: 2026-06-07 — Phase 03 Plan 02 completed (BFF users route, keycloak-admin.ts token cache, service account provisioned)
+Plan: 04 COMPLETE — 03-01 (backend), 03-02 (BFF layer), 03-03 (portal store+service), 03-04 (portal UI) all done
+Status: 03-04 COMPLETE — Full Users UI: UserTable, UserForm, UserRolesForm, UserActivityTab, UserDrawer, UsersView at /users
+Last activity: 2026-06-07 — Phase 03 Plan 04 completed (portal user management UI, 6 files, /users route)
 
 Progress: [██████████] 100% (of phase 06 plans) | [████████░░] 80% (of total roadmap)
 
@@ -57,6 +57,7 @@ Progress: [██████████] 100% (of phase 06 plans) | [███
 | Phase 06-stitch-ui-implementation P04 | 18m | 3 tasks | 6 files |
 | Phase 03-user-management P03 | 2m | 2 tasks | 2 files |
 | Phase 03-user-management P01 | 20m | 2 tasks | 12 files |
+| Phase 03-user-management P04 | 5m | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -95,6 +96,9 @@ Recent decisions affecting current work:
 - [Phase 03-01]: MySQL 5.6 has no JSON column type — user_events.context stored as TEXT with JSON serialize/deserialize in service layer
 - [Phase 03-01]: Keycloak role assignment requires GET /roles/{name} first for UUID — cannot assign by name only (returns 400)
 - [Phase 03-01]: Tenant scoping enforced at service layer via actor_tenant_id parameter, never trusting request body for listing
+- [Phase 03-04]: Router /users roles include PlatformAdmin + TenantAdmin + TenantOwner — permissive for Phase 3, can be narrowed later
+- [Phase 03-04]: UserDrawer uses custom CSS tab bar (not md-tabs) — allows disabled Activity tab when user=null without MDWC disabled attribute inconsistencies
+- [Phase 03-04]: UserActivityTab calls usersService.listEvents() directly on mount, not through store (per-user transient data pattern)
 
 ### Pending Todos
 
@@ -110,5 +114,5 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-06-07
-Stopped at: Completed 03-02-PLAN.md (BFF User Management Layer — /users proxy route, keycloak-admin.ts token cache, backoffice-admin-svc provisioned)
+Stopped at: Completed 03-04-PLAN.md (Users Portal UI — UserTable, UserDrawer, UsersView, /users route — Phase 03 complete)
 Resume file: None

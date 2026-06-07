@@ -23,9 +23,9 @@ See: .planning/PROJECT.md (updated 2026-06-06)
 ## Current Position
 
 Phase: 03-user-management IN PROGRESS
-Plan: 01 COMPLETE (re-run), then 02/03 earlier
-Status: 03-01 COMPLETE — Backend users domain (FastAPI /users endpoints + Keycloak Admin service + audit log migration)
-Last activity: 2026-06-07 — Phase 03 Plan 01 completed (8 /users endpoints, keycloak_admin.py, UserEvent model, user_events migration)
+Plan: 02 COMPLETE — 03-01 (backend), 03-02 (BFF layer) both done
+Status: 03-02 COMPLETE — BFF /users proxy route + Keycloak admin token cache + backoffice-admin-svc provisioned
+Last activity: 2026-06-07 — Phase 03 Plan 02 completed (BFF users route, keycloak-admin.ts token cache, service account provisioned)
 
 Progress: [██████████] 100% (of phase 06 plans) | [████████░░] 80% (of total roadmap)
 
@@ -110,5 +110,5 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-06-07
-Stopped at: Completed 03-01-PLAN.md (Backend User Management — FastAPI /users endpoints + keycloak_admin service + UserEvent migration)
+Stopped at: Completed 03-02-PLAN.md (BFF User Management Layer — /users proxy route, keycloak-admin.ts token cache, backoffice-admin-svc provisioned)
 Resume file: None

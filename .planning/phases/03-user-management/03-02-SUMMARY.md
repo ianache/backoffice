@@ -60,10 +60,10 @@ completed: 2026-06-07
 
 ## Performance
 
-- **Duration:** ~2 min
+- **Duration:** ~2 min (implementation) + human checkpoint
 - **Started:** 2026-06-07T10:54:06Z
-- **Completed:** 2026-06-07T10:56:00Z
-- **Tasks:** 2 of 3 (stopped at checkpoint:human-verify)
+- **Completed:** 2026-06-07
+- **Tasks:** 3 of 3 (all complete including human checkpoint)
 - **Files modified:** 5
 
 ## Accomplishments
@@ -79,7 +79,7 @@ Each task was committed atomically:
 
 1. **Task 1: Extend BFF config with Keycloak admin credentials** - `282567d` (feat)
 2. **Task 2: Keycloak Admin token service + users proxy route + mount** - `7960b8c` (feat)
-3. **Task 3: Checkpoint — provision backoffice-admin-svc Keycloak client** - AWAITING HUMAN
+3. **Task 3: Checkpoint — provision backoffice-admin-svc Keycloak client** - COMPLETE (human action)
 
 ## Files Created/Modified
 
@@ -102,27 +102,17 @@ None - plan executed exactly as written.
 
 None.
 
-## User Setup Required
+## Auth Gates
 
-Checkpoint Task 3 requires manual Keycloak Admin Console configuration:
-
-1. In QA Keycloak (https://oauth2.qa.comsatel.com.pe — Apps realm), create client:
-   - Client ID: `backoffice-admin-svc`
-   - Client authentication: ON (confidential)
-   - Standard flow: OFF, Direct access grants: OFF, Service accounts: ON
-2. From Credentials tab — copy the Client Secret
-3. Service accounts roles tab → Assign role → filter by "realm-management" → assign: `manage-users`, `view-users`, `view-realm`
-4. Add to `bff/.env`:
-   ```
-   KEYCLOAK_ADMIN_CLIENT_ID=backoffice-admin-svc
-   KEYCLOAK_ADMIN_CLIENT_SECRET=<paste-secret-here>
-   ```
-5. Restart BFF: `cd bff && pnpm dev` — confirm no "Missing required env var" errors
+**Checkpoint Task 3: Keycloak Service Account Provisioning**
+- **Task:** Provision `backoffice-admin-svc` client in QA Keycloak
+- **What was needed:** Keycloak Admin Console access to create confidential client with service account enabled; assign `manage-users`, `view-users`, `view-realm` roles from `realm-management` client
+- **Outcome:** COMPLETE — client created, secret copied, bff/.env updated with `KEYCLOAK_ADMIN_CLIENT_ID=backoffice-admin-svc` and `KEYCLOAK_ADMIN_CLIENT_SECRET`
 
 ## Next Phase Readiness
 
-- BFF layer ready; waiting for `backoffice-admin-svc` Keycloak client provisioning
-- After checkpoint: backend `/users` routes need to be implemented (plan 03-03 or later)
+- BFF layer fully complete with service account provisioned
+- Backend `/users` routes implemented in plan 03-01 — integration ready
 - Future: Keycloak protocol mapper for `tenant_id` attribute needed to populate `X-User-Tenant-Id` header
 
 ---

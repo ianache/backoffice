@@ -5,3 +5,5 @@ packages:
 allowBuilds:
   esbuild: true
   vue-demi: true
+minimumReleaseAgeExclude:
+  - http-proxy-middleware@4.1.0

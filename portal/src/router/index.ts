@@ -27,6 +27,12 @@ const routes: RouteRecordRaw[] = [
     component: () => import('../views/DashboardView.vue'),
     meta: { requiresAuth: true },
   },
+  {
+    path: '/tenants',
+    name: 'tenants',
+    component: () => import('../views/TenantsView.vue'),
+    meta: { requiresAuth: true, roles: ['PlatformAdmin'] },
+  },
 ]
 
 const router = createRouter({

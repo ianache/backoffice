@@ -18,8 +18,8 @@ Requirements para la Fase 1 (Tenants + Usuarios + Feature Flags). Cada uno mapea
 
 ### UI System & Brand Alignment
 
-- [ ] **UI-01**: La interfaz del portal sigue el System Design de Google Stitch
-- [ ] **UI-02**: El sistema soporta modos Light y Dark con un toggle persistente en la barra de navegación
+- [x] **UI-01**: La interfaz del portal sigue el System Design de Google Stitch
+- [x] **UI-02**: El sistema soporta modos Light y Dark con un toggle persistente en la barra de navegación
 
 
 ### User Management

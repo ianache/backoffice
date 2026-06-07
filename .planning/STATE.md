@@ -23,11 +23,11 @@ See: .planning/PROJECT.md (updated 2026-06-06)
 ## Current Position
 
 Phase: 04-feature-flags IN PROGRESS
-Plan: 01 COMPLETE — backend domain with evaluation engine, /flags + /segments endpoints
-Status: Phase 4 Plan 1/5 — feature_flags DB tables + FastAPI domain + 28 unit tests
-Last activity: 2026-06-07 — Phase 04 Plan 01 complete (evaluation engine, CRUD, routers)
+Plan: 02 COMPLETE — 26 unit tests for evaluate_flag() + _evaluate_rule(), no DB required
+Status: Phase 4 Plan 2/5 — evaluation engine TDD (SimpleNamespace make_flag() helper, 5 operators, hierarchy priority)
+Last activity: 2026-06-07 — Phase 04 Plan 02 complete (26 eval tests, 65 total passing)
 
-Progress: [██░░░░░░░░] 20% (of phase 04 plans) | [████████████░░] 53% (of total roadmap)
+Progress: [████░░░░░░] 40% (of phase 04 plans) | [█████████████░] 58% (of total roadmap)
 
 ## Performance Metrics
 
@@ -61,6 +61,7 @@ Progress: [██░░░░░░░░] 20% (of phase 04 plans) | [███�
 | Phase 03-user-management P05 | 10m | 2 tasks (1 auto + 1 human-verify) | 2 files |
 | Phase 03-user-management P06 | 20m | 3 tasks (2 auto + 1 human-verify) | 3 files |
 | Phase 04-feature-flags P01 | 5m | 2 tasks (TDD) | 9 files |
+| Phase 04-feature-flags P02 | 1m | 1 task (TDD) | 1 file |
 
 ## Accumulated Context
 
@@ -110,6 +111,9 @@ Recent decisions affecting current work:
 - [Phase 04-01]: _evaluate_rule() uses OPERATORS dispatch dict (not if/elif chain) — returns False on unknown operator or missing user attribute, never raises
 - [Phase 04-01]: rules, tags, members stored as TEXT (JSON arrays) in feature_flags/segments tables — MySQL 5.6 safe, json.dumps/loads in service layer
 - [Phase 04-01]: FlagResponse.model_validator(mode='before') handles both dict input and ORM objects for TEXT deserialization
+- [Phase 04-02]: Tests import evaluate_flag/_evaluate_rule at module level — collection errors surface immediately (not as test failures)
+- [Phase 04-02]: make_flag() uses SimpleNamespace per plan spec — minimal flag objects, no DB overhead for pure evaluation tests
+- [Phase 04-02]: test_scope_priority_not_recency proves SCOPE_PRIORITY dict used (not list-order) — global first in list still loses to tenant
 
 ### Pending Todos
 
@@ -126,5 +130,5 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-06-07
-Stopped at: Completed 04-01-PLAN.md — Feature Flags backend domain complete (evaluation engine, /flags, /segments, 28 tests)
+Stopped at: Completed 04-02-PLAN.md — Evaluation engine TDD (26 tests, make_flag() SimpleNamespace helper, 65 total passing)
 Resume file: None

@@ -94,7 +94,7 @@ Plans:
 
 Plans:
 - [x] 04-01-PLAN.md — Backend domain: feature_flags + segments models, evaluate_flag() engine, FastAPI router
-- [ ] 04-02-PLAN.md — TDD: evaluation engine unit tests (hierarchy + all 5 operators)
+- [x] 04-02-PLAN.md — TDD: evaluation engine unit tests (hierarchy + all 5 operators)
 - [ ] 04-03-PLAN.md — BFF /flags proxy route with multi-role guard
 - [ ] 04-04-PLAN.md — Portal service (TypeScript interfaces) + Pinia useFeatureFlagsStore
 - [ ] 04-05-PLAN.md — Portal UI: FlagsView + FlagTable + FlagDrawer + wiring + E2E checkpoint
@@ -136,6 +136,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 2. Tenant Management | 4/4 | Complete | 2026-06-07 |
 | 2.1. UI System & Brand Alignment | 1/1 | Complete | 2026-06-07 |
 | 3. User Management | 6/6 | Complete | 2026-06-07 |
-| 4. Feature Flags | 1/5 | In progress | - |
+| 4. Feature Flags | 2/5 | In progress | - |
 | 5. Rule Builder | 0/TBD | Not started | - |
 | 6. Stitch UI Implementation | 4/4 | Complete | 2026-06-06 |

@@ -91,11 +91,12 @@ const handleConfirm = async () => {
 </script>
 
 <template>
-  <div class="flex flex-col gap-6">
-    <!-- Action Bar -->
+  <div class="flex flex-col gap-4">
+    <!-- Page Header — Stitch title-large with subtitle -->
     <div class="flex items-center justify-between">
       <div>
-        <p class="text-on-surface-variant text-sm">
+        <h1 class="page-title">Tenants</h1>
+        <p class="page-subtitle">
           Manage platform tenants, whitelabeling, and product access.
         </p>
       </div>
@@ -107,10 +108,10 @@ const handleConfirm = async () => {
       </StitchButton>
     </div>
 
-    <!-- Table Section -->
+    <!-- Table Section — tonal elevation level 0 container -->
     <div class="bg-surface-container-lowest rounded-xl border border-outline-variant overflow-hidden">
-      <TenantTable 
-        :tenants="tenantsStore.tenants" 
+      <TenantTable
+        :tenants="tenantsStore.tenants"
         :is-loading="tenantsStore.isLoading"
         @edit="openEditDrawer"
         @suspend="confirmSuspend"
@@ -119,14 +120,14 @@ const handleConfirm = async () => {
       />
     </div>
 
-    <TenantDrawer 
-      :show="showDrawer" 
+    <TenantDrawer
+      :show="showDrawer"
       :tenant="selectedTenant"
       @close="showDrawer = false"
       @save="handleSave"
     />
 
-    <ConfirmDialog 
+    <ConfirmDialog
       v-bind="confirmDialog"
       @confirm="handleConfirm"
       @cancel="confirmDialog.show = false"
@@ -135,5 +136,20 @@ const handleConfirm = async () => {
 </template>
 
 <style scoped>
-/* Scoped styles mostly removed in favor of Tailwind and Stitch components */
+/* Stitch enterprise page header typography */
+.page-title {
+  font-size: 1.375rem;
+  font-weight: 400;
+  letter-spacing: 0;
+  color: var(--on-surface);
+  margin: 0 0 2px 0;
+  font-family: var(--font-family-sans);
+}
+
+.page-subtitle {
+  font-size: 0.8125rem;
+  font-weight: 400;
+  color: var(--on-surface-variant);
+  margin: 0;
+}
 </style>

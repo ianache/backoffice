@@ -16,14 +16,9 @@ usersRouter.use(
     on: {
       proxyReq: (proxyReq, req) => {
         proxyReq.setHeader('X-Internal-Secret', config.internalSecret)
-        proxyReq.setHeader('X-User-Sub', (req as any).user?.sub ?? '')
-        proxyReq.setHeader('X-User-Roles', ((req as any).user?.roles ?? []).join(','))
-        // tenant_id from JWT claim — requires Keycloak protocol mapper for tenant_id attribute
-        // auth.ts AuthUser shape: { sub, email, name, roles } — no tenantId yet
-        // Once the protocol mapper is configured, this will populate automatically
-        const user = (req as any).user ?? {}
-        const tenantId = user.tenantId ?? user.attributes?.tenant_id?.[0] ?? ''
-        proxyReq.setHeader('X-User-Tenant-Id', tenantId)
+        proxyReq.setHeader('X-User-Sub', req.user?.sub ?? '')
+        proxyReq.setHeader('X-User-Roles', (req.user?.roles ?? []).join(','))
+        proxyReq.setHeader('X-User-Tenant-Id', req.user?.tenantId ?? '')
       },
     },
   })

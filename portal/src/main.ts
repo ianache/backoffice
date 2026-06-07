@@ -7,6 +7,7 @@ import { useAuthStore } from './stores/auth'
 import './assets/theme.css'
 import './assets/tailwind.css'
 import './assets/main.css'
+import './plugins/material'
 
 const app = createApp(App)
 const pinia = createPinia()

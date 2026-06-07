@@ -70,7 +70,14 @@ Plans:
   3. TenantAdmin puede activar y desactivar usuarios — los desactivados no pueden autenticarse
   4. TenantAdmin puede resetear los dispositivos MFA de un usuario
   5. Toda acción sobre usuarios aparece en el audit log con actor, acción, timestamp y contexto
-**Plans**: TBD
+**Plans**: 5 plans
+
+Plans:
+- [ ] 03-01-PLAN.md — Backend: UserEvent model + Alembic migration + Keycloak Admin service + users domain (CRUD, roles, MFA reset, audit)
+- [ ] 03-02-PLAN.md — BFF: Keycloak admin token cache + /users proxy route (TenantAdmin/TenantOwner guarded) + Keycloak client provisioning checkpoint
+- [ ] 03-03-PLAN.md — Portal: users service (TypeScript interfaces + API calls) + useUsersStore Pinia store
+- [ ] 03-04-PLAN.md — Portal UI: UserTable + UserDrawer + UserForm + UserRolesForm (radio cards) + UserActivityTab + UsersView
+- [ ] 03-05-PLAN.md — Portal wiring: /users route + role-guarded nav item + end-to-end human verification
 
 ### Phase 4: Feature Flags
 **Goal**: Los feature flags funcionan con evaluación jerárquica determinista en 4 niveles, con soporte completo de operadores de reglas y segmentos reutilizables
@@ -120,7 +127,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 1. Foundation & Auth | 4/4 | Complete | 2026-06-07 |
 | 2. Tenant Management | 4/4 | Complete | 2026-06-07 |
 | 2.1. UI System & Brand Alignment | 1/1 | Complete | 2026-06-07 |
-| 3. User Management | 0/TBD | Not started | - |
+| 3. User Management | 0/5 | Planned | - |
 | 4. Feature Flags | 0/TBD | Not started | - |
 | 5. Rule Builder | 0/TBD | Not started | - |
 | 6. Stitch UI Implementation | 4/4 | Complete | 2026-06-06 |

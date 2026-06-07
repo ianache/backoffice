@@ -18,4 +18,8 @@ export const config = {
   nodeEnv: process.env.NODE_ENV ?? 'development',
   backendUrl: requireEnv('BACKEND_URL'),
   internalSecret: requireEnv('INTERNAL_SECRET'),
+  keycloakAdmin: {
+    clientId: requireEnv('KEYCLOAK_ADMIN_CLIENT_ID'),
+    clientSecret: requireEnv('KEYCLOAK_ADMIN_CLIENT_SECRET'),
+  },
 }

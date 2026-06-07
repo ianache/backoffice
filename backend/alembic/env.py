@@ -9,6 +9,7 @@ from app.config import settings
 
 # Import all models so Alembic can detect them
 from app.domains.tenants.models import Base
+from app.domains.users.models import UserEvent  # noqa: F401 — registers with metadata
 target_metadata = Base.metadata
 
 config = context.config

@@ -27,14 +27,19 @@ TenantAdmin can manage users within their own tenant — create, assign roles, a
 ### Role Assignment Model
 - **Tenant role:** one per user, mutually exclusive (TenantOwner / TenantAdmin / TenantViewer) — assigned as Keycloak realm roles
 - **Product roles:** one per product, per user (ProductManager / ProductDeveloper / ProductQA) — modeled as Keycloak realm roles with naming convention `product:{product_id}:{RoleName}`
-- Role assignment presented in a **single form with two sections**: tenant role dropdown at top, then a per-product role dropdown list (one per product the tenant has, with "No role" option)
+- Role assignment uses **radio cards** (bordered cards with radio input, not dropdowns) — one card per role with name + description, selected card highlighted with `border-primary bg-primary/5`
+- The drawer panel is titled **"Manage Access"** (not "Edit User") following the Stitch design reference
 
 ### User Table
-- Columns: Name, Email, Tenant Role, Status, Created At, Actions
-- Status chip reuses the existing active/suspended pattern from TenantTable
-- Actions: edit (opens drawer), activate/deactivate toggle, reset MFA
-- Toolbar and filter chips mirror the TenantTable pattern (all / active / inactive filters)
-- Density toggle (compact/normal) same as TenantTable
+- Page title: **"Access Management"** with subtitle "Control user access and granular permissions across your tenant environment"
+- Columns: User (avatar + name + email), Role (colored badge), Status (dot indicator), Actions (edit icon button)
+- Avatar: initials circle (`w-10 h-10 rounded-full`) using first 2 letters of name when no photo
+- Role badge: colored inline pill — primary tint for TenantAdmin, secondary tint for ProductManager, neutral for Viewer
+- Status: colored dot + label (green=Active, amber=Pending, grey=Inactive)
+- Header shows active/pending counts as badges: "12 Active", "2 Pending"
+- Primary CTA: "Invite Member" button (`person_add` icon + primary)
+- Tab navigation: **Members** | Roles | API Keys (implement Members tab only in Phase 3)
+- Filter chips follow TenantTable pattern (all / active / inactive)
 
 ### Navigation & Scoping
 - New nav rail item: **People icon + "Users" label** at `/users` route
@@ -65,8 +70,18 @@ TenantAdmin can manage users within their own tenant — create, assign roles, a
 <specifics>
 ## Specific Ideas
 
-- Role assignment UI: single form, two sections — avoids the extra tab-switching friction of the TenantDrawer approach
-- The existing TenantTable component (toolbar + filter chips + density toggle + status chip + `md-menu` actions) is the direct template for UserTable — follow it closely for consistency
+**Stitch design reference:** `design/stitch/permission-user-roles.html`
+
+Key patterns to follow from the design:
+- Page title "Access Management" + subtitle on the left, "Invite Member" primary button on the right
+- Tab bar: Members | Roles | API Keys — Members tab active, others placeholder for future phases
+- **12-column grid layout:** member table takes 8 cols, role insights sidebar takes 4 cols
+- **Role sidebar panel:** "Role Insights" card shows role definitions, each as a hoverable card
+- **Drawer "Manage Access":** 440px wide, contains "Assignment Scope" segmented toggle + radio cards for roles + "Summary of Permissions" preview section
+- Radio card pattern for role selection: `border-2 border-primary bg-primary/5` for selected, `border border-outline-variant` for unselected — each card shows role name + description
+- **"Summary of Permissions"** section in the drawer (below role cards): shows what the selected role can do with `check_circle` icons — static list per role
+- Avatar: `w-10 h-10 rounded-full bg-secondary-container` with 2-letter initials when no photo
+- The existing TenantTable component (toolbar + filter chips + density toggle + `md-menu` actions) remains the structural reference, but visuals adapt to the Stitch Roles & Permissions design
 
 </specifics>
 

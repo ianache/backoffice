@@ -2,6 +2,7 @@ import express from 'express'
 import cors from 'cors'
 import { config } from './config/index.js'
 import { authRouter } from './routes/auth.js'
+import { tenantsRouter } from './routes/tenants.js'
 
 const app = express()
 
@@ -18,6 +19,9 @@ app.get('/health', (_req, res) => {
 
 // Auth routes: /auth/me, etc.
 app.use('/auth', authRouter)
+
+// Tenant management: proxied to backend
+app.use('/tenants', tenantsRouter)
 
 app.listen(config.port, () => {
   console.log(`BFF running on http://localhost:${config.port}`)

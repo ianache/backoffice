@@ -76,8 +76,8 @@ Plans:
 - [x] 03-01-PLAN.md — Backend: UserEvent model + Alembic migration + Keycloak Admin service + users domain (CRUD, roles, MFA reset, audit)
 - [x] 03-02-PLAN.md — BFF: Keycloak admin token cache + /users proxy route (TenantAdmin/TenantOwner guarded) + Keycloak client provisioning checkpoint
 - [x] 03-03-PLAN.md — Portal: users service (TypeScript interfaces + API calls) + useUsersStore Pinia store
-- [ ] 03-04-PLAN.md — Portal UI: UserTable + UserDrawer + UserForm + UserRolesForm (radio cards) + UserActivityTab + UsersView
-- [ ] 03-05-PLAN.md — Portal wiring: /users route + role-guarded nav item + end-to-end human verification
+- [x] 03-04-PLAN.md — Portal UI: UserTable + UserDrawer + UserForm + UserRolesForm (radio cards) + UserActivityTab + UsersView
+- [x] 03-05-PLAN.md — Portal wiring: /users route + role-guarded nav item + end-to-end human verification
 
 ### Phase 4: Feature Flags
 **Goal**: Los feature flags funcionan con evaluación jerárquica determinista en 4 niveles, con soporte completo de operadores de reglas y segmentos reutilizables

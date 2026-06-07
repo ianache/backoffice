@@ -67,12 +67,65 @@ export const useAuthStore = defineStore('auth', () => {
     keycloak.login()
   }
 
+  async function loginWithCredentials(email: string, password: string): Promise<void> {
+    isLoading.value = true
+    try {
+      const response = await fetch(`${import.meta.env.VITE_KEYCLOAK_URL}/realms/${import.meta.env.VITE_KEYCLOAK_REALM}/protocol/openid-connect/token`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+          client_id: import.meta.env.VITE_KEYCLOAK_CLIENT_ID,
+          grant_type: 'password',
+          username: email,
+          password: password,
+        })
+      })
+
+      if (!response.ok) {
+        throw new Error('Invalid email or password')
+      }
+
+      const data = await response.json()
+      
+      // Initialize keycloak with the obtained tokens
+      const authenticated = await keycloak.init({
+        onLoad: 'check-sso',
+        checkLoginIframe: false,
+        token: data.access_token,
+        refreshToken: data.refresh_token,
+        idToken: data.id_token
+      })
+
+      if (authenticated) {
+        _populate()
+        // Start refresh interval
+        if (refreshInterval) clearInterval(refreshInterval)
+        refreshInterval = setInterval(async () => {
+          try {
+            const refreshed = await keycloak.updateToken(60)
+            if (refreshed) token.value = keycloak.token ?? null
+          } catch {
+            logout()
+          }
+        }, 30_000)
+      } else {
+        throw new Error('Authentication failed after token exchange')
+      }
+    } catch (error: any) {
+      console.error('Login failed:', error)
+      _clear()
+      throw error
+    } finally {
+      isLoading.value = false
+    }
+  }
+
   function logout(): void {
     _clear()
     keycloak.logout()
   }
 
-  return { isAuthenticated, token, user, roles, isLoading, hasRole, init, login, logout }
+  return { isAuthenticated, token, user, roles, isLoading, hasRole, init, login, loginWithCredentials, logout }
 }, {
   persist: {
     pick: ['token', 'user', 'roles', 'isAuthenticated'],

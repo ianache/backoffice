@@ -26,12 +26,12 @@ Requirements para la Fase 1 (Tenants + Usuarios + Feature Flags). Cada uno mapea
 
 ### User Management
 
-- [ ] **USER-01**: TenantAdmin puede crear usuarios dentro de su tenant con email y nombre
-- [ ] **USER-02**: TenantAdmin puede asignar roles por tenant (TenantOwner, TenantAdmin, TenantViewer) y por producto (ProductManager, ProductDeveloper, ProductQA)
-- [ ] **USER-03**: TenantAdmin puede editar datos de usuarios existentes
-- [ ] **USER-04**: TenantAdmin puede activar y desactivar usuarios del tenant
-- [ ] **USER-05**: TenantAdmin puede resetear los dispositivos MFA de un usuario
-- [ ] **USER-06**: Toda acción sobre usuarios genera entrada en audit log con actor, acción, timestamp y contexto
+- [x] **USER-01**: TenantAdmin puede crear usuarios dentro de su tenant con email y nombre
+- [x] **USER-02**: TenantAdmin puede asignar roles por tenant (TenantOwner, TenantAdmin, TenantViewer) y por producto (ProductManager, ProductDeveloper, ProductQA)
+- [x] **USER-03**: TenantAdmin puede editar datos de usuarios existentes
+- [x] **USER-04**: TenantAdmin puede activar y desactivar usuarios del tenant
+- [x] **USER-05**: TenantAdmin puede resetear los dispositivos MFA de un usuario
+- [x] **USER-06**: Toda acción sobre usuarios genera entrada en audit log con actor, acción, timestamp y contexto
 
 ### Authentication
 
@@ -111,12 +111,12 @@ Cual fase cubre cuáles requerimientos. Actualizado durante creación del roadma
 | TNNT-04 | Phase 2 | Complete |
 | TNNT-05 | Phase 2 | Complete |
 | TNNT-06 | Phase 2 | Complete |
-| USER-01 | Phase 3 | Pending |
-| USER-02 | Phase 3 | Pending |
-| USER-03 | Phase 3 | Pending |
-| USER-04 | Phase 3 | Pending |
-| USER-05 | Phase 3 | Pending |
-| USER-06 | Phase 3 | Pending |
+| USER-01 | Phase 3 | Complete |
+| USER-02 | Phase 3 | Complete |
+| USER-03 | Phase 3 | Complete |
+| USER-04 | Phase 3 | Complete |
+| USER-05 | Phase 3 | Complete |
+| USER-06 | Phase 3 | Complete |
 | FLAG-01 | Phase 4 | Pending |
 | FLAG-02 | Phase 4 | Pending |
 | FLAG-03 | Phase 4 | Pending |

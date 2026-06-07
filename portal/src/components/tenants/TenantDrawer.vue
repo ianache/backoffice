@@ -59,15 +59,20 @@ const handleTabChange = (e: any) => {
 <template>
   <Teleport to="body">
     <Transition name="slide">
-      <div v-if="show" class="drawer-overlay" @click="emit('close')">
+      <div v-if="show" class="drawer-overlay" @click="emit('close')" role="dialog" aria-modal="true" :aria-label="isEdit ? 'Edit Tenant' : 'Create Tenant'">
         <div class="drawer-content" @click.stop>
+          <!-- Drawer Header — Stitch side-sheet pattern -->
           <div class="drawer-header">
-            <h2 class="text-title-large">{{ isEdit ? 'Edit Tenant' : 'Create Tenant' }}</h2>
-            <md-icon-button @click="emit('close')">
+            <div class="flex flex-col">
+              <h2 class="drawer-title">{{ isEdit ? 'Edit Tenant' : 'Create Tenant' }}</h2>
+              <p class="drawer-subtitle">{{ isEdit ? `ID: ${tenant?.id}` : 'Fill in the details below' }}</p>
+            </div>
+            <md-icon-button @click="emit('close')" aria-label="Close drawer">
               <md-icon>close</md-icon>
             </md-icon-button>
           </div>
 
+          <!-- Tabs — uses surface-container-low container color -->
           <md-tabs :active-tab-index="activeTab" @change="handleTabChange">
             <md-primary-tab>
               <md-icon slot="icon">info</md-icon>
@@ -79,6 +84,7 @@ const handleTabChange = (e: any) => {
             </md-primary-tab>
           </md-tabs>
 
+          <!-- Scrollable form body -->
           <div class="drawer-body">
             <TenantForm v-if="activeTab === 0" v-model="formData" />
             <WhitelabelForm v-else v-model="formData" />
@@ -86,6 +92,7 @@ const handleTabChange = (e: any) => {
 
           <md-divider></md-divider>
 
+          <!-- Footer actions — Stitch text + filled button pattern -->
           <div class="drawer-footer">
             <StitchButton variant="text" @click="emit('close')">Cancel</StitchButton>
             <StitchButton variant="filled" @click="handleSubmit">
@@ -99,6 +106,7 @@ const handleTabChange = (e: any) => {
 </template>
 
 <style scoped>
+/* Drawer overlay — scrim with 40% opacity (M3 standard) */
 .drawer-overlay {
   position: fixed;
   top: 0;
@@ -111,6 +119,7 @@ const handleTabChange = (e: any) => {
   justify-content: flex-end;
 }
 
+/* Drawer container — M3 tonal elevation level 1 (surface-container-low) */
 .drawer-content {
   background: var(--surface-container-low);
   color: var(--on-surface);
@@ -119,46 +128,76 @@ const handleTabChange = (e: any) => {
   height: 100%;
   display: flex;
   flex-direction: column;
-  box-shadow: var(--md-sys-elevation-level3);
+  /* M3 elevation level 3 equivalent: layered shadow for modal drawers */
+  box-shadow:
+    0 8px 10px -5px rgba(0, 0, 0, 0.16),
+    0 16px 24px 2px rgba(0, 0, 0, 0.10),
+    0 6px 30px 5px rgba(0, 0, 0, 0.08);
+  border-left: 1px solid var(--outline-variant);
 }
 
+/* Header region */
 .drawer-header {
-  padding: var(--spacing-md) var(--spacing-lg);
+  padding: var(--spacing-md) var(--spacing-md) var(--spacing-md) var(--spacing-lg);
   display: flex;
   justify-content: space-between;
-  align-items: center;
-}
-
-.text-title-large {
-  font-size: 1.375rem;
-  font-weight: 400;
-  margin: 0;
-}
-
-.drawer-body {
-  flex: 1;
-  overflow-y: auto;
-  padding: var(--spacing-lg);
-}
-
-.drawer-footer {
-  padding: var(--spacing-md) var(--spacing-lg);
-  display: flex;
-  justify-content: flex-end;
-  gap: var(--spacing-sm);
+  align-items: flex-start;
   background: var(--surface-container-low);
 }
 
+/* Stitch title-large for side drawers */
+.drawer-title {
+  font-size: 1.25rem;
+  font-weight: 500;
+  letter-spacing: 0;
+  color: var(--on-surface);
+  margin: 0;
+  font-family: var(--font-family-sans);
+  line-height: 1.4;
+}
+
+.drawer-subtitle {
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: var(--on-surface-variant);
+  margin: 2px 0 0;
+}
+
+/* Tabs — inherit surface-container-low background */
 md-tabs {
   --md-primary-tab-container-color: var(--surface-container-low);
   --md-tabs-container-color: var(--surface-container-low);
 }
 
-.slide-enter-active, .slide-leave-active {
+/* Scrollable body */
+.drawer-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--spacing-lg);
+  /* subtle inner scroll track for Stitch */
+  scrollbar-width: thin;
+  scrollbar-color: var(--outline-variant) transparent;
+}
+
+/* Footer — sticky at bottom, same surface as drawer */
+.drawer-footer {
+  padding: var(--spacing-sm) var(--spacing-md);
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-sm);
+  background: var(--surface-container-low);
+  min-height: 52px;
+  align-items: center;
+}
+
+/* Slide-in animation — M3 standard easing */
+.slide-enter-active,
+.slide-leave-active {
   transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.slide-enter-from, .slide-leave-to {
+.slide-enter-from,
+.slide-leave-to {
   transform: translateX(100%);
 }
 </style>

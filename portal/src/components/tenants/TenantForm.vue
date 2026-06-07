@@ -45,79 +45,88 @@ const toggleProduct = (product: string) => {
 
 <template>
   <div class="form-container">
-    <StitchTextField
-      v-model="formData.name"
-      label="Tenant Name"
-      placeholder="e.g. Acme Corp"
-      required
-    />
+    <!-- Section: Identity -->
+    <div class="form-section">
+      <p class="form-section-label">Identity</p>
+      <StitchTextField
+        v-model="formData.name"
+        label="Tenant Name"
+        placeholder="e.g. Acme Corp"
+        required
+      />
 
-    <div class="form-row">
-      <md-outlined-select
-        label="Country"
-        :value="formData.country"
-        @change="(e: any) => formData.country = e.target.value"
-      >
-        <md-select-option v-for="c in countries" :key="c" :value="c">
-          <div slot="headline">{{ c }}</div>
-        </md-select-option>
-      </md-outlined-select>
+      <div class="form-row">
+        <md-outlined-select
+          label="Country"
+          :value="formData.country"
+          @change="(e: any) => formData.country = e.target.value"
+        >
+          <md-select-option v-for="c in countries" :key="c" :value="c">
+            <div slot="headline">{{ c }}</div>
+          </md-select-option>
+        </md-outlined-select>
+
+        <md-outlined-select
+          label="Status"
+          :value="formData.status"
+          @change="(e: any) => formData.status = e.target.value"
+        >
+          <md-select-option value="active">
+            <div slot="headline">Active</div>
+          </md-select-option>
+          <md-select-option value="suspended">
+            <div slot="headline">Suspended</div>
+          </md-select-option>
+        </md-outlined-select>
+      </div>
+    </div>
+
+    <!-- Section: Localization -->
+    <div class="form-section">
+      <p class="form-section-label">Localization</p>
+      <div class="form-row">
+        <md-outlined-select
+          label="Default Language"
+          :value="formData.default_language"
+          @change="(e: any) => formData.default_language = e.target.value"
+        >
+          <md-select-option v-for="l in languages" :key="l.value" :value="l.value">
+            <div slot="headline">{{ l.label }}</div>
+          </md-select-option>
+        </md-outlined-select>
+
+        <md-outlined-select
+          label="Default Currency"
+          :value="formData.default_currency"
+          @change="(e: any) => formData.default_currency = e.target.value"
+        >
+          <md-select-option v-for="c in currencies" :key="c" :value="c">
+            <div slot="headline">{{ c }}</div>
+          </md-select-option>
+        </md-outlined-select>
+      </div>
 
       <md-outlined-select
-        label="Status"
-        :value="formData.status"
-        @change="(e: any) => formData.status = e.target.value"
+        label="Measurement Units"
+        :value="formData.default_units"
+        @change="(e: any) => formData.default_units = e.target.value"
       >
-        <md-select-option value="active">
-          <div slot="headline">Active</div>
-        </md-select-option>
-        <md-select-option value="suspended">
-          <div slot="headline">Suspended</div>
+        <md-select-option v-for="u in units" :key="u.value" :value="u.value">
+          <div slot="headline">{{ u.label }}</div>
         </md-select-option>
       </md-outlined-select>
     </div>
 
-    <div class="form-row">
-      <md-outlined-select
-        label="Default Language"
-        :value="formData.default_language"
-        @change="(e: any) => formData.default_language = e.target.value"
-      >
-        <md-select-option v-for="l in languages" :key="l.value" :value="l.value">
-          <div slot="headline">{{ l.label }}</div>
-        </md-select-option>
-      </md-outlined-select>
-
-      <md-outlined-select
-        label="Default Currency"
-        :value="formData.default_currency"
-        @change="(e: any) => formData.default_currency = e.target.value"
-      >
-        <md-select-option v-for="c in currencies" :key="c" :value="c">
-          <div slot="headline">{{ c }}</div>
-        </md-select-option>
-      </md-outlined-select>
-    </div>
-
-    <md-outlined-select
-      label="Measurement Units"
-      :value="formData.default_units"
-      @change="(e: any) => formData.default_units = e.target.value"
-    >
-      <md-select-option v-for="u in units" :key="u.value" :value="u.value">
-        <div slot="headline">{{ u.label }}</div>
-      </md-select-option>
-    </md-outlined-select>
-
-    <div class="form-group">
-      <label class="section-label">Available Products</label>
+    <!-- Section: Products — md-checkbox for each product -->
+    <div class="form-section">
+      <p class="form-section-label">Product Access</p>
       <div class="checkbox-group">
         <label v-for="p in availableProducts" :key="p" class="checkbox-item">
-          <md-checkbox 
-            :checked="formData.products.includes(p)" 
+          <md-checkbox
+            :checked="formData.products.includes(p)"
             @change="toggleProduct(p)"
           />
-          <span class="text-body-medium">{{ p }}</span>
+          <span class="checkbox-label">{{ p }}</span>
         </label>
       </div>
     </div>
@@ -131,24 +140,35 @@ const toggleProduct = (product: string) => {
   gap: var(--spacing-lg);
 }
 
+/* Stitch form section — groups related fields with a label */
+.form-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+/* Section label — body-small with on-surface-variant */
+.form-section-label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--on-surface-variant);
+  margin: 0 0 2px;
+  font-family: var(--font-family-sans);
+}
+
 .form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--spacing-md);
 }
 
-.section-label {
-  display: block;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--on-surface-variant);
-  margin-bottom: var(--spacing-sm);
-}
-
+/* Product checkboxes */
 .checkbox-group {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--spacing-md);
+  gap: var(--spacing-sm) var(--spacing-lg);
 }
 
 .checkbox-item {
@@ -158,8 +178,9 @@ const toggleProduct = (product: string) => {
   cursor: pointer;
 }
 
-.text-body-medium {
+.checkbox-label {
   font-size: 0.875rem;
+  font-weight: 400;
   color: var(--on-surface);
 }
 

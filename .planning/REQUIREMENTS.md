@@ -16,6 +16,11 @@ Requirements para la Fase 1 (Tenants + Usuarios + Feature Flags). Cada uno mapea
 - [x] **TNNT-05**: PlatformAdmin puede asociar y deshabilitar productos en un tenant
 - [x] **TNNT-06**: PlatformAdmin puede buscar y filtrar la lista de tenants por estado, país y atributos clave
 
+### UI System & Brand Alignment
+
+- [ ] **UI-01**: La interfaz del portal sigue el System Design de Google Stitch
+- [ ] **UI-02**: El sistema soporta modos Light y Dark con un toggle persistente en la barra de navegación
+
 
 ### User Management
 

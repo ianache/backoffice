@@ -14,6 +14,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Foundation & Auth** - Autenticación funciona; PlatformAdmin puede entrar al sistema con roles propagados
 - [x] **Phase 2: Tenant Management** - PlatformAdmin puede crear, configurar y gestionar el ciclo de vida completo de tenants
+- [ ] **Phase 2.1: UI System & Brand Alignment** (INSERTED) - Alineación con Google Stitch y sistema de temas Light/Dark
 - [ ] **Phase 3: User Management** - TenantAdmin puede gestionar usuarios dentro de su tenant con audit completo
 - [ ] **Phase 4: Feature Flags** - Flags configurables en 4 niveles con evaluación jerárquica determinista
 - [ ] **Phase 5: Rule Builder** - Usuarios pueden crear, ordenar y previsualizar reglas de evaluación visualmente
@@ -44,6 +45,19 @@ Plans:
 - [x] 02-02-PLAN.md — FastAPI Tenants domain (Models, Schemas, Service, Router)
 - [x] 02-03-PLAN.md — BFF Proxy to Backend
 - [x] 02-04-PLAN.md — Portal UI (Tenants list, drawer, forms, store)
+
+### Phase 2.1: UI System & Brand Alignment
+**Goal**: El portal sigue los lineamientos de diseño de Google Stitch y soporta temas Light/Dark para mejorar la experiencia de usuario y coherencia visual
+**Depends on**: Phase 2
+**Requirements**: UI-01, UI-02
+**Success Criteria** (what must be TRUE):
+  1. Los componentes visuales y espaciado siguen las especificaciones de Google Stitch
+  2. El usuario puede alternar entre modo Light y Dark mediante un toggle en el menú principal
+  3. La preferencia de tema persiste entre sesiones
+**Plans**: 1 plan
+
+Plans:
+- [ ] 02.1-01-PLAN.md — Research & UI Planning (Stitch alignment + Theme System)
 
 ### Phase 3: User Management
 **Goal**: TenantAdmin puede gestionar usuarios dentro de su tenant — crear, asignar roles, activar/desactivar y auditar todas las acciones
@@ -88,6 +102,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 |-------|----------------|--------|-----------|
 | 1. Foundation & Auth | 4/4 | Complete | 2026-06-07 |
 | 2. Tenant Management | 4/4 | Complete | 2026-06-07 |
+| 2.1. UI System & Brand Alignment | 0/1 | Not started | - |
 | 3. User Management | 0/TBD | Not started | - |
 | 4. Feature Flags | 0/TBD | Not started | - |
 | 5. Rule Builder | 0/TBD | Not started | - |

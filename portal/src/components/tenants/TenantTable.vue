@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 import type { Tenant } from '../../services/tenants'
+import StitchTextField from '../ui/StitchTextField.vue'
 
 const props = defineProps<{
   tenants: Tenant[]
@@ -10,200 +11,213 @@ const props = defineProps<{
 const emit = defineEmits(['edit', 'delete', 'suspend', 'search'])
 
 const searchQuery = ref('')
+const selectedIds = ref<Set<number>>(new Set())
 
 const handleSearch = () => {
   emit('search', searchQuery.value)
 }
 
 const formatDate = (dateString: string) => {
-  return new Date(dateString).toLocaleDateString()
+  return new Date(dateString).toLocaleDateString(undefined, {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  })
+}
+
+const toggleSelectAll = (event: any) => {
+  if (event.target.checked) {
+    props.tenants.forEach(t => selectedIds.value.add(t.id))
+  } else {
+    selectedIds.value.clear()
+  }
+}
+
+const toggleSelect = (id: number, checked: boolean) => {
+  if (checked) {
+    selectedIds.value.add(id)
+  } else {
+    selectedIds.value.delete(id)
+  }
+}
+
+// Menu handling
+const activeMenu = ref<number | null>(null)
+const toggleMenu = (id: number) => {
+  if (activeMenu.value === id) {
+    activeMenu.value = null
+  } else {
+    activeMenu.value = id
+  }
 }
 </script>
 
 <template>
-  <div class="table-container">
-    <div class="table-header">
-      <div class="search-bar">
-        <input 
-          v-model="searchQuery" 
-          type="text" 
-          placeholder="Search tenants..." 
+  <div class="flex flex-col bg-surface overflow-hidden">
+    <!-- Table Header / Toolbar -->
+    <div class="p-4 border-b border-outline-variant flex items-center justify-between">
+      <div class="w-full max-w-xs">
+        <StitchTextField
+          v-model="searchQuery"
+          placeholder="Search tenants..."
           @input="handleSearch"
-        />
+        >
+          <template #leading-icon>
+            <md-icon>search</md-icon>
+          </template>
+        </StitchTextField>
+      </div>
+      
+      <div class="flex items-center gap-1">
+         <md-icon-button :disabled="selectedIds.size === 0">
+           <md-icon>delete</md-icon>
+         </md-icon-button>
+         <md-icon-button>
+           <md-icon>filter_list</md-icon>
+         </md-icon-button>
+         <md-icon-button>
+           <md-icon>more_vert</md-icon>
+         </md-icon-button>
       </div>
     </div>
 
-    <div v-if="isLoading" class="loading">Loading tenants...</div>
-    
-    <table v-else class="tenant-table">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Status</th>
-          <th>Country</th>
-          <th>Products</th>
-          <th>Created At</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="tenant in tenants" :key="tenant.id">
-          <td>
-            <div class="tenant-name">
-              <img v-if="tenant.logo_url" :src="tenant.logo_url" class="mini-logo" />
-              <span>{{ tenant.name }}</span>
-            </div>
-          </td>
-          <td>
-            <span :class="['status-badge', tenant.status]">
-              {{ tenant.status }}
-            </span>
-          </td>
-          <td>{{ tenant.country }}</td>
-          <td>
-            <div class="product-tags">
-              <span v-for="p in tenant.products" :key="p" class="product-tag">
-                {{ p }}
+    <!-- Table -->
+    <div class="overflow-x-auto">
+      <table class="w-full border-collapse text-left">
+        <thead>
+          <tr class="bg-surface-container-low border-b border-outline-variant">
+            <th class="pl-4 pr-2 py-3 w-10">
+              <md-checkbox 
+                @change="toggleSelectAll"
+                :indeterminate="selectedIds.size > 0 && selectedIds.size < tenants.length"
+              ></md-checkbox>
+            </th>
+            <th class="px-4 py-3 text-[11px] font-bold uppercase tracking-wider text-on-surface-variant">Tenant Name</th>
+            <th class="px-4 py-3 text-[11px] font-bold uppercase tracking-wider text-on-surface-variant text-center">Status</th>
+            <th class="px-4 py-3 text-[11px] font-bold uppercase tracking-wider text-on-surface-variant">Country</th>
+            <th class="px-4 py-3 text-[11px] font-bold uppercase tracking-wider text-on-surface-variant">Products</th>
+            <th class="px-4 py-3 text-[11px] font-bold uppercase tracking-wider text-on-surface-variant">Created</th>
+            <th class="px-4 py-3 text-[11px] font-bold uppercase tracking-wider text-on-surface-variant text-right pr-6">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-outline-variant">
+          <tr v-if="isLoading">
+             <td colspan="7" class="px-6 py-12 text-center text-on-surface-variant italic">
+               <div class="flex flex-col items-center gap-3">
+                 <md-linear-progress indeterminate class="w-32"></md-linear-progress>
+                 <span class="text-sm">Loading tenants...</span>
+               </div>
+             </td>
+          </tr>
+          <tr v-else-if="tenants.length === 0">
+             <td colspan="7" class="px-6 py-12 text-center text-on-surface-variant italic text-sm">
+               No tenants found matching your search.
+             </td>
+          </tr>
+          <tr 
+            v-for="tenant in tenants" 
+            :key="tenant.id"
+            class="hover:bg-surface-container-lowest transition-colors group"
+          >
+            <td class="pl-4 pr-2 py-1">
+              <md-checkbox 
+                :checked="selectedIds.has(tenant.id)"
+                @change="(e: any) => toggleSelect(tenant.id, e.target.checked)"
+              ></md-checkbox>
+            </td>
+            <td class="px-4 py-1">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center border border-outline-variant overflow-hidden shrink-0">
+                  <img v-if="tenant.logo_url" :src="tenant.logo_url" class="w-full h-full object-contain" />
+                  <md-icon v-else class="text-on-surface-variant text-sm">business</md-icon>
+                </div>
+                <div class="flex flex-col overflow-hidden">
+                  <span class="text-sm font-medium text-on-surface truncate">{{ tenant.name }}</span>
+                  <span class="text-[10px] text-on-surface-variant font-mono">#{{ tenant.id }}</span>
+                </div>
+              </div>
+            </td>
+            <td class="px-4 py-1 text-center">
+              <span 
+                :class="[
+                  'px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-tighter border',
+                  tenant.status === 'active' 
+                    ? 'bg-success-container text-on-success-container border-success/20' 
+                    : 'bg-error-container text-on-error-container border-error/20'
+                ]"
+              >
+                {{ tenant.status }}
               </span>
-            </div>
-          </td>
-          <td>{{ formatDate(tenant.created_at) }}</td>
-          <td class="actions">
-            <button class="action-btn" @click="emit('edit', tenant)">Edit</button>
-            <button 
-              v-if="tenant.status === 'active'" 
-              class="action-btn suspend" 
-              @click="emit('suspend', tenant)"
-            >
-              Suspend
-            </button>
-            <button class="action-btn delete" @click="emit('delete', tenant)">Delete</button>
-          </td>
-        </tr>
-        <tr v-if="tenants.length === 0">
-          <td colspan="6" class="no-data">No tenants found</td>
-        </tr>
-      </tbody>
-    </table>
+            </td>
+            <td class="px-4 py-1 text-sm text-on-surface-variant">
+              {{ tenant.country }}
+            </td>
+            <td class="px-4 py-1">
+              <div class="flex flex-wrap gap-1">
+                <span 
+                  v-for="p in tenant.products" 
+                  :key="p" 
+                  class="px-1.5 py-0.5 rounded bg-secondary-container text-on-secondary-container text-[10px] font-bold uppercase"
+                >
+                  {{ p }}
+                </span>
+              </div>
+            </td>
+            <td class="px-4 py-1 text-sm text-on-surface-variant">
+              {{ formatDate(tenant.created_at) }}
+            </td>
+            <td class="px-4 py-1 text-right pr-4">
+              <div class="flex justify-end gap-0.5">
+                <md-icon-button @click="emit('edit', tenant)">
+                  <md-icon>edit</md-icon>
+                </md-icon-button>
+                
+                <div class="relative">
+                  <md-icon-button :id="`anchor-${tenant.id}`" @click="toggleMenu(tenant.id)">
+                    <md-icon>more_vert</md-icon>
+                  </md-icon-button>
+                  <md-menu 
+                    :anchor="`anchor-${tenant.id}`" 
+                    :open="activeMenu === tenant.id"
+                    @closed="activeMenu = null"
+                    quick
+                  >
+                    <md-menu-item @click="emit('edit', tenant)">
+                      <div slot="headline">Edit</div>
+                      <md-icon slot="start">edit</md-icon>
+                    </md-menu-item>
+                    <md-menu-item v-if="tenant.status === 'active'" @click="emit('suspend', tenant)">
+                      <div slot="headline">Suspend</div>
+                      <md-icon slot="start">block</md-icon>
+                    </md-menu-item>
+                    <md-divider></md-divider>
+                    <md-menu-item @click="emit('delete', tenant)">
+                      <div slot="headline" class="text-error">Delete</div>
+                      <md-icon slot="start" class="text-error">delete</md-icon>
+                    </md-menu-item>
+                  </md-menu>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    
+    <!-- Table Footer / Pagination -->
+    <div class="p-2 border-t border-outline-variant flex items-center justify-end bg-surface text-[11px] text-on-surface-variant font-medium">
+      <span class="mr-4">Rows per page: 10</span>
+      <span class="mr-4">1-{{ tenants.length }} of {{ tenants.length }}</span>
+      <div class="flex">
+        <md-icon-button disabled><md-icon>chevron_left</md-icon></md-icon-button>
+        <md-icon-button disabled><md-icon>chevron_right</md-icon></md-icon-button>
+      </div>
+    </div>
   </div>
 </template>
 
 <style scoped>
-.table-container {
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-  overflow: hidden;
-}
-
-.table-header {
-  padding: 1rem;
-  border-bottom: 1px solid #f3f4f6;
-}
-
-.search-bar input {
-  padding: 0.5rem 1rem;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  width: 100%;
-  max-width: 300px;
-}
-
-.tenant-table {
-  width: 100%;
-  border-collapse: collapse;
-  text-align: left;
-}
-
-.tenant-table th {
-  padding: 0.75rem 1rem;
-  background: #f9fafb;
-  font-weight: 600;
-  color: #4b5563;
-  font-size: 0.875rem;
-  border-bottom: 1px solid #f3f4f6;
-}
-
-.tenant-table td {
-  padding: 1rem;
-  border-bottom: 1px solid #f3f4f6;
-  font-size: 0.875rem;
-}
-
-.tenant-name {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.mini-logo {
-  width: 24px;
-  height: 24px;
-  object-fit: contain;
-  border-radius: 4px;
-}
-
-.status-badge {
-  padding: 0.25rem 0.5rem;
-  border-radius: 9999px;
-  font-size: 0.75rem;
-  font-weight: 500;
-  text-transform: capitalize;
-}
-
-.status-badge.active {
-  background: #dcfce7;
-  color: #166534;
-}
-
-.status-badge.suspended {
-  background: #fee2e2;
-  color: #991b1b;
-}
-
-.product-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.25rem;
-}
-
-.product-tag {
-  background: #e0f2fe;
-  color: #0369a1;
-  padding: 0.125rem 0.375rem;
-  border-radius: 4px;
-  font-size: 0.75rem;
-}
-
-.actions {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.action-btn {
-  background: none;
-  border: none;
-  color: #2563eb;
-  cursor: pointer;
-  font-weight: 500;
-  padding: 0.25rem;
-}
-
-.action-btn:hover {
-  text-decoration: underline;
-}
-
-.action-btn.suspend {
-  color: #d97706;
-}
-
-.action-btn.delete {
-  color: #dc2626;
-}
-
-.loading, .no-data {
-  padding: 2rem;
-  text-align: center;
-  color: #6b7280;
+.text-error {
+  color: var(--error);
 }
 </style>

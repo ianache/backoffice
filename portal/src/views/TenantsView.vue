@@ -5,6 +5,7 @@ import type { Tenant, TenantPayload } from '../services/tenants'
 import TenantTable from '../components/tenants/TenantTable.vue'
 import TenantDrawer from '../components/tenants/TenantDrawer.vue'
 import ConfirmDialog from '../components/tenants/ConfirmDialog.vue'
+import StitchButton from '../components/ui/StitchButton.vue'
 
 const tenantsStore = useTenantsStore()
 
@@ -90,25 +91,33 @@ const handleConfirm = async () => {
 </script>
 
 <template>
-  <div class="tenants-view">
-    <div class="page-header">
+  <div class="flex flex-col gap-6">
+    <!-- Action Bar -->
+    <div class="flex items-center justify-between">
       <div>
-        <h1>Tenant Management</h1>
-        <p class="subtitle">Manage platform tenants, whitelabeling, and product access.</p>
+        <p class="text-on-surface-variant text-sm">
+          Manage platform tenants, whitelabeling, and product access.
+        </p>
       </div>
-      <button class="btn btn-primary" @click="openCreateDrawer">
+      <StitchButton @click="openCreateDrawer">
+        <template #icon>
+          <md-icon>add</md-icon>
+        </template>
         Create Tenant
-      </button>
+      </StitchButton>
     </div>
 
-    <TenantTable 
-      :tenants="tenantsStore.tenants" 
-      :is-loading="tenantsStore.isLoading"
-      @edit="openEditDrawer"
-      @suspend="confirmSuspend"
-      @delete="confirmDelete"
-      @search="handleSearch"
-    />
+    <!-- Table Section -->
+    <div class="bg-surface-container-lowest rounded-xl border border-outline-variant overflow-hidden">
+      <TenantTable 
+        :tenants="tenantsStore.tenants" 
+        :is-loading="tenantsStore.isLoading"
+        @edit="openEditDrawer"
+        @suspend="confirmSuspend"
+        @delete="confirmDelete"
+        @search="handleSearch"
+      />
+    </div>
 
     <TenantDrawer 
       :show="showDrawer" 
@@ -126,45 +135,5 @@ const handleConfirm = async () => {
 </template>
 
 <style scoped>
-.tenants-view {
-  padding: 2rem;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.page-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 2rem;
-}
-
-.page-header h1 {
-  margin: 0;
-  font-size: 1.875rem;
-  font-weight: 700;
-  color: #111827;
-}
-
-.subtitle {
-  margin: 0.25rem 0 0 0;
-  color: #6b7280;
-}
-
-.btn {
-  padding: 0.625rem 1.25rem;
-  border-radius: 6px;
-  font-weight: 500;
-  cursor: pointer;
-  border: 1px solid transparent;
-}
-
-.btn-primary {
-  background: #2563eb;
-  color: white;
-}
-
-.btn-primary:hover {
-  background: #1d4ed8;
-}
+/* Scoped styles mostly removed in favor of Tailwind and Stitch components */
 </style>

@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Stitch Console | Roles &amp; Permissions</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400&amp;display=swap"
+        rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet">
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "error-container": "#ffdad6",
+                        "error": "#ba1a1a",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-fixed": "#181c20",
+                        "surface-container-low": "#f0f4f9",
+                        "on-secondary-container": "#5f6368",
+                        "on-tertiary": "#ffffff",
+                        "on-surface-variant": "#414754",
+                        "on-secondary-fixed-variant": "#43474c",
+                        "on-secondary": "#ffffff",
+                        "primary": "#005bbf",
+                        "on-primary": "#ffffff",
+                        "primary-container": "#1a73e8",
+                        "on-primary-container": "#ffffff",
+                        "inverse-surface": "#2c3135",
+                        "primary-fixed-dim": "#adc7ff",
+                        "on-error": "#ffffff",
+                        "secondary-fixed-dim": "#c3c7cc",
+                        "surface-variant": "#dfe3e8",
+                        "surface-container-highest": "#dfe3e8",
+                        "on-error-container": "#93000a",
+                        "on-primary-fixed-variant": "#004493",
+                        "tertiary-fixed-dim": "#ffb691",
+                        "surface-tint": "#005bc0",
+                        "tertiary": "#9e4300",
+                        "on-primary-fixed": "#001a41",
+                        "outline-variant": "#c1c6d6",
+                        "tertiary-fixed": "#ffdbcb",
+                        "surface-bright": "#f6faff",
+                        "surface-container-high": "#e5e8ee",
+                        "on-tertiary-fixed": "#341100",
+                        "inverse-primary": "#adc7ff",
+                        "background": "#f6faff",
+                        "surface": "#f6faff",
+                        "inverse-on-surface": "#edf1f6",
+                        "surface-container": "#eaeef3",
+                        "on-background": "#181c20",
+                        "surface-dim": "#d6dadf",
+                        "secondary-fixed": "#dfe3e8",
+                        "primary-fixed": "#d8e2ff",
+                        "outline": "#727785",
+                        "secondary-container": "#dde0e6",
+                        "on-tertiary-fixed-variant": "#783100",
+                        "on-tertiary-container": "#0e0200",
+                        "tertiary-container": "#c55500",
+                        "secondary": "#5b5f64",
+                        "on-surface": "#181c20"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "base": "4px",
+                        "sm": "8px",
+                        "gutter": "24px",
+                        "xl": "32px",
+                        "xs": "4px",
+                        "margin": "32px",
+                        "lg": "24px",
+                        "md": "16px",
+                        "max-width": "1440px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Inter"],
+                        "title-md": ["Inter"],
+                        "title-lg": ["Inter"],
+                        "label-md": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "label-lg": ["Inter"],
+                        "code": ["JetBrains Mono"],
+                        "body-md": ["Inter"],
+                        "body-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["22px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "title-md": ["16px", { "lineHeight": "24px", "fontWeight": "500" }],
+                        "title-lg": ["18px", { "lineHeight": "24px", "fontWeight": "500" }],
+                        "label-md": ["11px", { "lineHeight": "16px", "fontWeight": "500" }],
+                        "headline-lg": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "label-lg": ["12px", { "lineHeight": "16px", "letterSpacing": "0.5px", "fontWeight": "600" }],
+                        "code": ["13px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+
+        body {
+            background-color: #f6faff;
+        }
+
+        .sidebar-active {
+            background-color: #dde0e6;
+            color: #005bbf;
+            font-weight: 700;
+            border-radius: 0.5rem;
+        }
+
+        .tab-active {
+            border-bottom: 2px solid #005bbf;
+            color: #005bbf;
+        }
+
+        .glass-panel {
+            backdrop-filter: blur(8px);
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        .transition-drawer {
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+    </style>
+</head>
+
+<body class="font-body-md text-on-surface">
+    <!-- Sidebar (Shared Component Style) -->
+    <aside
+        class="fixed left-0 top-0 h-full w-[256px] bg-surface-container-low border-r border-outline-variant flex flex-col p-md gap-sm z-50">
+        <div class="flex flex-col mb-lg">
+            <h1 class="font-headline-md text-headline-md font-bold text-primary"></h1>
+            <h1 class="font-headline-md text-headline-md font-bold text-primary"
+                style="--tw-border-spacing-y: 0; --tw-translate-x: 0; --tw-translate-y: 0; --tw-rotate: 0; --tw-skew-x: 0; --tw-skew-y: 0; --tw-scale-x: 1; --tw-scale-y: 1; --tw-pan-x: ; --tw-pan-y: ; --tw-pinch-zoom: ; --tw-scroll-snap-strictness: proximity; --tw-gradient-from-position: ; --tw-gradient-via-position: ; --tw-gradient-to-position: ; --tw-ordinal: ; --tw-slashed-zero: ; --tw-numeric-figure: ; --tw-numeric-spacing: ; --tw-numeric-fraction: ; --tw-ring-inset: ; --tw-ring-offset-width: 0px; --tw-ring-offset-color: #fff; --tw-ring-color: rgb(59 130 246 / 0.5); --tw-ring-offset-shadow: 0 0 #0000; --tw-ring-shadow: 0 0 #0000; --tw-shadow: 0 0 #0000; --tw-shadow-colored: 0 0 #0000; --tw-blur: ; --tw-brightness: ; --tw-contrast: ; --tw-grayscale: ; --tw-hue-rotate: ; --tw-invert: ; --tw-saturate: ; --tw-sepia: ; --tw-drop-shadow: ; --tw-backdrop-blur: ; --tw-backdrop-brightness: ; --tw-backdrop-contrast: ; --tw-backdrop-grayscale: ; --tw-backdrop-hue-rotate: ; --tw-backdrop-invert: ; --tw-backdrop-opacity: ; --tw-backdrop-saturate: ; --tw-backdrop-sepia: ; --tw-contain-size: ; --tw-contain-layout: ; --tw-contain-paint: ; --tw-contain-style: ; --tw-text-opacity: 1; color: rgb(0, 91, 191); outline: none !important; box-shadow: none !important;">
+                BackOffice CC</h1>
+            <p class="text-on-surface-variant font-label-md">Enterprise Admin</p>
+        </div>
+        <nav class="flex-1 space-y-1">
+            <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-highest transition-colors rounded-lg"
+                href="#">
+                <span class="material-symbols-outlined" data-icon="domain">domain</span>
+                <span class="font-body-md">Tenants</span>
+            </a>
+            <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-highest transition-colors rounded-lg"
+                href="#">
+                <span class="material-symbols-outlined" data-icon="inventory_2">inventory_2</span>
+                <span class="font-body-md">Products</span>
+            </a>
+            <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-highest transition-colors rounded-lg"
+                href="#">
+                <span class="material-symbols-outlined" data-icon="palette">palette</span>
+                <span class="font-body-md">WhiteLabels</span>
+            </a>
+            <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-highest transition-colors rounded-lg"
+                href="#">
+                <span class="material-symbols-outlined" data-icon="flag">flag</span>
+                <span class="font-body-md">Feature Flags</span>
+            </a>
+            <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-highest transition-colors rounded-lg"
+                href="#">
+                <span class="material-symbols-outlined" data-icon="history">history</span>
+                <span class="font-body-md">Audit Log</span>
+            </a>
+            <a class="sidebar-active flex items-center gap-md px-md py-sm transition-colors" href="#">
+                <span class="material-symbols-outlined" data-icon="settings">settings</span>
+                <span class="font-body-md">Platform Settings</span>
+            </a>
+        </nav>
+        <div class="mt-auto border-t border-outline-variant pt-md">
+            <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-highest transition-colors rounded-lg"
+                href="#">
+                <span class="material-symbols-outlined" data-icon="description">description</span>
+                <span class="">Docs</span>
+            </a>
+            <div class="flex items-center gap-md px-md py-sm mt-sm">
+                <img alt="Admin" class="w-8 h-8 rounded-full bg-primary-container"
+                    data-alt="A professional high-resolution headshot of a female software architect in a minimalist workspace. The lighting is bright and clean with a soft blue tint to match the corporate tech aesthetic. She is wearing a dark navy professional blazer and has a calm, confident expression. The background is a slightly blurred office with glass partitions."
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuCmGCsz_JbacFAwyNAzTQ2fx58up9wbs7KzMfOT6JuixerjjupfkdDyANZSIMDBuh7IFGvKGKq0lnZy2MhZ_rX5vE4Cs7zYFIrPq_nqsUvPD38NCQMAFI1CsylrfK6JZH4Gf6_P8Ph5da4IaVqUuHFPZIpssq6K0B0M9lhKH0HReO2kzAmVzVcsU6Ta9NeCMIpRNJmWjvV5zvIhc2vcmD4ThN_NkfOxMnZJrwu2MHgEuwks6e8GAqADmAFIBHhktKQ97OvUFgiPwkQ">
+                <div class="flex-1 overflow-hidden">
+                    <p class="font-label-lg truncate">Admin User</p>
+                    <p class="text-[10px] text-on-surface-variant truncate">admin@stitch.io</p>
+                </div>
+                <span class="material-symbols-outlined text-on-surface-variant cursor-pointer"
+                    data-icon="logout">logout</span>
+            </div>
+        </div>
+    </aside>
+    <!-- Main Content -->
+    <main class="ml-[256px] min-h-screen">
+        <!-- Top App Bar (Shared Component Style) -->
+        <header
+            class="fixed top-0 right-0 w-[calc(100%-256px)] h-16 bg-surface-bright border-b border-outline-variant shadow-sm z-40 flex items-center justify-between px-lg">
+            <div class="flex items-center gap-sm text-on-surface-variant">
+                <span class="font-label-md">Tenant:</span>
+                <span class="font-title-md text-on-surface font-bold">Acme Global</span>
+                <span class="material-symbols-outlined text-outline" data-icon="chevron_right">chevron_right</span>
+                <span class="font-title-md text-primary font-bold">Roles &amp; Permissions</span>
+            </div>
+            <div class="flex items-center gap-lg">
+                <div class="relative group">
+                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline"
+                        data-icon="search">search</span>
+                    <input
+                        class="pl-10 pr-4 py-2 bg-surface-container border border-outline-variant rounded-full text-body-md focus:ring-2 focus:ring-primary-container outline-none transition-all w-64 group-focus-within:w-80"
+                        placeholder="Search members or roles..." type="text">
+                </div>
+                <div class="flex items-center gap-md">
+                    <button
+                        class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors"
+                        title="Toggle Theme"><span class="material-symbols-outlined">dark_mode</span></button><button
+                        class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors"
+                        data-icon="notifications">notifications</button>
+                    <button
+                        class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors"
+                        data-icon="help">help</button>
+                    <button
+                        class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors"
+                        data-icon="account_circle">account_circle</button>
+                </div>
+            </div>
+        </header>
+        <!-- Page Content -->
+        <div class="pt-24 px-lg pb-lg max-w-max-width mx-auto">
+            <!-- Context & Primary Tabs -->
+            <div class="flex flex-col gap-lg">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="font-headline-lg text-headline-lg">Access Management</h2>
+                        <p class="text-on-surface-variant font-body-md">Control user access and granular permissions
+                            across your tenant environment.</p>
+                    </div>
+                    <button
+                        class="flex items-center gap-sm bg-primary text-on-primary px-lg py-md rounded-lg font-title-md hover:shadow-lg transition-all active:scale-[0.98]"
+                        onclick="toggleSidePanel()">
+                        <span class="material-symbols-outlined" data-icon="person_add">person_add</span>
+                        Invite Member
+                    </button>
+                </div>
+                <!-- Tabs -->
+                <nav class="flex border-b border-outline-variant">
+                    <button class="tab-active px-lg py-md font-title-md flex items-center gap-sm">
+                        <span class="material-symbols-outlined" data-icon="group">group</span>
+                        Members
+                    </button>
+                    <button
+                        class="px-lg py-md font-title-md text-on-surface-variant hover:text-primary transition-colors flex items-center gap-sm">
+                        <span class="material-symbols-outlined"
+                            data-icon="admin_panel_settings">admin_panel_settings</span>
+                        Roles
+                    </button>
+                    <button
+                        class="px-lg py-md font-title-md text-on-surface-variant hover:text-primary transition-colors flex items-center gap-sm">
+                        <span class="material-symbols-outlined" data-icon="key">key</span>
+                        API Keys
+                    </button>
+                </nav>
+                <!-- Members Section Grid Layout -->
+                <div class="grid grid-cols-12 gap-lg">
+                    <!-- Member List Table -->
+                    <div class="col-span-8">
+                        <div
+                            class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden">
+                            <div
+                                class="px-lg py-md bg-surface-container-low border-b border-outline-variant flex items-center justify-between">
+                                <h3 class="font-title-lg">Tenant Members</h3>
+                                <div class="flex gap-sm">
+                                    <span
+                                        class="px-3 py-1 bg-primary-container text-on-primary-container rounded-full font-label-lg">12
+                                        Active</span>
+                                    <span
+                                        class="px-3 py-1 bg-surface-variant text-on-surface-variant rounded-full font-label-lg">2
+                                        Pending</span>
+                                </div>
+                            </div>
+                            <table class="w-full text-left">
+                                <thead>
+                                    <tr
+                                        class="text-on-surface-variant font-label-lg uppercase tracking-wider border-b border-outline-variant">
+                                        <th class="px-lg py-md">User</th>
+                                        <th class="px-lg py-md">Role</th>
+                                        <th class="px-lg py-md">Status</th>
+                                        <th class="px-lg py-md text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-outline-variant">
+                                    <tr class="hover:bg-surface-container-low transition-colors group">
+                                        <td class="px-lg py-md">
+                                            <div class="flex items-center gap-md">
+                                                <div
+                                                    class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center font-bold text-on-secondary-container">
+                                                    SH</div>
+                                                <div>
+                                                    <p class="font-title-md">Sarah Henderson</p>
+                                                    <p class="text-on-surface-variant font-body-md">s.henderson@acme.com
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-lg py-md">
+                                            <span
+                                                class="px-sm py-1 bg-primary/10 text-primary border border-primary/20 rounded-lg font-label-md">Tenant
+                                                Admin</span>
+                                        </td>
+                                        <td class="px-lg py-md">
+                                            <div class="flex items-center gap-xs text-green-600">
+                                                <span class="w-2 h-2 rounded-full bg-green-500"></span>
+                                                <span class="font-label-lg">Active</span>
+                                            </div>
+                                        </td>
+                                        <td class="px-lg py-md text-right">
+                                            <button
+                                                class="text-on-surface-variant hover:text-primary p-sm rounded-lg hover:bg-surface-container-highest transition-all"
+                                                onclick="toggleSidePanel()">
+                                                <span class="material-symbols-outlined" data-icon="edit">edit</span>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr class="hover:bg-surface-container-low transition-colors group">
+                                        <td class="px-lg py-md">
+                                            <div class="flex items-center gap-md">
+                                                <img alt="Marcus" class="w-10 h-10 rounded-full"
+                                                    data-alt="A modern office environment with warm natural sunlight streaming through large windows. A professional designer with glasses is sitting at a desk with two monitors showing complex data dashboards. The lighting is soft and the focus is on the clean, organized workspace that emphasizes a collaborative and high-productivity atmosphere."
+                                                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuALkCyXqY9dZxEbMutBh81NR5lY4H0dwWPwD_YmmyhrmvE0whJ26fGZkvuwOi-UB_AtfjqwsgVsl8mEG0ktGU4oll_X6AVjszY8aYuuSUHpYc0lBq1815OYrBGjdXbwKW2fX7lMNZscPB_rhhEOG2YI78OvCgH8MBqVtVas_sNFPDedVRkKEPRbkfTwXn5GAbNmIh3kZtFgKj7R0pOOzmcoBZ08-YGGdf6HOGCQeK16KCPHHKK7WPazuwv43CdNS7IpyU5N_znTG6I">
+                                                <div>
+                                                    <p class="font-title-md">Marcus Bloom</p>
+                                                    <p class="text-on-surface-variant font-body-md">m.bloom@acme.com</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-lg py-md">
+                                            <span
+                                                class="px-sm py-1 bg-on-secondary-container/10 text-on-secondary-container border border-outline-variant rounded-lg font-label-md">Product
+                                                Manager</span>
+                                        </td>
+                                        <td class="px-lg py-md">
+                                            <div class="flex items-center gap-xs text-green-600">
+                                                <span class="w-2 h-2 rounded-full bg-green-500"></span>
+                                                <span class="font-label-lg">Active</span>
+                                            </div>
+                                        </td>
+                                        <td class="px-lg py-md text-right">
+                                            <button
+                                                class="text-on-surface-variant hover:text-primary p-sm rounded-lg hover:bg-surface-container-highest transition-all">
+                                                <span class="material-symbols-outlined" data-icon="edit">edit</span>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr class="hover:bg-surface-container-low transition-colors group">
+                                        <td class="px-lg py-md">
+                                            <div class="flex items-center gap-md">
+                                                <div
+                                                    class="w-10 h-10 rounded-full bg-tertiary-container flex items-center justify-center font-bold text-on-tertiary-container">
+                                                    EL</div>
+                                                <div>
+                                                    <p class="font-title-md">Elena Lopez</p>
+                                                    <p class="text-on-surface-variant font-body-md">elena.l@acme.com</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-lg py-md">
+                                            <span
+                                                class="px-sm py-1 bg-surface-variant text-on-surface-variant border border-outline-variant rounded-lg font-label-md">Viewer</span>
+                                        </td>
+                                        <td class="px-lg py-md">
+                                            <div class="flex items-center gap-xs text-amber-600">
+                                                <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+                                                <span class="font-label-lg">Pending</span>
+                                            </div>
+                                        </td>
+                                        <td class="px-lg py-md text-right">
+                                            <button
+                                                class="text-on-surface-variant hover:text-primary p-sm rounded-lg hover:bg-surface-container-highest transition-all">
+                                                <span class="material-symbols-outlined" data-icon="mail">mail</span>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div
+                                class="p-md flex items-center justify-center border-t border-outline-variant bg-surface-container-lowest">
+                                <button class="text-primary font-title-md hover:underline">View All Members</button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Role Definitions Summary -->
+                    <div class="col-span-4 flex flex-col gap-lg">
+                        <div class="bg-surface-container border border-outline-variant rounded-xl p-lg">
+                            <h3 class="font-title-lg mb-md flex items-center gap-sm">
+                                <span class="material-symbols-outlined text-primary"
+                                    data-icon="security">security</span>
+                                Role Insights
+                            </h3>
+                            <div class="space-y-md">
+                                <div
+                                    class="p-md bg-surface-container-lowest border border-outline-variant rounded-lg hover:border-primary transition-all cursor-pointer group">
+                                    <div class="flex justify-between items-start mb-sm">
+                                        <p class="font-title-md font-bold text-on-surface">Tenant Admin</p>
+                                        <span
+                                            class="material-symbols-outlined text-on-surface-variant group-hover:text-primary"
+                                            data-icon="arrow_forward">arrow_forward</span>
+                                    </div>
+                                    <p class="text-on-surface-variant font-body-md mb-md">Full control over tenant
+                                        settings, members, and billing.</p>
+                                    <div class="flex flex-wrap gap-xs">
+                                        <span
+                                            class="px-2 py-0.5 bg-green-100 text-green-700 rounded text-[10px] font-bold">ALL
+                                            PERMISSIONS</span>
+                                        <span
+                                            class="px-2 py-0.5 bg-blue-100 text-blue-700 rounded text-[10px] font-bold">MANAGEMENT</span>
+                                    </div>
+                                </div>
+                                <div
+                                    class="p-md bg-surface-container-lowest border border-outline-variant rounded-lg hover:border-primary transition-all cursor-pointer group">
+                                    <div class="flex justify-between items-start mb-sm">
+                                        <p class="font-title-md font-bold text-on-surface">Product Manager</p>
+                                        <span
+                                            class="material-symbols-outlined text-on-surface-variant group-hover:text-primary"
+                                            data-icon="arrow_forward">arrow_forward</span>
+                                    </div>
+                                    <p class="text-on-surface-variant font-body-md mb-md">Manage flags and products, but
+                                        cannot change tenant settings.</p>
+                                    <div class="flex flex-wrap gap-xs">
+                                        <span
+                                            class="px-2 py-0.5 bg-surface-variant text-on-surface-variant rounded text-[10px] font-bold">FLAGS:
+                                            EDIT</span>
+                                        <span
+                                            class="px-2 py-0.5 bg-surface-variant text-on-surface-variant rounded text-[10px] font-bold">PRODUCTS:
+                                            VIEW</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <button
+                                class="w-full mt-lg py-md border border-outline text-on-surface font-title-md rounded-lg hover:bg-surface-container-highest transition-colors">
+                                Manage Role Schema
+                            </button>
+                        </div>
+                        <!-- System Status/Quick Action Card -->
+                        <div
+                            class="bg-primary-container text-on-primary-container rounded-xl p-lg flex flex-col gap-md relative overflow-hidden">
+                            <div class="relative z-10">
+                                <h3 class="font-title-lg">Global Admin Override</h3>
+                                <p class="text-on-primary-container/80 font-body-md">You are currently operating with
+                                    Tenant-Specific permissions. Switch to Global Admin to manage cross-tenant logic.
+                                </p>
+                                <button
+                                    class="mt-md bg-white/20 hover:bg-white/30 text-white font-title-md px-lg py-sm rounded-lg transition-all flex items-center gap-sm">
+                                    <span class="material-symbols-outlined" data-icon="swap_horiz">swap_horiz</span>
+                                    Switch Context
+                                </button>
+                            </div>
+                            <!-- Subtle pattern overlay -->
+                            <div class="absolute right-[-20px] bottom-[-20px] opacity-10">
+                                <span class="material-symbols-outlined text-[120px]" data-icon="shield">shield</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <!-- Role Assignment Side Panel (Modal) -->
+    <div class="fixed inset-0 z-[60] invisible group" id="rolePanel">
+        <div class="absolute inset-0 bg-on-background/40 backdrop-blur-sm opacity-0 transition-opacity duration-300"
+            id="panelBackdrop" onclick="toggleSidePanel()"></div>
+        <div class="absolute right-0 top-0 h-full w-[440px] bg-white shadow-2xl transition-drawer translate-x-full flex flex-col"
+            id="panelContent">
+            <!-- Header -->
+            <div
+                class="p-lg border-b border-outline-variant flex items-center justify-between bg-surface-container-low">
+                <div>
+                    <h3 class="font-headline-md">Manage Access</h3>
+                    <p class="text-on-surface-variant font-body-md">Member: Sarah Henderson</p>
+                </div>
+                <button class="p-sm hover:bg-surface-container-highest rounded-full transition-colors"
+                    onclick="toggleSidePanel()">
+                    <span class="material-symbols-outlined" data-icon="close">close</span>
+                </button>
+            </div>
+            <!-- Panel Body -->
+            <div class="flex-1 overflow-y-auto p-lg space-y-xl">
+                <!-- Platform Toggle -->
+                <div class="space-y-md">
+                    <label class="font-title-md block">Assignment Scope</label>
+                    <div class="flex p-1 bg-surface-container rounded-xl border border-outline-variant">
+                        <button
+                            class="flex-1 py-md rounded-lg font-title-md transition-all bg-white shadow-sm text-primary">
+                            Tenant-Specific
+                        </button>
+                        <button
+                            class="flex-1 py-md rounded-lg font-title-md transition-all text-on-surface-variant hover:text-on-surface">
+                            Global Admin
+                        </button>
+                    </div>
+                </div>
+                <!-- Role Selection -->
+                <div class="space-y-md">
+                    <label class="font-title-md block">Select Role</label>
+                    <div class="space-y-sm">
+                        <label class="block p-md border-2 border-primary bg-primary/5 rounded-xl cursor-pointer">
+                            <div class="flex justify-between items-center mb-sm">
+                                <span class="font-bold text-on-surface">Tenant Admin</span>
+                                <input checked="" class="text-primary focus:ring-primary h-5 w-5" name="role"
+                                    type="radio">
+                            </div>
+                            <p class="text-on-surface-variant text-body-md">Unrestricted access to all resources within
+                                the Acme Global tenant.</p>
+                        </label>
+                        <label
+                            class="block p-md border border-outline-variant hover:border-outline rounded-xl cursor-pointer transition-all">
+                            <div class="flex justify-between items-center mb-sm">
+                                <span class="font-bold text-on-surface">Product Manager</span>
+                                <input class="text-primary focus:ring-primary h-5 w-5" name="role" type="radio">
+                            </div>
+                            <p class="text-on-surface-variant text-body-md">Can create flags and manage products. No
+                                access to billing or member management.</p>
+                        </label>
+                        <label
+                            class="block p-md border border-outline-variant hover:border-outline rounded-xl cursor-pointer transition-all">
+                            <div class="flex justify-between items-center mb-sm">
+                                <span class="font-bold text-on-surface">Viewer</span>
+                                <input class="text-primary focus:ring-primary h-5 w-5" name="role" type="radio">
+                            </div>
+                            <p class="text-on-surface-variant text-body-md">Read-only access to flags, audit logs, and
+                                configurations.</p>
+                        </label>
+                    </div>
+                </div>
+                <!-- Permissions Preview -->
+                <div
+                    class="p-lg bg-surface-container-lowest border border-outline-variant rounded-xl border-l-4 border-l-primary">
+                    <h4 class="font-title-md mb-md">Summary of Permissions</h4>
+                    <ul class="space-y-sm text-body-md">
+                        <li class="flex items-center gap-md">
+                            <span class="material-symbols-outlined text-green-600 text-lg"
+                                data-icon="check_circle">check_circle</span>
+                            <span class="">Create, Edit, and Delete all Feature Flags</span>
+                        </li>
+                        <li class="flex items-center gap-md">
+                            <span class="material-symbols-outlined text-green-600 text-lg"
+                                data-icon="check_circle">check_circle</span>
+                            <span class="">Manage Member Roles and Invitations</span>
+                        </li>
+                        <li class="flex items-center gap-md">
+                            <span class="material-symbols-outlined text-green-600 text-lg"
+                                data-icon="check_circle">check_circle</span>
+                            <span class="">Modify Tenant-Level WhiteLabel Settings</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- Footer -->
+            <div class="p-lg border-t border-outline-variant flex gap-md bg-surface-container-low">
+                <button
+                    class="flex-1 py-md border border-outline text-on-surface font-title-md rounded-lg hover:bg-surface-container-highest transition-colors"
+                    onclick="toggleSidePanel()">
+                    Cancel
+                </button>
+                <button
+                    class="flex-1 py-md bg-primary text-on-primary font-title-md rounded-lg hover:shadow-lg transition-all active:scale-[0.98]">
+                    Save Changes
+                </button>
+            </div>
+        </div>
+    </div>
+    <script>
+        function toggleSidePanel() {
+            const panel = document.getElementById('rolePanel');
+            const content = document.getElementById('panelContent');
+            const backdrop = document.getElementById('panelBackdrop');
+
+            if (panel.classList.contains('invisible')) {
+                panel.classList.remove('invisible');
+                setTimeout(() => {
+                    content.classList.remove('translate-x-full');
+                    backdrop.classList.add('opacity-100');
+                }, 10);
+            } else {
+                content.classList.add('translate-x-full');
+                backdrop.classList.remove('opacity-100');
+                setTimeout(() => {
+                    panel.classList.add('invisible');
+                }, 300);
+            }
+        }
+
+        // Atmospheric effect for production toggles (subtle confirmation delay)
+        document.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('click', function (e) {
+                if (this.textContent.includes('Save')) {
+                    const originalText = this.innerHTML;
+                    this.innerHTML = '<span class="material-symbols-outlined animate-spin" data-icon="progress_activity">progress_activity</span> Updating...';
+                    setTimeout(() => {
+                        this.innerHTML = originalText;
+                        toggleSidePanel();
+                    }, 800);
+                }
+            });
+        });
+    </script>
+
+
+
+
+
+
+</body>
+
+</html>

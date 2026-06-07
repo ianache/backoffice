@@ -1,21 +1,23 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import type { Tenant } from '../../services/tenants'
-import StitchTextField from '../ui/StitchTextField.vue'
 
 const props = defineProps<{
   tenants: Tenant[]
   isLoading: boolean
 }>()
 
-const emit = defineEmits(['edit', 'delete', 'suspend', 'search'])
+const emit = defineEmits(['edit', 'delete', 'suspend'])
 
-const searchQuery = ref('')
-const selectedIds = ref<Set<number>>(new Set())
+type StatusFilter = 'all' | 'active' | 'suspended'
+const activeFilter = ref<StatusFilter>('all')
+const isCompact = ref(false)
+const activeMenu = ref<number | null>(null)
 
-const handleSearch = () => {
-  emit('search', searchQuery.value)
-}
+const filteredTenants = computed(() => {
+  if (activeFilter.value === 'all') return props.tenants
+  return props.tenants.filter(t => t.status === activeFilter.value)
+})
 
 const formatDate = (dateString: string) => {
   return new Date(dateString).toLocaleDateString(undefined, {
@@ -25,94 +27,88 @@ const formatDate = (dateString: string) => {
   })
 }
 
-const toggleSelectAll = (event: any) => {
-  if (event.target.checked) {
-    props.tenants.forEach(t => selectedIds.value.add(t.id))
-  } else {
-    selectedIds.value.clear()
-  }
+const derivePlan = (products: string[]): string => {
+  if (products.length === 0) return '—'
+  if (products.length <= 2) return 'Starter'
+  if (products.length <= 4) return 'Pro'
+  return 'Enterprise'
 }
 
-const toggleSelect = (id: number, checked: boolean) => {
-  if (checked) {
-    selectedIds.value.add(id)
-  } else {
-    selectedIds.value.delete(id)
-  }
+const countryMap: Record<string, string> = {
+  ES: 'Spain',
+  US: 'USA',
+  DE: 'Germany',
+  FR: 'France',
+  GB: 'UK',
+  PE: 'Peru'
 }
 
-// Menu handling
-const activeMenu = ref<number | null>(null)
+const getCountryName = (code: string) => {
+  return countryMap[code.toUpperCase()] || code
+}
+
 const toggleMenu = (id: number) => {
-  if (activeMenu.value === id) {
-    activeMenu.value = null
-  } else {
-    activeMenu.value = id
-  }
+  activeMenu.value = activeMenu.value === id ? null : id
 }
 </script>
 
 <template>
-  <div class="flex flex-col bg-surface overflow-hidden">
-    <!-- Toolbar — search + bulk actions -->
-    <div class="px-4 py-2 border-b border-outline-variant flex items-center justify-between gap-4 min-h-[52px]">
-      <div class="w-full max-w-xs">
-        <StitchTextField
-          v-model="searchQuery"
-          placeholder="Search tenants..."
-          @input="handleSearch"
-        >
-          <template #leading-icon>
-            <md-icon>search</md-icon>
-          </template>
-        </StitchTextField>
+  <div class="flex flex-col overflow-hidden">
+    <!-- Toolbar -->
+    <div class="px-md py-sm flex flex-wrap items-center justify-between gap-md border-b border-outline-variant bg-surface-container-low/50 min-h-[52px]">
+      <div class="flex items-center gap-lg">
+        <h2 class="text-sm font-medium text-on-surface whitespace-nowrap">All Tenants</h2>
+        <div class="flex items-center gap-xs bg-surface-container-lowest border border-outline-variant rounded-lg p-1">
+          <button
+            v-for="tab in (['all', 'active', 'suspended'] as StatusFilter[])"
+            :key="tab"
+            @click="activeFilter = tab"
+            :class="[
+              'px-md py-xs rounded-md text-xs transition-colors capitalize whitespace-nowrap',
+              activeFilter === tab
+                ? 'bg-surface-container-high text-primary font-bold'
+                : 'text-secondary hover:text-on-surface font-medium'
+            ]"
+          >
+            {{ tab.charAt(0).toUpperCase() + tab.slice(1) }}
+          </button>
+        </div>
       </div>
-
-      <div class="flex items-center gap-0.5 shrink-0">
-        <md-icon-button :aria-disabled="selectedIds.size === 0 ? 'true' : 'false'" :title="'Delete selected'">
-          <md-icon>delete</md-icon>
-        </md-icon-button>
-        <md-icon-button title="Filter">
-          <md-icon>filter_list</md-icon>
-        </md-icon-button>
-        <md-icon-button title="More options">
-          <md-icon>more_vert</md-icon>
-        </md-icon-button>
+      <div class="flex items-center gap-xs shrink-0">
+        <button class="p-sm hover:bg-surface-variant rounded-lg transition-colors" title="Filter">
+          <span class="material-symbols-outlined text-on-surface-variant icon-action">filter_list</span>
+        </button>
+        <button @click="isCompact = !isCompact" class="p-sm hover:bg-surface-variant rounded-lg transition-colors" title="Toggle density">
+          <span class="material-symbols-outlined text-on-surface-variant icon-action">{{ isCompact ? 'density_small' : 'density_medium' }}</span>
+        </button>
       </div>
     </div>
 
-    <!-- Data Table — high-density compact rows -->
+    <!-- Data Table -->
     <div class="overflow-x-auto">
-      <table class="w-full border-collapse text-left table-fixed">
+      <table class="w-full text-left border-collapse">
         <colgroup>
-          <col class="w-10" />
-          <col class="w-[260px]" />
-          <col class="w-[100px]" />
-          <col class="w-[110px]" />
-          <col />
-          <col class="w-[110px]" />
-          <col class="w-[88px]" />
+          <col style="min-width: 220px" />
+          <col style="width: 120px" />
+          <col style="width: 100px" />
+          <col style="width: 120px" />
+          <col style="width: 130px" />
+          <col style="width: 168px" />
         </colgroup>
         <thead>
-          <tr class="bg-surface-container-low border-b border-outline-variant">
-            <th class="pl-4 pr-2 py-2 w-10">
-              <md-checkbox
-                @change="toggleSelectAll"
-                :indeterminate="selectedIds.size > 0 && selectedIds.size < tenants.length"
-              ></md-checkbox>
-            </th>
-            <th class="px-4 py-2 table-col-header">Tenant Name</th>
-            <th class="px-4 py-2 table-col-header text-center">Status</th>
-            <th class="px-4 py-2 table-col-header">Country</th>
-            <th class="px-4 py-2 table-col-header">Products</th>
-            <th class="px-4 py-2 table-col-header">Created</th>
-            <th class="px-4 py-2 table-col-header text-right pr-6">Actions</th>
+          <tr class="bg-surface-container-low/30 border-b border-outline-variant">
+            <th :class="['px-lg table-col-header', isCompact ? 'py-sm' : 'py-md']">Name</th>
+            <th :class="['px-lg table-col-header', isCompact ? 'py-sm' : 'py-md']">Status</th>
+            <th :class="['px-lg table-col-header', isCompact ? 'py-sm' : 'py-md']">Plan</th>
+            <th :class="['px-lg table-col-header', isCompact ? 'py-sm' : 'py-md']">Created At</th>
+            <th :class="['px-lg table-col-header', isCompact ? 'py-sm' : 'py-md']">Country</th>
+            <th :class="['px-lg table-col-header text-right', isCompact ? 'py-sm' : 'py-md']">Actions</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-outline-variant">
           <!-- Loading state -->
           <tr v-if="isLoading">
-            <td colspan="7" class="px-6 py-10 text-center text-on-surface-variant">
+            <td colspan="6" class="px-lg py-10 text-center text-on-surface-variant">
               <div class="flex flex-col items-center gap-3">
                 <md-linear-progress indeterminate class="w-32"></md-linear-progress>
                 <span class="text-sm">Loading tenants...</span>
@@ -120,73 +116,67 @@ const toggleMenu = (id: number) => {
             </td>
           </tr>
           <!-- Empty state -->
-          <tr v-else-if="tenants.length === 0">
-            <td colspan="7" class="px-6 py-10 text-center text-on-surface-variant text-sm">
-              No tenants found matching your search.
+          <tr v-else-if="filteredTenants.length === 0">
+            <td colspan="6" class="px-lg py-10 text-center text-on-surface-variant text-sm">
+              No tenants found.
             </td>
           </tr>
-          <!-- Data rows — compact 36px rows -->
+          <!-- Data rows -->
           <tr
-            v-for="tenant in tenants"
+            v-for="tenant in filteredTenants"
             :key="tenant.id"
-            class="hover:bg-state-hover transition-colors duration-100 group"
+            class="hover:bg-surface-container-low transition-colors group"
           >
-            <td class="pl-4 pr-2 py-0">
-              <md-checkbox
-                :checked="selectedIds.has(tenant.id)"
-                @change="(e: any) => toggleSelect(tenant.id, e.target.checked)"
-              ></md-checkbox>
-            </td>
-            <td class="px-4 py-0">
-              <div class="flex items-center gap-3 h-9">
-                <div class="w-7 h-7 rounded-lg bg-surface-container flex items-center justify-center border border-outline-variant overflow-hidden shrink-0">
-                  <img v-if="tenant.logo_url" :src="tenant.logo_url" class="w-full h-full object-contain" />
-                  <md-icon v-else class="text-on-surface-variant" style="font-size: 14px;">business</md-icon>
+            <!-- Name -->
+            <td :class="['px-lg', isCompact ? 'py-sm' : 'py-md']">
+              <div class="flex items-center gap-md">
+                <div class="w-10 h-10 rounded-lg bg-surface-variant flex items-center justify-center border border-outline-variant overflow-hidden shrink-0">
+                  <img v-if="tenant.logo_url" :src="tenant.logo_url" :alt="tenant.name" class="w-full h-full object-cover" />
+                  <span v-else class="material-symbols-outlined text-on-surface-variant" style="font-size: 18px">business</span>
                 </div>
-                <div class="flex flex-col overflow-hidden">
-                  <span class="text-sm font-medium text-on-surface truncate leading-tight">{{ tenant.name }}</span>
-                  <span class="text-[10px] text-on-surface-variant font-mono leading-tight">#{{ tenant.id }}</span>
-                </div>
+                <span class="text-sm font-bold text-primary hover:underline cursor-pointer">{{ tenant.name }}</span>
               </div>
             </td>
-            <td class="px-4 py-0 text-center">
-              <span
-                :class="[
-                  'status-chip',
-                  tenant.status === 'active' ? 'status-chip--active' : 'status-chip--suspended'
-                ]"
-              >
-                {{ tenant.status }}
+            <!-- Status -->
+            <td :class="['px-lg', isCompact ? 'py-sm' : 'py-md']">
+              <span :class="['status-chip', tenant.status === 'active' ? 'status-active' : 'status-suspended']">
+                <span class="status-dot" :style="{ backgroundColor: tenant.status === 'active' ? 'var(--status-active-indicator)' : 'var(--status-suspended-indicator)' }"></span>
+                {{ tenant.status.charAt(0).toUpperCase() + tenant.status.slice(1) }}
               </span>
             </td>
-            <td class="px-4 py-0 text-sm text-on-surface-variant">
-              {{ tenant.country }}
+            <!-- Plan -->
+            <td :class="['px-lg text-sm text-on-surface-variant', isCompact ? 'py-sm' : 'py-md']">
+              {{ derivePlan(tenant.products) }}
             </td>
-            <td class="px-4 py-0">
-              <div class="flex flex-wrap gap-1 py-1">
-                <span
-                  v-for="p in tenant.products"
-                  :key="p"
-                  class="product-chip"
-                >
-                  {{ p }}
-                </span>
-              </div>
-            </td>
-            <td class="px-4 py-0 text-sm text-on-surface-variant tabular-nums">
+            <!-- Created At -->
+            <td :class="['px-lg text-sm text-on-surface-variant font-mono tabular-nums', isCompact ? 'py-sm' : 'py-md']">
               {{ formatDate(tenant.created_at) }}
             </td>
-            <td class="px-4 py-0 text-right pr-2">
-              <!-- Stitch action menu pattern: visible edit + overflow menu -->
-              <div class="flex justify-end items-center gap-0">
-                <md-icon-button @click="emit('edit', tenant)" title="Edit">
-                  <md-icon>edit</md-icon>
-                </md-icon-button>
-
+            <!-- Country -->
+            <td :class="['px-lg', isCompact ? 'py-sm' : 'py-md']">
+              <div class="flex items-center gap-xs">
+                <div class="w-6 h-6 rounded-full bg-surface-container-high border border-outline-variant flex items-center justify-center shrink-0 country-initials">
+                  {{ tenant.country.slice(0, 2).toUpperCase() }}
+                </div>
+                <span class="text-sm text-on-surface">{{ getCountryName(tenant.country) }}</span>
+              </div>
+            </td>
+            <!-- Actions -->
+            <td :class="['px-lg text-right', isCompact ? 'py-sm' : 'py-md']">
+              <div class="flex items-center justify-end gap-xs">
+                <button @click="emit('edit', tenant)" class="action-btn" title="Manage Products">
+                  <span class="material-symbols-outlined icon-action">inventory</span>
+                </button>
+                <button @click="emit('edit', tenant)" class="action-btn" title="Configure WhiteLabel">
+                  <span class="material-symbols-outlined icon-action">palette</span>
+                </button>
+                <button class="action-btn action-btn--disabled" title="View Analytics" disabled>
+                  <span class="material-symbols-outlined icon-action">bar_chart</span>
+                </button>
                 <div class="relative">
-                  <md-icon-button :id="`anchor-${tenant.id}`" @click="toggleMenu(tenant.id)" title="More actions">
-                    <md-icon>more_vert</md-icon>
-                  </md-icon-button>
+                  <button :id="`anchor-${tenant.id}`" @click="toggleMenu(tenant.id)" class="action-btn-muted" title="More actions">
+                    <span class="material-symbols-outlined icon-action">more_vert</span>
+                  </button>
                   <md-menu
                     :anchor="`anchor-${tenant.id}`"
                     :open="activeMenu === tenant.id"
@@ -216,22 +206,27 @@ const toggleMenu = (id: number) => {
       </table>
     </div>
 
-    <!-- Table Footer / Pagination — compact Stitch style -->
-    <div class="px-4 py-1.5 border-t border-outline-variant flex items-center justify-end bg-surface gap-4 min-h-[44px]">
-      <span class="table-pagination-text">Rows per page: 10</span>
-      <span class="table-pagination-text">
-        {{ tenants.length === 0 ? '0' : `1–${tenants.length}` }} of {{ tenants.length }}
-      </span>
-      <div class="flex">
-        <md-icon-button disabled title="Previous page"><md-icon>chevron_left</md-icon></md-icon-button>
-        <md-icon-button disabled title="Next page"><md-icon>chevron_right</md-icon></md-icon-button>
+    <!-- Pagination -->
+    <div class="px-md py-sm border-t border-outline-variant flex items-center justify-between bg-surface-container-low/50 min-h-[48px]">
+      <p class="text-xs text-on-surface-variant">
+        Showing {{ filteredTenants.length === 0 ? 0 : 1 }} to {{ filteredTenants.length }} of {{ tenants.length }} tenants
+      </p>
+      <div class="flex items-center gap-sm">
+        <button class="p-xs border border-outline-variant rounded-lg bg-surface-container-lowest hover:bg-surface-variant transition-colors opacity-50 cursor-not-allowed" disabled>
+          <span class="material-symbols-outlined icon-action">chevron_left</span>
+        </button>
+        <div class="flex items-center gap-xs">
+          <button class="w-8 h-8 rounded-lg bg-primary text-on-primary font-bold text-xs">1</button>
+        </div>
+        <button class="p-xs border border-outline-variant rounded-lg bg-surface-container-lowest hover:bg-surface-variant transition-colors opacity-50 cursor-not-allowed" disabled>
+          <span class="material-symbols-outlined icon-action">chevron_right</span>
+        </button>
       </div>
     </div>
   </div>
 </template>
 
 <style scoped>
-/* Column header — Stitch enterprise label style */
 .table-col-header {
   font-size: 11px;
   font-weight: 700;
@@ -241,63 +236,86 @@ const toggleMenu = (id: number) => {
   white-space: nowrap;
 }
 
-/* High-density row hover — M3 state layer (8% primary tint) */
-.hover\:bg-state-hover:hover {
-  background-color: color-mix(in srgb, var(--primary) 8%, transparent);
+.icon-action {
+  font-size: 20px;
+  display: block;
 }
 
-/* Status chips — tonal container pattern */
 .status-chip {
   display: inline-flex;
   align-items: center;
-  padding: 1px 8px;
-  border-radius: 4px;
-  font-size: 10px;
+  gap: 4px;
+  padding: 2px 10px;
+  border-radius: 9999px;
+  font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.04em;
-  text-transform: uppercase;
-  border: 1px solid transparent;
 }
 
-.status-chip--active {
-  background-color: #e6f4ea;
-  color: #137333;
-  border-color: rgba(19, 115, 51, 0.2);
+.status-active {
+  background-color: #dcfce7;
+  color: #166534;
 }
 
-[data-theme='dark'] .status-chip--active {
+.status-suspended {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+[data-theme='dark'] .status-active {
   background-color: rgba(52, 168, 83, 0.15);
-  color: #81c995;
-  border-color: rgba(52, 168, 83, 0.25);
+  color: #86efac;
 }
 
-.status-chip--suspended {
-  background-color: var(--error-container);
-  color: var(--on-error-container);
-  border-color: color-mix(in srgb, var(--error) 20%, transparent);
+[data-theme='dark'] .status-suspended {
+  background-color: rgba(239, 68, 68, 0.15);
+  color: #fca5a5;
 }
 
-/* Product chips — secondary-container tonal style */
-.product-chip {
-  display: inline-flex;
-  padding: 1px 6px;
-  border-radius: 4px;
-  background-color: var(--secondary-container);
-  color: var(--on-secondary-container);
-  font-size: 10px;
+.country-initials {
+  font-size: 9px;
   font-weight: 700;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
-}
-
-/* Pagination text */
-.table-pagination-text {
-  font-size: 11px;
-  font-weight: 500;
   color: var(--on-surface-variant);
 }
 
-/* Danger menu item */
+.action-btn {
+  padding: 6px;
+  color: var(--secondary);
+  border-radius: 8px;
+  transition: color 0.15s, background-color 0.15s, transform 0.1s;
+  display: flex;
+  align-items: center;
+}
+
+.action-btn:hover {
+  color: var(--primary);
+  background-color: color-mix(in srgb, var(--primary) 10%, transparent);
+}
+
+.action-btn:active {
+  transform: scale(0.95);
+}
+
+.action-btn--disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.action-btn-muted {
+  padding: 6px;
+  color: var(--secondary);
+  border-radius: 8px;
+  transition: color 0.15s, background-color 0.15s;
+  display: flex;
+  align-items: center;
+}
+
+.action-btn-muted:hover {
+  color: var(--on-surface);
+  background-color: var(--surface-variant);
+}
+
 .menu-item-danger {
   --md-menu-item-label-text-color: var(--error);
 }

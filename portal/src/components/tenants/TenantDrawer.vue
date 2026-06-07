@@ -16,7 +16,7 @@ const activeTab = ref(0)
 
 const defaultPayload: TenantPayload = {
   name: '',
-  country: 'Spain',
+  country: 'ES',
   status: 'active',
   default_language: 'es',
   default_currency: 'EUR',

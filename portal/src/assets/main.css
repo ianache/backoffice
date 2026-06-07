@@ -8,3 +8,68 @@
   display: flex;
   flex-direction: column;
 }
+
+/* ─── Material Web → Project Design System token bridge ───────────────────
+ * Material Web components read --md-sys-color-* tokens for their colors.
+ * Our design system defines colors as --primary, --on-primary, etc.
+ * This mapping wires them together so all MWC controls (buttons, text fields,
+ * checkboxes, progress, tabs…) automatically use the project's color scheme.
+ * Dark mode is covered automatically because --primary etc. already change
+ * under [data-theme='dark'] in theme.css.
+ * ───────────────────────────────────────────────────────────────────────── */
+:root,
+[data-theme='dark'] {
+  /* Primary */
+  --md-sys-color-primary:                var(--primary);
+  --md-sys-color-on-primary:             var(--on-primary);
+  --md-sys-color-primary-container:      var(--primary-container);
+  --md-sys-color-on-primary-container:   var(--on-primary-container);
+  --md-sys-color-inverse-primary:        var(--inverse-primary);
+
+  /* Secondary */
+  --md-sys-color-secondary:              var(--secondary);
+  --md-sys-color-on-secondary:           var(--on-secondary);
+  --md-sys-color-secondary-container:    var(--secondary-container);
+  --md-sys-color-on-secondary-container: var(--on-secondary-container);
+
+  /* Tertiary */
+  --md-sys-color-tertiary:               var(--tertiary);
+  --md-sys-color-on-tertiary:            var(--on-tertiary);
+  --md-sys-color-tertiary-container:     var(--tertiary-container);
+  --md-sys-color-on-tertiary-container:  var(--on-tertiary-container);
+
+  /* Error */
+  --md-sys-color-error:                  var(--error);
+  --md-sys-color-on-error:               var(--on-error);
+  --md-sys-color-error-container:        var(--error-container);
+  --md-sys-color-on-error-container:     var(--on-error-container);
+
+  /* Surface & background */
+  --md-sys-color-background:             var(--background);
+  --md-sys-color-on-background:          var(--on-background);
+  --md-sys-color-surface:                var(--surface);
+  --md-sys-color-on-surface:             var(--on-surface);
+  --md-sys-color-surface-variant:        var(--surface-variant);
+  --md-sys-color-on-surface-variant:     var(--on-surface-variant);
+  --md-sys-color-surface-container-lowest:  var(--surface-container-lowest);
+  --md-sys-color-surface-container-low:     var(--surface-container-low);
+  --md-sys-color-surface-container:         var(--surface-container);
+  --md-sys-color-surface-container-high:    var(--surface-container-high);
+  --md-sys-color-surface-container-highest: var(--surface-container-highest);
+
+  /* Outline */
+  --md-sys-color-outline:                var(--outline);
+  --md-sys-color-outline-variant:        var(--outline-variant);
+
+  /* Inverse */
+  --md-sys-color-inverse-surface:        var(--inverse-surface);
+  --md-sys-color-inverse-on-surface:     var(--inverse-on-surface);
+
+  /* Shape — map M3 shape scale to project border-radius tokens */
+  --md-sys-shape-corner-full:         var(--rounded-full);
+  --md-sys-shape-corner-extra-large:  var(--rounded-xl);
+  --md-sys-shape-corner-large:        var(--rounded-lg);
+  --md-sys-shape-corner-medium:       var(--rounded-md);
+  --md-sys-shape-corner-small:        var(--rounded);
+  --md-sys-shape-corner-extra-small:  var(--rounded-sm);
+}

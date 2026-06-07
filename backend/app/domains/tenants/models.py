@@ -24,7 +24,7 @@ class Tenant(Base):
     font_weight: Mapped[str | None] = mapped_column(String(20), nullable=True)
     domain: Mapped[str | None] = mapped_column(String(255), nullable=True)
     
-    products: Mapped[List[str]] = mapped_column(JSON, default=list, server_default='[]', nullable=False)
+    products: Mapped[List[str]] = mapped_column(JSON, default=list, nullable=False)
     
     created_at: Mapped[datetime] = mapped_column(server_default=func.now(), nullable=False)
     updated_at: Mapped[datetime] = mapped_column(server_default=func.now(), onupdate=func.now(), nullable=False)

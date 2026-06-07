@@ -26,8 +26,8 @@ const filteredUsers = computed(() => {
 })
 
 const initials = (user: KcUser): string => {
-  const first = user.firstName?.charAt(0) ?? ''
-  const last = user.lastName?.charAt(0) ?? ''
+  const first = user.first_name?.charAt(0) ?? ''
+  const last = user.last_name?.charAt(0) ?? ''
   return (first + last).toUpperCase() || user.email.charAt(0).toUpperCase()
 }
 
@@ -136,7 +136,7 @@ const toggleMenu = (userId: string) => {
                 </div>
                 <div class="min-w-0">
                   <p class="text-sm font-semibold text-on-surface truncate">
-                    {{ user.firstName }} {{ user.lastName }}
+                    {{ user.first_name }} {{ user.last_name }}
                   </p>
                   <p class="text-xs text-on-surface-variant truncate">{{ user.email }}</p>
                 </div>
@@ -144,8 +144,8 @@ const toggleMenu = (userId: string) => {
             </td>
             <!-- Role badge -->
             <td :class="['px-lg', isCompact ? 'py-sm' : 'py-md']">
-              <span :class="['role-badge', roleBadgeClass(user.tenantRole)]">
-                {{ roleLabel(user.tenantRole) }}
+              <span :class="['role-badge', roleBadgeClass(user.tenant_role)]">
+                {{ roleLabel(user.tenant_role) }}
               </span>
             </td>
             <!-- Status dot + label -->

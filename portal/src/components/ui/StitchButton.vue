@@ -3,6 +3,7 @@ interface Props {
   variant?: 'filled' | 'outlined' | 'text';
   disabled?: boolean;
   type?: 'button' | 'submit' | 'reset';
+  icon?: string;
 }
 
 withDefaults(defineProps<Props>(), {
@@ -13,14 +14,17 @@ withDefaults(defineProps<Props>(), {
 </script>
 
 <template>
+  <!-- icon prop renders md-icon directly as a named-slot child of the Web Component.
+       This is more reliable than slot forwarding (slot="icon" on a <slot> element
+       doesn't consistently propagate the attribute in Vue 3 + custom elements). -->
   <md-filled-button
     v-if="variant === 'filled'"
     :disabled="disabled"
     :type="type"
     class="stitch-button"
   >
+    <md-icon v-if="icon" slot="icon">{{ icon }}</md-icon>
     <slot />
-    <slot name="icon" slot="icon" />
   </md-filled-button>
 
   <md-outlined-button
@@ -29,8 +33,8 @@ withDefaults(defineProps<Props>(), {
     :type="type"
     class="stitch-button"
   >
+    <md-icon v-if="icon" slot="icon">{{ icon }}</md-icon>
     <slot />
-    <slot name="icon" slot="icon" />
   </md-outlined-button>
 
   <md-text-button
@@ -39,8 +43,8 @@ withDefaults(defineProps<Props>(), {
     :type="type"
     class="stitch-button"
   >
+    <md-icon v-if="icon" slot="icon">{{ icon }}</md-icon>
     <slot />
-    <slot name="icon" slot="icon" />
   </md-text-button>
 </template>
 
@@ -49,10 +53,6 @@ withDefaults(defineProps<Props>(), {
   --md-filled-button-container-shape: var(--rounded-lg);
   --md-outlined-button-container-shape: var(--rounded-lg);
   --md-text-button-container-shape: var(--rounded-lg);
-  
-  /* Use theme tokens for colors if needed, but md-filled-button already uses --md-sys-color-primary by default */
-  /* We map our --primary to --md-sys-color-primary in theme.css or here */
-  
   font-family: var(--font-family-sans);
 }
 </style>

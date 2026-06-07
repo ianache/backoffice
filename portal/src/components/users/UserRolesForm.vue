@@ -2,8 +2,8 @@
 import { computed } from 'vue'
 
 interface RolesModel {
-  tenantRole: string
-  productRoles: Record<string, string>
+  tenant_role: string
+  product_roles: Record<string, string>
 }
 
 const props = defineProps<{
@@ -14,7 +14,7 @@ const emit = defineEmits<{
   'update:modelValue': [value: RolesModel]
 }>()
 
-const tenantRoles = [
+const tenant_roles = [
   {
     id: 'TenantOwner',
     label: 'TenantOwner',
@@ -34,21 +34,21 @@ const tenantRoles = [
 
 const productOptions = ['', 'ProductManager', 'ProductDeveloper', 'ProductQA']
 
-// Default product slots when productRoles is empty
+// Default product slots when product_roles is empty
 const DEFAULT_PRODUCTS = ['analytics', 'platform']
 
 const productSlots = computed<string[]>(() => {
-  const keys = Object.keys(props.modelValue.productRoles ?? {})
+  const keys = Object.keys(props.modelValue.product_roles ?? {})
   return keys.length > 0 ? keys : DEFAULT_PRODUCTS
 })
 
 const selectTenantRole = (roleId: string) => {
-  emit('update:modelValue', { ...props.modelValue, tenantRole: roleId })
+  emit('update:modelValue', { ...props.modelValue, tenant_role: roleId })
 }
 
 const updateProductRole = (productId: string, role: string) => {
-  const updated = { ...props.modelValue.productRoles, [productId]: role }
-  emit('update:modelValue', { ...props.modelValue, productRoles: updated })
+  const updated = { ...props.modelValue.product_roles, [productId]: role }
+  emit('update:modelValue', { ...props.modelValue, product_roles: updated })
 }
 </script>
 
@@ -59,11 +59,11 @@ const updateProductRole = (productId: string, role: string) => {
       <h3 class="section-heading">Tenant Role</h3>
       <div class="flex flex-col gap-sm mt-sm">
         <label
-          v-for="role in tenantRoles"
+          v-for="role in tenant_roles"
           :key="role.id"
           :class="[
             'role-card cursor-pointer',
-            modelValue.tenantRole === role.id
+            modelValue.tenant_role === role.id
               ? 'border-2 border-primary bg-primary/5'
               : 'border border-outline-variant hover:border-outline'
           ]"
@@ -73,17 +73,17 @@ const updateProductRole = (productId: string, role: string) => {
             type="radio"
             :name="'tenant-role'"
             :value="role.id"
-            :checked="modelValue.tenantRole === role.id"
+            :checked="modelValue.tenant_role === role.id"
             class="sr-only"
             @change="selectTenantRole(role.id)"
           />
           <div class="flex items-start gap-md">
             <div
               class="w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 mt-0.5"
-              :class="modelValue.tenantRole === role.id ? 'border-primary' : 'border-outline-variant'"
+              :class="modelValue.tenant_role === role.id ? 'border-primary' : 'border-outline-variant'"
             >
               <div
-                v-if="modelValue.tenantRole === role.id"
+                v-if="modelValue.tenant_role === role.id"
                 class="w-2 h-2 rounded-full bg-primary"
               ></div>
             </div>
@@ -107,7 +107,7 @@ const updateProductRole = (productId: string, role: string) => {
         >
           <span class="text-sm font-medium text-on-surface capitalize">{{ productId }}</span>
           <select
-            :value="modelValue.productRoles?.[productId] ?? ''"
+            :value="modelValue.product_roles?.[productId] ?? ''"
             @change="updateProductRole(productId, ($event.target as HTMLSelectElement).value)"
             class="product-role-select"
           >

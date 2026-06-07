@@ -5,22 +5,22 @@ export interface KcUser {
   id: string              // Keycloak UUID
   username: string
   email: string
-  firstName: string
-  lastName: string
+  first_name: string
+  last_name: string
   enabled: boolean
-  tenantId: string        // from attributes.tenant_id[0]
-  tenantRole: string | null  // e.g., "TenantAdmin" — derived from realm roles
-  productRoles: Record<string, string>  // { productId: roleName }
-  createdTimestamp: number
+  tenant_id: string       // from attributes.tenant_id[0]
+  tenant_role: string | null  // e.g., "TenantAdmin" — derived from realm roles
+  product_roles: Record<string, string>  // { productId: roleName }
+  created_timestamp: number
 }
 
 // Payload for creating or updating a user
 export interface UserPayload {
   email: string
-  firstName: string
-  lastName: string
-  tenantRole: string
-  productRoles: Record<string, string>  // { productId: roleName | '' }
+  first_name: string
+  last_name: string
+  tenant_role: string
+  product_roles: Record<string, string>  // { productId: roleName | '' }
 }
 
 // Single audit log entry for a user

@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Stitch Console - Feature Flags</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;family=JetBrains+Mono&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface": "#f8f9ff",
+                        "outline-variant": "#e7bdb7",
+                        "primary-container": "#d41117",
+                        "on-surface-variant": "#5d3f3b",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-fixed-variant": "#474746",
+                        "inverse-on-surface": "#eaf1ff",
+                        "background": "#f8f9ff",
+                        "on-primary-fixed": "#410001",
+                        "error-container": "#ffdad6",
+                        "on-tertiary-fixed": "#001b3c",
+                        "surface-container": "#e5eeff",
+                        "inverse-primary": "#ffb4aa",
+                        "tertiary": "#00529d",
+                        "on-background": "#0b1c30",
+                        "secondary-fixed-dim": "#c8c6c5",
+                        "tertiary-container": "#006ac8",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-fixed": "#ffdad5",
+                        "on-primary-container": "#ffe6e3",
+                        "secondary-fixed": "#e5e2e1",
+                        "on-tertiary-fixed-variant": "#004789",
+                        "secondary": "#5f5e5e",
+                        "outline": "#926f6a",
+                        "tertiary-fixed-dim": "#a7c8ff",
+                        "primary": "#d41117",
+                        "error": "#ba1a1a",
+                        "on-tertiary-container": "#e4ecff",
+                        "surface-tint": "#c0000f",
+                        "primary-fixed-dim": "#ffb4aa",
+                        "on-error-container": "#93000a",
+                        "surface-variant": "#d3e4fe",
+                        "on-primary-fixed-variant": "#930008",
+                        "on-secondary-container": "#636262",
+                        "surface-container-high": "#dce9ff",
+                        "on-surface": "#0b1c30",
+                        "on-primary": "#ffffff",
+                        "secondary-container": "#e2dfde",
+                        "surface-container-low": "#eff4ff",
+                        "inverse-surface": "#213145",
+                        "surface-container-highest": "#d3e4fe",
+                        "surface-bright": "#f8f9ff",
+                        "tertiary-fixed": "#d5e3ff",
+                        "surface-dim": "#cbdbf5",
+                        "on-secondary-fixed": "#1c1b1b",
+                        "on-secondary": "#ffffff",
+                        "on-error": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "md": "16px",
+                        "xl": "32px",
+                        "lg": "24px",
+                        "sm": "8px",
+                        "base": "8px",
+                        "xs": "4px",
+                        "margin-desktop": "40px",
+                        "margin-mobile": "16px",
+                        "gutter": "24px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "body-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "label-md": ["Inter"],
+                        "title-lg": ["Inter"],
+                        "title-md": ["Inter"],
+                        "code": ["JetBrains Mono"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "36px", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "label-md": ["14px", { "lineHeight": "20px", "fontWeight": "500" }],
+                        "title-lg": ["18px", { "lineHeight": "24px", "fontWeight": "600" }],
+                        "title-md": ["16px", { "lineHeight": "24px", "fontWeight": "500" }],
+                        "code": ["13px", { "lineHeight": "20px", "fontWeight": "400" }]
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+
+        .toggle-checked .toggle-dot {
+            transform: translateX(18px);
+        }
+
+        .toggle-checked .toggle-track {
+            background-color: #d41117;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #e7bdb7;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+
+<body class="bg-background text-on-background font-body-md text-body-md overflow-hidden">
+    <!-- SideNavBar -->
+    <aside
+        class="fixed left-0 top-0 h-screen w-64 border-r border-outline-variant flex flex-col py-lg px-md bg-surface-container-low z-50">
+        <div class="px-sm mb-xl">
+            <button
+                class="w-full flex items-center justify-center gap-2 bg-primary-container text-on-primary py-md px-lg rounded-lg font-title-md text-title-md hover:opacity-90 transition-all duration-150 shadow-sm">
+                <span class="material-symbols-outlined">add</span>
+                New Feature Flag
+            </button>
+        </div>
+        <nav class="flex-1 space-y-1 custom-scrollbar overflow-y-auto px-sm">
+            <a class="flex items-center gap-3 px-md py-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-variant rounded-lg transition-colors"
+                href="#">
+                <span class="material-symbols-outlined">dashboard</span>
+                <span class="font-body-md">Dashboard</span>
+            </a>
+            <a class="flex items-center gap-3 px-md py-sm bg-primary text-on-primary font-semibold rounded-lg transition-all duration-150"
+                href="#">
+                <span class="material-symbols-outlined" style='font-variation-settings: "FILL" 1;'>toggle_on</span>
+                <span class="font-body-md">Feature Flags</span>
+            </a>
+            <a class="flex items-center gap-3 px-md py-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-variant rounded-lg transition-colors"
+                href="#">
+                <span class="material-symbols-outlined">group</span>
+                <span class="font-body-md">Segments</span>
+            </a>
+            <a class="flex items-center gap-3 px-md py-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-variant rounded-lg transition-colors"
+                href="#">
+                <span class="material-symbols-outlined">cloud</span>
+                <span class="font-body-md">Environments</span>
+            </a>
+            <a class="flex items-center gap-3 px-md py-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-variant rounded-lg transition-colors"
+                href="#">
+                <span class="material-symbols-outlined">history_edu</span>
+                <span class="font-body-md">Audit Log</span>
+            </a>
+            <a class="flex items-center gap-3 px-md py-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-variant rounded-lg transition-colors"
+                href="#">
+                <span class="material-symbols-outlined">settings</span>
+                <span class="font-body-md">Settings</span>
+            </a>
+        </nav>
+        <div class="mt-auto border-t border-outline-variant pt-lg space-y-1">
+            <div class="px-md py-sm flex flex-col gap-xs">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <div class="w-2 h-2 rounded-full bg-green-500"></div>
+                        <span class="text-label-sm text-on-surface-variant">All systems operational</span>
+                    </div>
+                    <span class="text-label-sm font-code text-on-surface-variant">v2.4.12</span>
+                </div>
+            </div>
+            <div class="flex items-center gap-3 px-md py-sm border-t border-outline-variant mt-sm">
+                <img alt="User Profile" class="w-8 h-8 rounded-full bg-surface-variant"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuBDGB4v0W63eMpKnAyQGO_L7pzvPlGTst_q28s_SrItsUcgpT3GU6YsfcrGQAnIRxMPfRdTJfy36VmtVoaltKU3ydCEumU4gMLIzQrg2Xei4g3GDVXGMUJqUJkWmNFXPbQ98iOpUPAxD5lEAfX4_amJgvIK3-4CRuacHxcZXDNue61rQOaHwsvVSndyG9dvEryZYLRGj685N98WixeKjlOyxCp-mzylAtRLDtdGYPCmVuWqugS8EP8kWpR6TaxHz43jS77_9N2Imc0" />
+                <div class="min-w-0">
+                    <p class="font-label-md text-on-surface font-bold truncate">Alex Rivera</p>
+                    <p class="text-[10px] text-on-surface-variant truncate">alex.r@stitch.io</p>
+                </div>
+            </div>
+        </div>
+    </aside>
+    <!-- Main Content Area -->
+    <main class="ml-64 flex flex-col h-screen overflow-hidden">
+        <!-- TopAppBar -->
+        <header
+            class="h-16 flex justify-between items-center px-lg bg-surface-container-lowest border-b border-outline-variant shadow-sm z-40">
+            <div class="flex items-center h-full">
+                <div class="flex items-center gap-sm pr-lg border-r border-outline-variant h-10">
+                    <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center shrink-0">
+                        <span class="material-symbols-outlined text-on-primary text-[20px]">corporate_fare</span>
+                    </div>
+                    <div class="min-w-0">
+                        <h2 class="font-title-lg text-title-lg font-black text-on-surface truncate leading-tight">
+                            BackOffice CC</h2>
+                        <p class="text-[10px] text-on-surface-variant">Global Admin</p>
+                    </div>
+                </div>
+                <nav aria-label="Breadcrumb"
+                    class="flex items-center gap-sm text-on-surface-variant font-body-md ml-lg">
+                    <a class="flex items-center hover:text-primary transition-colors" href="#">
+                        <span class="material-symbols-outlined text-[20px]">home</span>
+                    </a>
+                    <span class="material-symbols-outlined text-sm">chevron_right</span>
+                    <span class="text-on-surface font-semibold">Feature Flags</span>
+                </nav>
+            </div>
+            <div class="flex items-center gap-md">
+                <div
+                    class="hidden md:flex items-center bg-surface-container-low px-md py-1.5 rounded-full border border-outline-variant">
+                    <span class="material-symbols-outlined text-on-surface-variant mr-xs text-[20px]">search</span>
+                    <input class="bg-transparent border-none focus:ring-0 text-body-md w-64"
+                        placeholder="Search flags, tags..." type="text" />
+                </div>
+                <button
+                    class="flex items-center gap-2 bg-primary text-on-primary px-lg py-2 rounded-lg font-label-md text-label-md font-bold shadow-sm active:scale-95 duration-75">Create
+                    Flag</button>
+                <div class="flex items-center gap-xs">
+                    <button class="p-sm rounded-full hover:bg-surface-container-low transition-colors"
+                        title="Toggle Theme">
+                        <span class="material-symbols-outlined text-secondary">light_mode</span>
+                    </button>
+                    <button class="p-sm rounded-full hover:bg-surface-container-low transition-colors">
+                        <span class="material-symbols-outlined text-secondary">notifications</span>
+                    </button>
+                    <button class="p-sm rounded-full hover:bg-surface-container-low transition-colors">
+                        <span class="material-symbols-outlined text-secondary">help</span>
+                    </button>
+                    <button class="p-sm rounded-full hover:bg-surface-container-low transition-colors">
+                        <span class="material-symbols-outlined text-secondary">apps</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+        <!-- Page Content -->
+        <div class="flex-1 overflow-hidden flex flex-col p-lg">
+            <!-- Filters and Actions -->
+            <div
+                class="flex items-center justify-between mb-lg bg-surface-container-lowest p-md rounded-xl border border-outline-variant shadow-sm">
+                <div class="flex items-center gap-md">
+                    <div
+                        class="flex items-center gap-2 border border-outline-variant rounded-lg px-3 py-1.5 bg-surface text-on-surface-variant hover:border-primary cursor-pointer transition-all">
+                        <span class="material-symbols-outlined text-[18px]">filter_list</span>
+                        <span class="font-label-md">All Statuses</span>
+                        <span class="material-symbols-outlined text-[16px]">expand_more</span>
+                    </div>
+                    <div
+                        class="flex items-center gap-2 border border-outline-variant rounded-lg px-3 py-1.5 bg-surface text-on-surface-variant hover:border-primary cursor-pointer transition-all">
+                        <span class="material-symbols-outlined text-[18px]">tag</span>
+                        <span class="font-label-md">Any Tags</span>
+                        <span class="material-symbols-outlined text-[16px]">expand_more</span>
+                    </div>
+                    <div
+                        class="flex items-center gap-2 border border-outline-variant rounded-lg px-3 py-1.5 bg-surface text-on-surface-variant hover:border-primary cursor-pointer transition-all">
+                        <span class="material-symbols-outlined text-[18px]">bolt</span>
+                        <span class="font-label-md">Complexity</span>
+                        <span class="material-symbols-outlined text-[16px]">expand_more</span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-sm">
+                    <span class="text-on-surface-variant font-label-md">Sort by:</span>
+                    <button class="flex items-center gap-1 font-label-md font-bold text-on-surface px-2 py-1">
+                        Last Updated
+                        <span class="material-symbols-outlined text-[16px]">arrow_downward</span>
+                    </button>
+                </div>
+            </div>
+            <!-- Data Table -->
+            <div
+                class="flex-1 bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm overflow-hidden flex flex-col">
+                <div class="overflow-x-auto custom-scrollbar flex-1">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-surface-container-low border-b border-outline-variant">
+                                <th class="px-lg py-md font-label-sm text-on-surface-variant uppercase tracking-wider">
+                                    Flag Name &amp; Description</th>
+                                <th
+                                    class="px-md py-md font-label-sm text-on-surface-variant uppercase tracking-wider text-center">
+                                    Status</th>
+                                <th class="px-md py-md font-label-sm text-on-surface-variant uppercase tracking-wider">
+                                    Complexity</th>
+                                <th class="px-md py-md font-label-sm text-on-surface-variant uppercase tracking-wider">
+                                    Rollout</th>
+                                <th class="px-md py-md font-label-sm text-on-surface-variant uppercase tracking-wider">
+                                    TTL</th>
+                                <th class="px-md py-md font-label-sm text-on-surface-variant uppercase tracking-wider">
+                                    Last Updated</th>
+                                <th
+                                    class="px-lg py-md font-label-sm text-on-surface-variant uppercase tracking-wider text-right">
+                                    Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-outline-variant">
+                            <!-- Row 1 -->
+                            <tr class="hover:bg-surface-container-low transition-colors group">
+                                <td class="px-lg py-lg">
+                                    <div class="flex flex-col">
+                                        <span
+                                            class="font-title-md text-primary font-bold cursor-pointer hover:underline">checkout_v2_redesign</span>
+                                        <span class="text-on-surface-variant text-[12px] mt-0.5">Enables the new
+                                            multi-step checkout flow for premium users.</span>
+                                        <div class="flex gap-2 mt-2">
+                                            <span
+                                                class="bg-secondary-container text-on-secondary-container text-[10px] px-1.5 py-0.5 rounded uppercase font-bold">Payments</span>
+                                            <span
+                                                class="bg-secondary-container text-on-secondary-container text-[10px] px-1.5 py-0.5 rounded uppercase font-bold">UI-Refactor</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-md py-lg text-center">
+                                    <button
+                                        class="toggle-checked inline-flex items-center h-6 w-11 rounded-full bg-surface-variant relative transition-colors duration-200 cursor-pointer focus:outline-none"
+                                        onclick="toggleSwitch(this)">
+                                        <span
+                                            class="toggle-dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full shadow transition-transform duration-200 ease-in-out"></span>
+                                        <span
+                                            class="toggle-track absolute inset-0 rounded-full bg-outline transition-colors duration-200"></span>
+                                    </button>
+                                </td>
+                                <td class="px-md py-lg">
+                                    <span
+                                        class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary-fixed text-primary text-label-md font-bold border border-primary/20">
+                                        <span class="material-symbols-outlined text-[14px]">bolt</span> Complex
+                                    </span>
+                                </td>
+                                <td class="px-md py-lg w-40">
+                                    <div class="flex flex-col gap-1.5">
+                                        <div
+                                            class="flex justify-between text-label-sm font-medium text-on-surface-variant">
+                                            <span>Progress</span>
+                                            <span>65%</span>
+                                        </div>
+                                        <div class="h-2 w-full bg-surface-variant rounded-full overflow-hidden">
+                                            <div class="h-full bg-primary" style="width: 65%"></div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-md py-lg font-code text-code text-on-surface-variant">14d Rem.</td>
+                                <td class="px-md py-lg">
+                                    <div class="flex flex-col">
+                                        <span class="font-medium">2h ago</span>
+                                        <span class="text-[11px] text-on-surface-variant">by m.smith@</span>
+                                    </div>
+                                </td>
+                                <td class="px-lg py-lg text-right">
+                                    <div
+                                        class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <button
+                                            class="p-1.5 hover:bg-surface-variant rounded text-on-surface-variant transition-all"
+                                            title="Edit"><span class="material-symbols-outlined">edit</span></button>
+                                        <button
+                                            class="p-1.5 hover:bg-surface-variant rounded text-on-surface-variant transition-all"
+                                            title="Clone"><span
+                                                class="material-symbols-outlined">content_copy</span></button>
+                                        <button
+                                            class="p-1.5 hover:bg-surface-variant rounded text-primary transition-all"
+                                            title="Promote"><span
+                                                class="material-symbols-outlined">rocket_launch</span></button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <!-- Row 2 -->
+                            <tr class="hover:bg-surface-container-low transition-colors group">
+                                <td class="px-lg py-lg">
+                                    <div class="flex flex-col">
+                                        <span
+                                            class="font-title-md text-primary font-bold cursor-pointer hover:underline">ai_search_experimental</span>
+                                        <span class="text-on-surface-variant text-[12px] mt-0.5">Vector search
+                                            integration for the product catalog.</span>
+                                        <div class="flex gap-2 mt-2">
+                                            <span
+                                                class="bg-secondary-container text-on-secondary-container text-[10px] px-1.5 py-0.5 rounded uppercase font-bold">Search</span>
+                                            <span
+                                                class="bg-secondary-container text-on-secondary-container text-[10px] px-1.5 py-0.5 rounded uppercase font-bold">Experimental</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-md py-lg text-center">
+                                    <button
+                                        class="inline-flex items-center h-6 w-11 rounded-full bg-surface-variant relative transition-colors duration-200 cursor-pointer focus:outline-none"
+                                        onclick="toggleSwitch(this)">
+                                        <span
+                                            class="toggle-dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full shadow transition-transform duration-200 ease-in-out"></span>
+                                        <span
+                                            class="toggle-track absolute inset-0 rounded-full bg-outline transition-colors duration-200"></span>
+                                    </button>
+                                </td>
+                                <td class="px-md py-lg">
+                                    <span
+                                        class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container text-on-surface-variant text-label-md font-bold">
+                                        <span class="material-symbols-outlined text-[14px]">psychology</span> Simple
+                                    </span>
+                                </td>
+                                <td class="px-md py-lg w-40">
+                                    <div class="flex flex-col gap-1.5">
+                                        <div
+                                            class="flex justify-between text-label-sm font-medium text-on-surface-variant">
+                                            <span>Progress</span>
+                                            <span>10%</span>
+                                        </div>
+                                        <div class="h-2 w-full bg-surface-variant rounded-full overflow-hidden">
+                                            <div class="h-full bg-primary" style="width: 10%"></div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-md py-lg font-code text-code text-on-surface-variant">30d Rem.</td>
+                                <td class="px-md py-lg">
+                                    <div class="flex flex-col">
+                                        <span class="font-medium">1d ago</span>
+                                        <span class="text-[11px] text-on-surface-variant">by j.doe@</span>
+                                    </div>
+                                </td>
+                                <td class="px-lg py-lg text-right">
+                                    <div
+                                        class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <button
+                                            class="p-1.5 hover:bg-surface-variant rounded text-on-surface-variant transition-all"
+                                            title="Edit"><span class="material-symbols-outlined">edit</span></button>
+                                        <button
+                                            class="p-1.5 hover:bg-surface-variant rounded text-on-surface-variant transition-all"
+                                            title="Clone"><span
+                                                class="material-symbols-outlined">content_copy</span></button>
+                                        <button
+                                            class="p-1.5 hover:bg-surface-variant rounded text-primary transition-all"
+                                            title="Promote"><span
+                                                class="material-symbols-outlined">rocket_launch</span></button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <!-- Row 3 -->
+                            <tr class="hover:bg-surface-container-low transition-colors group">
+                                <td class="px-lg py-lg">
+                                    <div class="flex flex-col">
+                                        <span
+                                            class="font-title-md text-primary font-bold cursor-pointer hover:underline">dark_mode_v1</span>
+                                        <span class="text-on-surface-variant text-[12px] mt-0.5">Toggle global dark mode
+                                            CSS theme variables.</span>
+                                        <div class="flex gap-2 mt-2">
+                                            <span
+                                                class="bg-secondary-container text-on-secondary-container text-[10px] px-1.5 py-0.5 rounded uppercase font-bold">Accessibility</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-md py-lg text-center">
+                                    <button
+                                        class="toggle-checked inline-flex items-center h-6 w-11 rounded-full bg-surface-variant relative transition-colors duration-200 cursor-pointer focus:outline-none"
+                                        onclick="toggleSwitch(this)">
+                                        <span
+                                            class="toggle-dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full shadow transition-transform duration-200 ease-in-out"></span>
+                                        <span
+                                            class="toggle-track absolute inset-0 rounded-full bg-outline transition-colors duration-200"></span>
+                                    </button>
+                                </td>
+                                <td class="px-md py-lg">
+                                    <span
+                                        class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container text-on-surface-variant text-label-md font-bold">
+                                        <span class="material-symbols-outlined text-[14px]">psychology</span> Simple
+                                    </span>
+                                </td>
+                                <td class="px-md py-lg w-40">
+                                    <div class="flex flex-col gap-1.5">
+                                        <div
+                                            class="flex justify-between text-label-sm font-medium text-on-surface-variant">
+                                            <span>Progress</span>
+                                            <span>100%</span>
+                                        </div>
+                                        <div class="h-2 w-full bg-surface-variant rounded-full overflow-hidden">
+                                            <div class="h-full bg-on-secondary-fixed-variant" style="width: 100%"></div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-md py-lg font-code text-code text-on-surface-variant">Expired</td>
+                                <td class="px-md py-lg">
+                                    <div class="flex flex-col">
+                                        <span class="font-medium">14d ago</span>
+                                        <span class="text-[11px] text-on-surface-variant">by k.lee@</span>
+                                    </div>
+                                </td>
+                                <td class="px-lg py-lg text-right">
+                                    <div
+                                        class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <button
+                                            class="p-1.5 hover:bg-surface-variant rounded text-on-surface-variant transition-all"
+                                            title="Edit"><span class="material-symbols-outlined">edit</span></button>
+                                        <button
+                                            class="p-1.5 hover:bg-surface-variant rounded text-on-surface-variant transition-all"
+                                            title="Clone"><span
+                                                class="material-symbols-outlined">content_copy</span></button>
+                                        <button
+                                            class="p-1.5 hover:bg-surface-variant rounded text-primary transition-all"
+                                            title="Promote"><span
+                                                class="material-symbols-outlined">rocket_launch</span></button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Pagination/Footer -->
+                <div
+                    class="mt-auto border-t border-outline-variant p-md flex items-center justify-between bg-surface-container-low">
+                    <span class="font-label-md text-on-surface-variant">Showing 1-3 of 42 flags</span>
+                    <div class="flex items-center gap-md">
+                        <div class="flex items-center gap-1">
+                            <button
+                                class="p-1 rounded hover:bg-surface-variant text-on-surface-variant disabled:opacity-30"
+                                disabled="">
+                                <span class="material-symbols-outlined">chevron_left</span>
+                            </button>
+                            <button
+                                class="w-8 h-8 rounded bg-primary text-on-primary font-bold text-label-md">1</button>
+                            <button
+                                class="w-8 h-8 rounded hover:bg-surface-variant text-on-surface text-label-md transition-colors">2</button>
+                            <button
+                                class="w-8 h-8 rounded hover:bg-surface-variant text-on-surface text-label-md transition-colors">3</button>
+                            <button class="p-1 rounded hover:bg-surface-variant text-on-surface-variant">
+                                <span class="material-symbols-outlined">chevron_right</span>
+                            </button>
+                        </div>
+                        <select
+                            class="bg-surface border border-outline-variant rounded px-2 py-1 text-label-md focus:ring-primary focus:border-primary">
+                            <option>10 per page</option>
+                            <option>25 per page</option>
+                            <option>50 per page</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <!-- Background Decorative Elements -->
+    <div class="fixed top-0 right-0 w-full h-full pointer-events-none -z-10 overflow-hidden opacity-30">
+        <div class="absolute top-[-10%] right-[-10%] w-[60%] h-[60%] bg-primary opacity-5 blur-[120px] rounded-full">
+        </div>
+        <div class="absolute bottom-[-10%] left-[20%] w-[40%] h-[40%] bg-tertiary opacity-5 blur-[100px] rounded-full">
+        </div>
+    </div>
+    <script>
+        // Toggle Switch functionality logic
+        function toggleSwitch(btn) {
+            const isChecked = btn.classList.contains('toggle-checked');
+            if (isChecked) {
+                if (confirm("Are you sure you want to disable this feature in PRODUCTION? This may impact live users.")) {
+                    btn.classList.remove('toggle-checked');
+                }
+            } else {
+                btn.classList.add('toggle-checked');
+            }
+        }
+    </script>
+</body>
+
+</html>

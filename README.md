@@ -79,6 +79,12 @@ cd portal
 pnpm dev
 ```
 
+**Terminal 3 - backend:**
+```bash
+cd backend
+uv run uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+```
+
 ## Verificar que todo funciona
 
 ### 1. BFF saludable
@@ -102,7 +108,7 @@ Abre [http://localhost:5173](http://localhost:5173) — deberías ser redirigido
 |-------|-------|
 | URL | https://oauth2.qa.comsatel.com.pe |
 | Realm | Apps |
-| Usuario | `bo.admin` |
+| Usuario | `bo.admin@backoffice.dev` |
 | Contraseña | `Backoffice1!` |
 | Rol | PlatformAdmin |
 

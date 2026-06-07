@@ -19,7 +19,14 @@ watch(formData, (newVal) => {
   emit('update:modelValue', newVal)
 }, { deep: true })
 
-const countries = ['Spain', 'USA', 'Germany', 'France', 'UK']
+const countries = [
+  { value: 'ES', label: 'Spain' },
+  { value: 'US', label: 'USA' },
+  { value: 'DE', label: 'Germany' },
+  { value: 'FR', label: 'France' },
+  { value: 'GB', label: 'UK' },
+  { value: 'PE', label: 'Peru' }
+]
 const languages = [
   { value: 'es', label: 'Spanish' },
   { value: 'en', label: 'English' },
@@ -61,8 +68,8 @@ const toggleProduct = (product: string) => {
           :value="formData.country"
           @change="(e: any) => formData.country = e.target.value"
         >
-          <md-select-option v-for="c in countries" :key="c" :value="c">
-            <div slot="headline">{{ c }}</div>
+          <md-select-option v-for="c in countries" :key="c.value" :value="c.value">
+            <div slot="headline">{{ c.label }}</div>
           </md-select-option>
         </md-outlined-select>
 

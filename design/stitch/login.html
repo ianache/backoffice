@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>BackOffice CC - Entry Portal</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=JetBrains+Mono&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary-fixed": "#e5e2e1",
+                        "on-primary": "#ffffff",
+                        "on-secondary-fixed-variant": "#474746",
+                        "inverse-primary": "#ffb4aa",
+                        "secondary-container": "#e2dfde",
+                        "primary-fixed-dim": "#ffb4aa",
+                        "on-tertiary": "#ffffff",
+                        "outline-variant": "#e7bdb7",
+                        "surface-dim": "#cbdbf5",
+                        "inverse-surface": "#213145",
+                        "background": "#f8f9ff",
+                        "outline": "#926f6a",
+                        "on-tertiary-container": "#e4ecff",
+                        "on-primary-container": "#ffe6e3",
+                        "surface-container-highest": "#d3e4fe",
+                        "on-surface": "#0b1c30",
+                        "inverse-on-surface": "#eaf1ff",
+                        "tertiary-container": "#006ac8",
+                        "primary": "#d41117",
+                        "primary-fixed": "#ffdad5",
+                        "on-surface-variant": "#5d3f3b",
+                        "on-primary-fixed": "#410001",
+                        "surface-tint": "#c0000f",
+                        "tertiary-fixed-dim": "#a7c8ff",
+                        "on-background": "#0b1c30",
+                        "on-error-container": "#93000a",
+                        "surface-container": "#e5eeff",
+                        "surface-bright": "#f8f9ff",
+                        "secondary": "#5f5e5e",
+                        "surface-container-lowest": "#ffffff",
+                        "error": "#ba1a1a",
+                        "on-tertiary-fixed-variant": "#004789",
+                        "primary-container": "#d41117",
+                        "on-error": "#ffffff",
+                        "on-secondary-fixed": "#1c1b1b",
+                        "error-container": "#ffdad6",
+                        "surface-container-low": "#eff4ff",
+                        "surface-container-high": "#dce9ff",
+                        "on-tertiary-fixed": "#001b3c",
+                        "tertiary": "#00529d",
+                        "on-primary-fixed-variant": "#930008",
+                        "tertiary-fixed": "#d5e3ff",
+                        "secondary-fixed-dim": "#c8c6c5",
+                        "on-secondary": "#ffffff",
+                        "surface": "#f8f9ff",
+                        "surface-variant": "#d3e4fe",
+                        "on-secondary-container": "#636262"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "sm": "8px",
+                        "xs": "4px",
+                        "lg": "24px",
+                        "xl": "32px",
+                        "md": "16px",
+                        "margin-mobile": "16px",
+                        "margin-desktop": "40px",
+                        "gutter": "24px",
+                        "base": "8px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "label-md": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "body-md": ["Inter"],
+                        "title-lg": ["Inter"],
+                        "title-md": ["Inter"],
+                        "code": ["JetBrains Mono"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "label-md": ["14px", { "lineHeight": "20px", "fontWeight": "500" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "36px", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "title-lg": ["18px", { "lineHeight": "24px", "fontWeight": "600" }],
+                        "title-md": ["16px", { "lineHeight": "24px", "fontWeight": "500" }]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(218, 220, 224, 0.5);
+        }
+    </style>
+</head>
+<body class="bg-background font-body-md text-on-background h-screen overflow-hidden">
+<main class="flex h-full w-full">
+<!-- Left Panel: Branding & Auth (30%) -->
+<section class="w-[30%] min-w-[400px] h-full flex flex-col justify-between p-xl bg-surface-container-lowest border-r border-outline-variant relative overflow-hidden">
+<!-- Decorative Background Element -->
+<div class="absolute -top-24 -left-24 w-64 h-64 bg-primary/5 rounded-full blur-3xl"></div>
+<!-- Branding -->
+<div class="z-10">
+<div class="flex items-center gap-sm">
+<div class="bg-primary p-xs rounded">
+<span class="material-symbols-outlined text-white text-[32px]" data-icon="hub">hub</span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-primary tracking-tight">BackOffice CC</h1>
+</div>
+<p class="font-body-md text-on-surface-variant mt-sm">Control Center &amp; Multi-tenant Administration</p>
+</div>
+<!-- Auth Section -->
+<div class="z-10 flex flex-col gap-lg max-w-sm">
+<div class="space-y-sm">
+<h2 class="font-headline-md text-headline-md">Welcome back</h2>
+<p class="font-body-md text-on-surface-variant">Access your administrative dashboard using enterprise credentials.</p>
+</div>
+<button class="group flex items-center justify-center gap-md w-full py-md px-lg bg-primary text-white rounded-lg font-title-md hover:bg-primary-container transition-all shadow-md active:scale-[0.98]">
+<span class="material-symbols-outlined" data-icon="key">key</span>
+                    Sign in with Keycloak
+                </button>
+<div class="flex items-center gap-sm">
+<div class="h-px flex-1 bg-outline-variant"></div>
+<span class="font-label-lg text-outline">OR</span>
+<div class="h-px flex-1 bg-outline-variant"></div>
+</div>
+<div class="flex flex-col gap-sm">
+<button class="flex items-center justify-center gap-sm py-sm border border-outline rounded-lg text-on-surface hover:bg-surface-container-low transition-colors">
+<span class="font-title-md text-title-md">Local Admin Login</span>
+</button>
+<p class="font-label-md text-on-surface-variant text-center">Trouble signing in? <a class="text-primary font-bold hover:underline" href="#">Contact Support</a></p>
+</div>
+</div>
+<!-- Footer -->
+<div class="z-10 flex flex-col gap-xs">
+<div class="h-px w-full bg-outline-variant mb-sm"></div>
+<div class="flex justify-between items-center text-on-surface-variant">
+<span class="font-label-lg text-label-lg">v2.4.12-stable</span>
+<div class="flex gap-md">
+<span class="material-symbols-outlined text-sm hover:text-primary cursor-pointer" data-icon="security">security</span>
+<span class="material-symbols-outlined text-sm hover:text-primary cursor-pointer" data-icon="help_outline">help_outline</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Right Panel: Dashboard (70%) -->
+<section class="w-[70%] h-full p-xl overflow-y-auto">
+<div class="max-w-[1200px] mx-auto space-y-xl">
+<!-- Top Row: Metric Cards -->
+<div class="bento-grid">
+<!-- Tenants -->
+<div class="glass-panel p-md rounded-xl shadow-sm border border-outline-variant hover:shadow-md transition-shadow">
+<div class="flex items-start justify-between mb-sm">
+<span class="material-symbols-outlined text-primary bg-primary/10 p-xs rounded" data-icon="domain">domain</span>
+<span class="text-on-secondary-container font-label-lg">GLOBAL</span>
+</div>
+<h3 class="font-label-lg text-label-lg text-on-surface-variant uppercase tracking-wider"># de Tenants</h3>
+<div class="mt-xs flex items-baseline gap-xs">
+<span class="font-headline-lg text-headline-lg text-on-surface">1,284</span>
+<span class="text-green-600 font-label-md flex items-center">
+<span class="material-symbols-outlined text-xs" data-icon="arrow_upward">arrow_upward</span> 12
+                            </span>
+</div>
+</div>
+<!-- Connected Users -->
+<div class="glass-panel p-md rounded-xl shadow-sm border border-outline-variant hover:shadow-md transition-shadow">
+<div class="flex items-start justify-between mb-sm">
+<span class="material-symbols-outlined text-tertiary bg-tertiary/10 p-xs rounded" data-icon="group">group</span>
+<div class="flex gap-1">
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+</span>
+</div>
+</div>
+<h3 class="font-label-lg text-label-lg text-on-surface-variant uppercase tracking-wider"># Usuarios Conectados</h3>
+<div class="mt-xs">
+<span class="font-headline-lg text-headline-lg text-on-surface">42</span>
+</div>
+</div>
+<!-- Products -->
+<div class="glass-panel p-md rounded-xl shadow-sm border border-outline-variant hover:shadow-md transition-shadow">
+<div class="flex items-start justify-between mb-sm">
+<span class="material-symbols-outlined text-secondary bg-secondary/10 p-xs rounded" data-icon="inventory_2">inventory_2</span>
+</div>
+<h3 class="font-label-lg text-label-lg text-on-surface-variant uppercase tracking-wider"># de Productos</h3>
+<div class="mt-xs">
+<span class="font-headline-lg text-headline-lg text-on-surface">12</span>
+</div>
+</div>
+<!-- Feature Flags -->
+<div class="glass-panel p-md rounded-xl shadow-sm border border-outline-variant hover:shadow-md transition-shadow">
+<div class="flex items-start justify-between mb-sm">
+<span class="material-symbols-outlined text-primary bg-primary/10 p-xs rounded" data-icon="toggle_on">toggle_on</span>
+</div>
+<h3 class="font-label-lg text-label-lg text-on-surface-variant uppercase tracking-wider"># Feature Flags</h3>
+<div class="mt-xs">
+<span class="font-headline-lg text-headline-lg text-on-surface">856</span>
+</div>
+</div>
+</div>
+<!-- Bottom Section: Announcements -->
+<div class="bg-white rounded-xl border border-outline-variant shadow-sm flex flex-col overflow-hidden">
+<div class="p-lg border-b border-outline-variant flex justify-between items-center bg-surface-container-low/50">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-on-surface" data-icon="campaign">campaign</span>
+<h2 class="font-title-lg text-title-lg text-on-surface">Avisos, Alertas o Noticias</h2>
+</div>
+<div class="flex gap-sm">
+<button class="px-md py-xs bg-white border border-outline-variant rounded-full font-label-lg hover:bg-surface-container-low transition-colors">Ver Todo</button>
+<button class="p-xs text-on-surface-variant hover:bg-surface-container-low rounded-full">
+<span class="material-symbols-outlined" data-icon="filter_list">filter_list</span>
+</button>
+</div>
+</div>
+<div class="divide-y divide-outline-variant">
+<!-- News Entry 1 -->
+<div class="p-lg hover:bg-surface-container-lowest transition-colors flex gap-lg group">
+<div class="flex flex-col items-center min-w-[64px]">
+<span class="font-headline-md text-headline-md text-on-surface">24</span>
+<span class="font-label-lg text-label-lg text-on-surface-variant uppercase">OCT</span>
+</div>
+<div class="flex-1 space-y-xs">
+<div class="flex items-center gap-md">
+<h4 class="font-title-md text-title-md text-primary group-hover:underline cursor-pointer">Actualización de Infraestructura Programada</h4>
+<span class="px-sm py-0.5 bg-blue-100 text-blue-700 rounded-full font-label-lg text-[10px] uppercase">Aviso</span>
+</div>
+<p class="font-body-md text-on-surface-variant max-w-3xl">Se llevará a cabo un mantenimiento preventivo en el clúster de producción de la Región Este el próximo domingo de 02:00 a 04:00 AM UTC. No se esperan interrupciones en el servicio.</p>
+</div>
+<button class="self-center opacity-0 group-hover:opacity-100 transition-opacity p-sm hover:bg-primary/5 rounded-full text-primary">
+<span class="material-symbols-outlined" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+<!-- News Entry 2 -->
+<div class="p-lg hover:bg-surface-container-lowest transition-colors flex gap-lg group">
+<div class="flex flex-col items-center min-w-[64px]">
+<span class="font-headline-md text-headline-md text-on-surface">22</span>
+<span class="font-label-lg text-label-lg text-on-surface-variant uppercase">OCT</span>
+</div>
+<div class="flex-1 space-y-xs">
+<div class="flex items-center gap-md">
+<h4 class="font-title-md text-title-md text-on-surface group-hover:underline cursor-pointer">Vulnerabilidad de Seguridad Detectada (CVE-2023-X)</h4>
+<span class="px-sm py-0.5 bg-orange-100 text-orange-700 rounded-full font-label-lg text-[10px] uppercase">Alerta</span>
+</div>
+<p class="font-body-md text-on-surface-variant max-w-3xl">Se ha identificado una posible vulnerabilidad en el SDK de autenticación para integraciones legacy. Se recomienda a todos los tenants actualizar a la versión v4.2.1 inmediatamente.</p>
+</div>
+<button class="self-center opacity-0 group-hover:opacity-100 transition-opacity p-sm hover:bg-primary/5 rounded-full text-primary">
+<span class="material-symbols-outlined" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+<!-- News Entry 3 -->
+<div class="p-lg hover:bg-surface-container-lowest transition-colors flex gap-lg group">
+<div class="flex flex-col items-center min-w-[64px]">
+<span class="font-headline-md text-headline-md text-on-surface">19</span>
+<span class="font-label-lg text-label-lg text-on-surface-variant uppercase">OCT</span>
+</div>
+<div class="flex-1 space-y-xs">
+<div class="flex items-center gap-md">
+<h4 class="font-title-md text-title-md text-on-surface group-hover:underline cursor-pointer">Nuevo Módulo: Analytics Pro</h4>
+<span class="px-sm py-0.5 bg-green-100 text-green-700 rounded-full font-label-lg text-[10px] uppercase">New</span>
+</div>
+<p class="font-body-md text-on-surface-variant max-w-3xl">Ya está disponible el nuevo módulo de analíticas avanzadas para todos los tenants Enterprise. Incluye exportación a S3 y dashboards en tiempo real.</p>
+</div>
+<button class="self-center opacity-0 group-hover:opacity-100 transition-opacity p-sm hover:bg-primary/5 rounded-full text-primary">
+<span class="material-symbols-outlined" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Atmospheric Visual / Hero -->
+<div class="relative h-[240px] rounded-2xl overflow-hidden shadow-lg border border-outline-variant">
+<img alt="Cybersecurity and cloud infrastructure" class="absolute inset-0 w-full h-full object-cover" data-alt="A highly sophisticated digital dashboard visualized as glowing blue data streams and holographic network nodes floating in a dark, professional tech environment. The image uses a clean, light-mode palette of primary blues and stark whites to represent data flow and security. The lighting is crisp and modern, emphasizing the precision and high-density nature of an enterprise DevOps command center." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBNbW0mwWAfbQ7thb-2BShwwdUhlfWAqUSLcNU_z5heZ8O457I5MmbMRqpuwxyI2t8xiAPmLIZd0ophk0bLOOJwiPpqnq13BPgENBz4rWf2k9UsHn3c-U1jfaUAtCVHLIGLbER-wRjxFSIdAWmK7zZ0HkiApxyvFud-9_Dr3A1wOOSHtUq16MS__p-dtcC7TJyIKGG-ujVFDsvHjBULa94WqGWIL8wEFZCrzWgNpo-513fP3buZiSnU-reTriXHQBIUYTX6kGsL9ck"/>
+<div class="absolute inset-0 bg-gradient-to-r from-primary/80 to-transparent flex items-center p-xl">
+<div class="max-w-md text-white">
+<h3 class="font-headline-lg text-headline-lg mb-xs">Monitorización en Tiempo Real</h3>
+<p class="font-body-lg text-body-lg opacity-90">Visualiza el estado de todos tus servicios y despliegues desde un único punto de control.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<script>
+        // Simple micro-interaction for the login button
+        const loginBtn = document.querySelector('button.bg-primary');
+        if (loginBtn) {
+            loginBtn.addEventListener('click', function() {
+                this.innerHTML = '<span class="material-symbols-outlined animate-spin" data-icon="refresh">refresh</span> Connecting to Keycloak...';
+                this.classList.add('opacity-80', 'cursor-not-allowed');
+                setTimeout(() => {
+                    this.innerHTML = '<span class="material-symbols-outlined" data-icon="check_circle">check_circle</span> Redirecting...';
+                    this.classList.remove('bg-primary');
+                    this.classList.add('bg-green-600');
+                }, 1500);
+            });
+        }
+
+        // Add hover effects for bento cards
+        document.querySelectorAll('.glass-panel').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.classList.add('scale-[1.02]');
+            });
+            card.addEventListener('mouseleave', () => {
+                card.classList.remove('scale-[1.02]');
+            });
+        });
+    </script>
+</body></html>

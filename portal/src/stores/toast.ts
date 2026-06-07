@@ -34,5 +34,22 @@ export const useToastStore = defineStore('toast', () => {
 export function extractErrorMessage(err: unknown, fallback = 'An unexpected error occurred'): string {
   if (!err || typeof err !== 'object') return fallback
   const e = err as any
-  return e.response?.data?.detail ?? e.message ?? fallback
+  const detail = e.response?.data?.detail ?? e.message
+  if (!detail) return fallback
+
+  if (typeof detail === 'string') {
+    try {
+      const parsed = JSON.parse(detail)
+      if (parsed && typeof parsed === 'object') {
+        return parsed.errorMessage || parsed.message || parsed.detail || detail
+      }
+    } catch {
+      // not a json string, return raw detail string
+    }
+    return detail
+  } else if (typeof detail === 'object') {
+    return detail.errorMessage || detail.message || detail.detail || JSON.stringify(detail)
+  }
+  return fallback
 }
+

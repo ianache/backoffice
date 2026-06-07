@@ -21,32 +21,32 @@ const activeTab = ref<TabId>('general')
 
 const defaultFormData: Partial<UserPayload> = {
   email: '',
-  firstName: '',
-  lastName: '',
+  first_name: '',
+  last_name: '',
 }
 
 const defaultRolesData = {
-  tenantRole: '',
-  productRoles: {} as Record<string, string>,
+  tenant_role: '',
+  product_roles: {} as Record<string, string>,
 }
 
 const formData = ref<Partial<UserPayload>>({ ...defaultFormData })
-const rolesData = ref({ ...defaultRolesData, productRoles: {} as Record<string, string> })
+const rolesData = ref({ ...defaultRolesData, product_roles: {} as Record<string, string> })
 
 const resetFromUser = (user: KcUser | null) => {
   if (user) {
     formData.value = {
       email: user.email,
-      firstName: user.firstName,
-      lastName: user.lastName,
+      first_name: user.first_name,
+      last_name: user.last_name,
     }
     rolesData.value = {
-      tenantRole: user.tenantRole ?? '',
-      productRoles: { ...user.productRoles },
+      tenant_role: user.tenant_role ?? '',
+      product_roles: { ...user.product_roles },
     }
   } else {
     formData.value = { ...defaultFormData }
-    rolesData.value = { tenantRole: '', productRoles: {} }
+    rolesData.value = { tenant_role: '', product_roles: {} }
   }
   activeTab.value = 'general'
 }
@@ -72,10 +72,10 @@ watch(
 const handleSave = () => {
   const payload: UserPayload = {
     email: formData.value.email ?? '',
-    firstName: formData.value.firstName ?? '',
-    lastName: formData.value.lastName ?? '',
-    tenantRole: rolesData.value.tenantRole,
-    productRoles: rolesData.value.productRoles,
+    first_name: formData.value.first_name ?? '',
+    last_name: formData.value.last_name ?? '',
+    tenant_role: rolesData.value.tenant_role,
+    product_roles: rolesData.value.product_roles,
   }
   emit('save', payload)
 }
@@ -102,7 +102,7 @@ const setTab = (tab: TabId) => {
             <div class="flex flex-col">
               <h2 class="drawer-title">Manage Access</h2>
               <p class="drawer-subtitle">
-                {{ user ? `${user.firstName} ${user.lastName}` : 'Invite a new member' }}
+                {{ user ? `${user.first_name} ${user.last_name}` : 'Invite a new member' }}
               </p>
             </div>
             <md-icon-button @click="emit('close')" aria-label="Close drawer">

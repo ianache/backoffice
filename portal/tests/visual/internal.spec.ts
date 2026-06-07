@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 /**
  * Internal Pages Visual Regression Tests
- * Covers Tenant Management UI (UI-04): Stitch high-density layout validation.
+ * Covers Tenant Management UI: Stitch high-density layout validation.
  *
  * Strategy:
  * - Mock BFF /api/tenants/ to avoid server dependency
@@ -49,10 +49,10 @@ const MOCK_TENANTS = [
   }
 ];
 
-test.describe('Internal Pages — Stitch Design (UI-04)', () => {
+test.describe('Internal Pages — Stitch Design', () => {
   test.beforeEach(async ({ page }) => {
-    // Mock BFF tenants endpoint
-    await page.route('**/api/tenants/**', async route => {
+    // Mock BFF tenants endpoint (portal calls http://localhost:3000/tenants/)
+    await page.route('**/tenants/**', async route => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -60,7 +60,7 @@ test.describe('Internal Pages — Stitch Design (UI-04)', () => {
       });
     });
 
-    // Inject auth session to bypass Keycloak initialization
+    // Inject auth session to bypass Keycloak
     await page.addInitScript(() => {
       const mockAuth = {
         token: 'mock-jwt-token',
@@ -90,17 +90,25 @@ test.describe('Internal Pages — Stitch Design (UI-04)', () => {
     await expect(page.locator('text=Acme Corp')).toBeVisible();
     await expect(page.locator('text=Globex')).toBeVisible();
 
-    // High-density table: verify md-checkbox is rendered (not native input)
-    const checkboxes = page.locator('md-checkbox');
-    await expect(checkboxes.first()).toBeVisible();
+    // Bento summary cards
+    await expect(page.locator('text=Active Tenants')).toBeVisible();
+    await expect(page.locator('text=Total Products')).toBeVisible();
+    await expect(page.locator('text=System Health')).toBeVisible();
 
-    // Action menu anchors present for each row
-    const actionButtons = page.locator('md-icon-button[title="More actions"]');
-    await expect(actionButtons.first()).toBeVisible();
+    // Table filter tabs
+    await expect(page.locator('text=All Tenants')).toBeVisible();
 
     // Page header with Stitch title typography
     await expect(page.locator('.page-title')).toBeVisible();
-    await expect(page.locator('.page-title')).toContainText('Tenants');
+    await expect(page.locator('.page-title')).toContainText('Tenant Management');
+
+    // Status chips
+    const statusChips = page.locator('.status-chip');
+    await expect(statusChips.first()).toBeVisible();
+
+    // Action buttons (icon-based, not md-icon-button)
+    const inventoryBtns = page.locator('button[title="Manage Products"]');
+    await expect(inventoryBtns.first()).toBeVisible();
 
     await expect(page).toHaveScreenshot('tenants-view-light.png', {
       maxDiffPixelRatio: 0.1,
@@ -138,7 +146,7 @@ test.describe('Internal Pages — Stitch Design (UI-04)', () => {
     });
 
     // Open create drawer via Stitch button
-    await page.click('text=Create Tenant');
+    await page.click('text=Create New Tenant');
     await page.waitForSelector('.drawer-content', { state: 'visible' });
     await page.waitForTimeout(400);
 
@@ -168,14 +176,14 @@ test.describe('Internal Pages — Stitch Design (UI-04)', () => {
       document.documentElement.classList.remove('dark');
     });
 
-    await page.click('text=Create Tenant');
+    await page.click('text=Create New Tenant');
     await page.waitForSelector('.drawer-content', { state: 'visible' });
 
     // Navigate to Whitelabel tab
     await page.click('md-primary-tab:has-text("Whitelabel")');
     await page.waitForTimeout(300);
 
-    // Verify section labels are present (Stitch form-section-label)
+    // Verify section labels are present
     await expect(page.locator('.form-section-label').first()).toBeVisible();
 
     // Verify color inputs and text fields are rendered
@@ -198,11 +206,10 @@ test.describe('Internal Pages — Stitch Design (UI-04)', () => {
     });
     await page.waitForTimeout(400);
 
-    await page.click('text=Create Tenant');
+    await page.click('text=Create New Tenant');
     await page.waitForSelector('.drawer-content', { state: 'visible' });
     await page.waitForTimeout(400);
 
-    // Verify drawer uses tonal surface (background should differ from page background)
     await expect(page.locator('.drawer-content')).toBeVisible();
 
     await expect(page).toHaveScreenshot('tenant-drawer-dark.png', {

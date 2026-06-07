@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en" style="width: 1280px; height: 1024px; overflow: hidden; position: relative;">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Stitch Enterprise | Tenant Management</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;family=JetBrains+Mono:wght@400&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary-fixed": "#e5e2e1",
+                        "on-primary": "#ffffff",
+                        "on-secondary-fixed-variant": "#474746",
+                        "inverse-primary": "#ffb4aa",
+                        "secondary-container": "#e2dfde",
+                        "primary-fixed-dim": "#ffb4aa",
+                        "on-tertiary": "#ffffff",
+                        "outline-variant": "#e7bdb7",
+                        "surface-dim": "#cbdbf5",
+                        "inverse-surface": "#213145",
+                        "background": "#f8f9ff",
+                        "outline": "#926f6a",
+                        "on-tertiary-container": "#e4ecff",
+                        "on-primary-container": "#ffe6e3",
+                        "surface-container-highest": "#d3e4fe",
+                        "on-surface": "#0b1c30",
+                        "inverse-on-surface": "#eaf1ff",
+                        "tertiary-container": "#006ac8",
+                        "primary": "#d41117",
+                        "primary-fixed": "#ffdad5",
+                        "on-surface-variant": "#5d3f3b",
+                        "on-primary-fixed": "#410001",
+                        "surface-tint": "#c0000f",
+                        "tertiary-fixed-dim": "#a7c8ff",
+                        "on-background": "#0b1c30",
+                        "on-error-container": "#93000a",
+                        "surface-container": "#e5eeff",
+                        "surface-bright": "#f8f9ff",
+                        "secondary": "#5f5e5e",
+                        "surface-container-lowest": "#ffffff",
+                        "error": "#ba1a1a",
+                        "on-tertiary-fixed-variant": "#004789",
+                        "primary-container": "#d41117",
+                        "on-error": "#ffffff",
+                        "on-secondary-fixed": "#1c1b1b",
+                        "error-container": "#ffdad6",
+                        "surface-container-low": "#eff4ff",
+                        "surface-container-high": "#dce9ff",
+                        "on-tertiary-fixed": "#001b3c",
+                        "tertiary": "#00529d",
+                        "on-primary-fixed-variant": "#930008",
+                        "tertiary-fixed": "#d5e3ff",
+                        "secondary-fixed-dim": "#c8c6c5",
+                        "on-secondary": "#ffffff",
+                        "surface": "#f8f9ff",
+                        "surface-variant": "#d3e4fe",
+                        "on-secondary-container": "#636262"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "sm": "8px",
+                        "xs": "4px",
+                        "lg": "24px",
+                        "xl": "32px",
+                        "md": "16px",
+                        "margin-mobile": "16px",
+                        "margin-desktop": "40px",
+                        "gutter": "24px",
+                        "base": "8px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "label-md": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "body-md": ["Inter"],
+                        "title-lg": ["Inter"],
+                        "title-md": ["Inter"],
+                        "code": ["JetBrains Mono"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "label-md": ["14px", { "lineHeight": "20px", "fontWeight": "500" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "36px", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "title-lg": ["18px", { "lineHeight": "24px", "fontWeight": "600" }],
+                        "title-md": ["16px", { "lineHeight": "24px", "fontWeight": "500" }]
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+
+<body class="bg-background text-on-background min-h-screen">
+    <!-- TopNavBar Shell -->
+    <header
+        class="fixed top-0 left-0 right-0 flex items-center h-16 w-full bg-surface-container-lowest border-b border-outline-variant shadow-sm z-50 p-0">
+        <div class="flex items-center h-full w-64 px-sm border-r border-outline-variant bg-surface-container-low">
+            <div class="flex items-center gap-sm px-sm">
+                <div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center shrink-0">
+                    <span class="material-symbols-outlined text-on-primary"
+                        data-icon="corporate_fare">corporate_fare</span>
+                </div>
+                <div class="min-w-0">
+                    <h2 class="font-title-lg text-title-lg font-black text-on-surface truncate leading-tight">BackOffice
+                        CC</h2>
+                    <p class="text-label-md text-on-surface-variant truncate">Global Admin</p>
+                </div>
+            </div>
+        </div>
+        <div class="flex flex-1 items-center justify-between px-gutter h-full">
+            <div class="flex items-center gap-md">
+                <nav aria-label="Breadcrumb" class="flex items-center gap-sm text-on-surface-variant font-body-md">
+                    <a class="flex items-center hover:text-primary transition-colors" href="#">
+                        <span class="material-symbols-outlined text-[20px]" data-icon="home">home</span>
+                    </a>
+                    <span class="material-symbols-outlined text-secondary text-sm"
+                        data-icon="chevron_right">chevron_right</span>
+                    <span class="text-on-surface font-semibold">Tenants</span>
+                </nav>
+            </div>
+            <div class="flex items-center gap-md">
+                <div
+                    class="hidden md:flex items-center bg-surface-container-low px-md py-xs rounded-full border border-outline-variant">
+                    <span class="material-symbols-outlined text-on-surface-variant mr-xs"
+                        data-icon="search">search</span>
+                    <input class="bg-transparent border-none focus:ring-0 text-body-md w-64"
+                        placeholder="Search tenants..." type="text" />
+                </div>
+                <div class="flex items-center gap-sm">
+                    <button
+                        class="p-sm rounded-full hover:bg-surface-container-low transition-colors active:scale-95 duration-150"
+                        id="theme-toggle" title="Toggle Theme">
+                        <span class="material-symbols-outlined text-secondary" data-icon="light_mode">light_mode</span>
+                    </button>
+                    <button
+                        class="p-sm rounded-full hover:bg-surface-container-low transition-colors active:scale-95 duration-150">
+                        <span class="material-symbols-outlined text-secondary"
+                            data-icon="notifications">notifications</span>
+                    </button>
+                    <button
+                        class="p-sm rounded-full hover:bg-surface-container-low transition-colors active:scale-95 duration-150">
+                        <span class="material-symbols-outlined text-secondary" data-icon="help">help</span>
+                    </button>
+                    <button
+                        class="p-sm rounded-full hover:bg-surface-container-low transition-colors active:scale-95 duration-150">
+                        <span class="material-symbols-outlined text-secondary" data-icon="apps">apps</span>
+                    </button>
+                    <div class="w-8 h-8 rounded-full overflow-hidden ml-sm border border-outline-variant">
+                        <img alt="User profile" class="w-full h-full object-cover"
+                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDPnvwY1FUu0zb0iXWiX6R8wYSnE6lFfr9ATmjVnBkX7ZLZarylk8_YYBM9t29OAO7UY3WkiIzq9yXT5YV0nmtTFw8J-bVuvz-pqToToJ4tqL-ABz0nXkiH6JAzL9v_w7dInspaH0Y3_FgQTQgW_ETKO1Jk_td9wFYScguGhu1Ctia7ucKjkyOBJBuEFj-_prdxknsjt-CbhRDYkbFMnBw2FFHLxXzzjhHeRt3o1DLzNqMfwgxRLA79vxM6JYEfbjxMcOGQKiYC42k" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- SideNavBar Shell -->
+    <aside
+        class="fixed left-0 top-0 bottom-0 w-64 bg-surface-container-low border-r border-outline-variant flex flex-col h-full py-md px-sm gap-base z-40 hidden md:flex pt-20">
+        <nav class="flex-1 flex flex-col gap-xs overflow-y-auto">
+            <a class="bg-primary text-on-primary font-semibold rounded-lg flex items-center gap-md px-md py-sm active:translate-x-1 duration-200"
+                href="#">
+                <span class="material-symbols-outlined" data-icon="corporate_fare">corporate_fare</span>
+                <span class="font-body-md">Tenants</span>
+            </a>
+            <a class="text-on-surface-variant hover:bg-surface-container-high transition-all flex items-center gap-md px-md py-sm rounded-lg active:translate-x-1 duration-200"
+                href="#">
+                <span class="material-symbols-outlined" data-icon="inventory_2">inventory_2</span>
+                <span class="font-body-md">Products</span>
+            </a>
+            <a class="text-on-surface-variant hover:bg-surface-container-high transition-all flex items-center gap-md px-md py-sm rounded-lg active:translate-x-1 duration-200"
+                href="#">
+                <span class="material-symbols-outlined" data-icon="branding_watermark">branding_watermark</span>
+                <span class="font-body-md">WhiteLabels</span>
+            </a>
+            <a class="text-on-surface-variant hover:bg-surface-container-high transition-all flex items-center gap-md px-md py-sm rounded-lg active:translate-x-1 duration-200"
+                href="#">
+                <span class="material-symbols-outlined" data-icon="toggle_on">toggle_on</span>
+                <span class="font-body-md">Feature Flags</span>
+            </a>
+            <a class="text-on-surface-variant hover:bg-surface-container-high transition-all flex items-center gap-md px-md py-sm rounded-lg active:translate-x-1 duration-200"
+                href="#">
+                <span class="material-symbols-outlined" data-icon="history_edu">history_edu</span>
+                <span class="font-body-md">Audit Log</span>
+            </a>
+            <a class="text-on-surface-variant hover:bg-surface-container-high transition-all flex items-center gap-md px-md py-sm rounded-lg active:translate-x-1 duration-200"
+                href="#">
+                <span class="material-symbols-outlined" data-icon="settings">settings</span>
+                <span class="font-body-md">Platform Settings</span>
+            </a>
+        </nav>
+        <div class="mt-auto border-t border-outline-variant pt-md flex flex-col gap-xs">
+            <div class="flex items-center justify-between px-md py-sm">
+                <div class="flex items-center gap-sm">
+                    <div class="w-2 h-2 rounded-full bg-green-500"></div>
+                    <span class="material-symbols-outlined text-secondary text-[20px]"
+                        data-icon="cloud_done">cloud_done</span>
+                    <span class="text-label-md text-on-surface-variant">All systems operational</span>
+                </div>
+                <span class="text-label-md text-on-surface-variant font-code">v2.4.12</span>
+            </div>
+        </div>
+    </aside>
+    <!-- Main Content Canvas -->
+    <main class="md:ml-64 pt-16 min-h-screen">
+        <div class="p-lg max-w-[1440px] mx-auto">
+            <!-- Header Section -->
+            <div class="flex flex-col md:flex-row md:items-center justify-between mb-xl gap-md">
+                <div>
+                    <h1 class="font-headline-lg text-headline-lg text-on-surface">Tenant Management</h1>
+                    <p class="text-body-md text-on-surface-variant">Oversee and manage ecosystem-wide tenant
+                        configurations and health.</p>
+                </div>
+                <div class="flex items-center gap-md">
+                    <button
+                        class="flex items-center gap-sm px-md py-sm border border-outline rounded-lg text-on-surface hover:bg-surface-container-high transition-colors font-title-md">
+                        <span class="material-symbols-outlined" data-icon="file_download">file_download</span>
+                        Export List
+                    </button>
+                    <button
+                        class="flex items-center gap-sm px-lg py-sm bg-primary text-on-primary rounded-lg shadow-sm hover:bg-[#D72429] transition-all active:scale-95 font-title-md">
+                        <span class="material-symbols-outlined" data-icon="add">add</span>
+                        Create New Tenant
+                    </button>
+                </div>
+            </div>
+            <!-- Bento Summary Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-lg mb-xl">
+                <div
+                    class="md:col-span-4 bg-surface-container-lowest border border-outline-variant rounded-xl p-lg flex flex-col justify-between hover:shadow-sm transition-all relative overflow-hidden group">
+                    <div class="absolute top-0 left-0 w-1.5 h-full bg-primary"></div>
+                    <div class="flex justify-between items-start mb-md">
+                        <div>
+                            <p class="text-label-sm text-on-surface-variant uppercase tracking-wider mb-xs font-bold">
+                                Active Tenants</p>
+                            <h3 class="font-headline-lg text-headline-lg text-on-surface">1,284</h3>
+                        </div>
+                        <div class="p-sm bg-surface-container-high rounded-lg">
+                            <span class="material-symbols-outlined text-primary" data-icon="groups">groups</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-sm">
+                        <span class="text-success text-body-md font-bold text-green-600 flex items-center">
+                            <span class="material-symbols-outlined text-sm" data-icon="trending_up">trending_up</span>
+                            +12%
+                        </span>
+                        <p class="text-label-md text-on-surface-variant">vs last month</p>
+                    </div>
+                </div>
+                <div
+                    class="md:col-span-4 bg-surface-container-lowest border border-outline-variant rounded-xl p-lg flex flex-col justify-between hover:shadow-sm transition-all relative overflow-hidden group">
+                    <div class="absolute top-0 left-0 w-1.5 h-full bg-tertiary"></div>
+                    <div class="flex justify-between items-start mb-md">
+                        <div>
+                            <p class="text-label-sm text-on-surface-variant uppercase tracking-wider mb-xs font-bold">
+                                Total Products</p>
+                            <h3 class="font-headline-lg text-headline-lg text-on-surface">42</h3>
+                        </div>
+                        <div class="p-sm bg-surface-container-high rounded-lg">
+                            <span class="material-symbols-outlined text-tertiary"
+                                data-icon="shopping_bag">shopping_bag</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-sm">
+                        <span class="text-body-md font-bold text-on-surface">6 New</span>
+                        <p class="text-label-md text-on-surface-variant">Added this week</p>
+                    </div>
+                </div>
+                <div
+                    class="md:col-span-4 bg-surface-container-lowest border border-outline-variant rounded-xl p-lg flex flex-col justify-between hover:shadow-sm transition-all relative overflow-hidden group">
+                    <div class="absolute top-0 left-0 w-1.5 h-full bg-primary"></div>
+                    <div class="flex justify-between items-start mb-md">
+                        <div>
+                            <p class="text-label-sm text-on-surface-variant uppercase tracking-wider mb-xs font-bold">
+                                System Health</p>
+                            <h3 class="font-headline-lg text-headline-lg text-on-surface">99.98%</h3>
+                        </div>
+                        <div class="p-sm bg-surface-container-high rounded-lg">
+                            <span class="material-symbols-outlined text-primary" data-icon="check_circle"
+                                style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                        </div>
+                    </div>
+                    <div class="w-full bg-surface-container-high h-1.5 rounded-full overflow-hidden">
+                        <div class="bg-primary h-full w-[99.98%]"></div>
+                    </div>
+                </div>
+            </div>
+            <!-- Tenants Table -->
+            <div class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-sm">
+                <div
+                    class="p-md flex flex-wrap items-center justify-between gap-md border-b border-outline-variant bg-surface-container-low/50">
+                    <div class="flex items-center gap-lg">
+                        <h2 class="font-title-md text-title-md text-on-surface">All Tenants</h2>
+                        <div
+                            class="flex items-center gap-sm bg-surface-container-lowest border border-outline-variant rounded-lg px-xs py-xs">
+                            <button
+                                class="px-md py-sm bg-surface-container-high rounded-md text-label-md font-bold text-primary">All</button>
+                            <button
+                                class="px-md py-sm text-label-md text-secondary hover:text-on-surface font-medium">Active</button>
+                            <button
+                                class="px-md py-sm text-label-md text-secondary hover:text-on-surface font-medium">Suspended</button>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-md">
+                        <button class="p-sm hover:bg-surface-variant rounded-lg transition-colors">
+                            <span class="material-symbols-outlined" data-icon="filter_list">filter_list</span>
+                        </button>
+                        <button class="p-sm hover:bg-surface-variant rounded-lg transition-colors" id="density-toggle">
+                            <span class="material-symbols-outlined" data-icon="density_medium">density_medium</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse" id="tenant-table">
+                        <thead>
+                            <tr class="bg-surface-container-low/30 border-b border-outline-variant">
+                                <th class="px-lg py-md text-label-sm text-on-surface-variant uppercase font-bold">Name
+                                </th>
+                                <th class="px-lg py-md text-label-sm text-on-surface-variant uppercase font-bold">Status
+                                </th>
+                                <th class="px-lg py-md text-label-sm text-on-surface-variant uppercase font-bold">Plan
+                                </th>
+                                <th class="px-lg py-md text-label-sm text-on-surface-variant uppercase font-bold">
+                                    Created At</th>
+                                <th class="px-lg py-md text-label-sm text-on-surface-variant uppercase font-bold">Owner
+                                </th>
+                                <th
+                                    class="px-lg py-md text-label-sm text-on-surface-variant uppercase font-bold text-right">
+                                    Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-outline-variant">
+                            <tr class="hover:bg-surface-container-low transition-colors group">
+                                <td class="px-lg py-md">
+                                    <div class="flex items-center gap-md">
+                                        <div
+                                            class="w-10 h-10 rounded-lg bg-surface-variant flex items-center justify-center border border-outline-variant overflow-hidden">
+                                            <img alt="Acme Corp" class="w-full h-full object-cover"
+                                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuDZ4Y5cmbLerQGGwyU3MHwrIj0ygitUM3rAzKqYp1BA-RPgNP9iULQxIrFxevGMS4yRcEncc0W72AAxzprA0W7ZGRxmYABDjbrJH5wfTcP5biy3FLH7z2JnJxma265vu3ksoAdTJLgUbIqc9k2vvXiXdDYDhVRtKZIvnHu3G8W-QFSCbB2mdQUeMj3Djl4c87b3fW_h1dMtEU0wjxa8N8iEI7_hXBmwClnVEs4FE2UhgDZRekwVD_Hxl7MEz4xGlEHzb7hHdjV3po8" />
+                                        </div>
+                                        <span
+                                            class="font-title-md text-primary font-bold hover:underline cursor-pointer">Acme
+                                            Global</span>
+                                    </div>
+                                </td>
+                                <td class="px-lg py-md">
+                                    <span
+                                        class="inline-flex items-center gap-xs px-sm py-xs bg-green-100 text-green-800 rounded-full text-label-sm font-bold">
+                                        <span class="w-2 h-2 rounded-full bg-green-500"></span> Active
+                                    </span>
+                                </td>
+                                <td class="px-lg py-md text-body-md text-on-surface-variant">Enterprise</td>
+                                <td class="px-lg py-md text-body-md text-on-surface-variant font-code">2023-10-12</td>
+                                <td class="px-lg py-md">
+                                    <div class="flex items-center gap-xs">
+                                        <div
+                                            class="w-6 h-6 rounded-full bg-primary-fixed border border-primary-container flex items-center justify-center text-[10px] font-bold text-on-primary-fixed">
+                                            JD</div>
+                                        <span class="text-body-md">John Doe</span>
+                                    </div>
+                                </td>
+                                <td class="px-lg py-md text-right">
+                                    <div class="flex items-center justify-end gap-sm">
+                                        <button
+                                            class="p-sm text-secondary hover:text-primary hover:bg-primary-fixed rounded-lg transition-all active:scale-95"
+                                            title="Manage Products">
+                                            <span class="material-symbols-outlined"
+                                                data-icon="inventory">inventory</span>
+                                        </button>
+                                        <button
+                                            class="p-sm text-secondary hover:text-primary hover:bg-primary-fixed rounded-lg transition-all active:scale-95"
+                                            title="Configure WhiteLabel">
+                                            <span class="material-symbols-outlined" data-icon="palette">palette</span>
+                                        </button>
+                                        <button
+                                            class="p-sm text-secondary hover:text-primary hover:bg-primary-fixed rounded-lg transition-all active:scale-95"
+                                            title="View Analytics">
+                                            <span class="material-symbols-outlined"
+                                                data-icon="bar_chart">bar_chart</span>
+                                        </button>
+                                        <button
+                                            class="p-sm text-secondary hover:text-on-surface hover:bg-surface-variant rounded-lg">
+                                            <span class="material-symbols-outlined"
+                                                data-icon="more_vert">more_vert</span>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-surface-container-low transition-colors group">
+                                <td class="px-lg py-md">
+                                    <div class="flex items-center gap-md">
+                                        <div
+                                            class="w-10 h-10 rounded-lg bg-surface-variant flex items-center justify-center border border-outline-variant overflow-hidden">
+                                            <img alt="Stellar Vent" class="w-full h-full object-cover"
+                                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuAFi1Djm4vLhn9ro8b6sk1nnCoAE81Oz3GV8fmntpVDNQCZUWBD1m41PZqRVZaLyfhygloIxDVHd8zZ6CN-_gSsN1B3npCZIrRCPRaxgi8lfeaB5WOW2oMqQrlXWn4cktOOtESoHH27YlG1_nuRtQuMiDiDF1Dwphz3nYH0da0onHSSDtvhoRe1VgvOAjIUCdu2Fz4TGbWnaDnlm6X9Heht6T_hlF7m4lkwDpW718gtXGHvdMRYF9OvlqO0gIUtIrIBRVxMjbhMv14" />
+                                        </div>
+                                        <span
+                                            class="font-title-md text-primary font-bold hover:underline cursor-pointer">Stellar
+                                            Ventures</span>
+                                    </div>
+                                </td>
+                                <td class="px-lg py-md">
+                                    <span
+                                        class="inline-flex items-center gap-xs px-sm py-xs bg-amber-100 text-amber-800 rounded-full text-label-sm font-bold">
+                                        <span class="w-2 h-2 rounded-full bg-amber-500"></span> Pending
+                                    </span>
+                                </td>
+                                <td class="px-lg py-md text-body-md text-on-surface-variant">Pro</td>
+                                <td class="px-lg py-md text-body-md text-on-surface-variant font-code">2024-01-05</td>
+                                <td class="px-lg py-md">
+                                    <div class="flex items-center gap-xs">
+                                        <div
+                                            class="w-6 h-6 rounded-full bg-tertiary-fixed border border-tertiary-container flex items-center justify-center text-[10px] font-bold text-on-tertiary-fixed">
+                                            SM</div>
+                                        <span class="text-body-md">Sarah Miller</span>
+                                    </div>
+                                </td>
+                                <td class="px-lg py-md text-right">
+                                    <div class="flex items-center justify-end gap-sm">
+                                        <button
+                                            class="p-sm text-secondary hover:text-primary hover:bg-primary-fixed rounded-lg"><span
+                                                class="material-symbols-outlined"
+                                                data-icon="inventory">inventory</span></button>
+                                        <button
+                                            class="p-sm text-secondary hover:text-primary hover:bg-primary-fixed rounded-lg"><span
+                                                class="material-symbols-outlined"
+                                                data-icon="palette">palette</span></button>
+                                        <button
+                                            class="p-sm text-secondary hover:text-primary hover:bg-primary-fixed rounded-lg"><span
+                                                class="material-symbols-outlined"
+                                                data-icon="bar_chart">bar_chart</span></button>
+                                        <button
+                                            class="p-sm text-secondary hover:text-on-surface hover:bg-surface-variant rounded-lg"><span
+                                                class="material-symbols-outlined"
+                                                data-icon="more_vert">more_vert</span></button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-surface-container-low transition-colors group">
+                                <td class="px-lg py-md">
+                                    <div class="flex items-center gap-md">
+                                        <div
+                                            class="w-10 h-10 rounded-lg bg-surface-variant flex items-center justify-center border border-outline-variant overflow-hidden">
+                                            <img alt="TechX" class="w-full h-full object-cover"
+                                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBtgyD9bySUE_tU-ex3QI_d5czuqXxOT4eQFDVZWRGsd3w9yv6FNziL5dEsn2j-kafh_57ScuojGw7cZJUrIN079TSo7M7A5utlOZ31V0HToNaeDzEvCJV93uVXi9JTODV8KYYkD22gaJUAhEdEx6TrVnwtS_I1c2yXGFpCLj7zu9o0C2VrZGp-Ip6SsFPkVMEJEAV3lrYR8_O-14EnTt5BzMpY3JjPJ0ll7NqqVlJIk5_1UbB9t_I9IHj-6t1ViYmZSIT32EKuX7o" />
+                                        </div>
+                                        <span
+                                            class="font-title-md text-primary font-bold hover:underline cursor-pointer">TechX
+                                            Systems</span>
+                                    </div>
+                                </td>
+                                <td class="px-lg py-md">
+                                    <span
+                                        class="inline-flex items-center gap-xs px-sm py-xs bg-red-100 text-red-800 rounded-full text-label-sm font-bold">
+                                        <span class="w-2 h-2 rounded-full bg-red-500"></span> Suspended
+                                    </span>
+                                </td>
+                                <td class="px-lg py-md text-body-md text-on-surface-variant">Starter</td>
+                                <td class="px-lg py-md text-body-md text-on-surface-variant font-code">2023-05-18</td>
+                                <td class="px-lg py-md">
+                                    <div class="flex items-center gap-xs">
+                                        <div
+                                            class="w-6 h-6 rounded-full bg-surface-dim border border-outline flex items-center justify-center text-[10px] font-bold">
+                                            AK</div>
+                                        <span class="text-body-md">Alex Kim</span>
+                                    </div>
+                                </td>
+                                <td class="px-lg py-md text-right">
+                                    <div class="flex items-center justify-end gap-sm">
+                                        <button
+                                            class="p-sm text-secondary hover:text-primary hover:bg-primary-fixed rounded-lg"><span
+                                                class="material-symbols-outlined"
+                                                data-icon="inventory">inventory</span></button>
+                                        <button
+                                            class="p-sm text-secondary hover:text-primary hover:bg-primary-fixed rounded-lg"><span
+                                                class="material-symbols-outlined"
+                                                data-icon="palette">palette</span></button>
+                                        <button
+                                            class="p-sm text-secondary hover:text-primary hover:bg-primary-fixed rounded-lg"><span
+                                                class="material-symbols-outlined"
+                                                data-icon="bar_chart">bar_chart</span></button>
+                                        <button
+                                            class="p-sm text-secondary hover:text-on-surface hover:bg-surface-variant rounded-lg"><span
+                                                class="material-symbols-outlined"
+                                                data-icon="more_vert">more_vert</span></button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-surface-container-low transition-colors group border-b-0">
+                                <td class="px-lg py-md">
+                                    <div class="flex items-center gap-md">
+                                        <div
+                                            class="w-10 h-10 rounded-lg bg-surface-variant flex items-center justify-center border border-outline-variant overflow-hidden">
+                                            <img alt="Hyperion" class="w-full h-full object-cover"
+                                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuAftqpkJRUzAq-9xJnXx_lIyp15sv4zeL7-2sSXqpcmbTccnZNBnLv4tE1c0v-gKSQuN3FED26vXlWj2CFALmYgWLxVzMQbJga86D7Blw1zaCaRND9NwcN4KkMb6tzUD25hTtGJxRCpLfDU5z64cdbKf7qOrwahdTzNhMa-BcaN94PJeoW6hBEL6oga5xQl5e5Z74qBGG1TZNMXAYTJylgeroe-NG96SVBu_QbNlAtv2yv9dFeIJPITmTRCjjauwPylCjyvfYviJ30" />
+                                        </div>
+                                        <span
+                                            class="font-title-md text-primary font-bold hover:underline cursor-pointer">Hyperion
+                                            Data</span>
+                                    </div>
+                                </td>
+                                <td class="px-lg py-md">
+                                    <span
+                                        class="inline-flex items-center gap-xs px-sm py-xs bg-green-100 text-green-800 rounded-full text-label-sm font-bold">
+                                        <span class="w-2 h-2 rounded-full bg-green-500"></span> Active
+                                    </span>
+                                </td>
+                                <td class="px-lg py-md text-body-md text-on-surface-variant">Enterprise</td>
+                                <td class="px-lg py-md text-body-md text-on-surface-variant font-code">2023-11-30</td>
+                                <td class="px-lg py-md">
+                                    <div class="flex items-center gap-xs">
+                                        <div
+                                            class="w-6 h-6 rounded-full bg-primary-fixed border border-primary-container flex items-center justify-center text-[10px] font-bold text-on-primary-fixed">
+                                            LW</div>
+                                        <span class="text-body-md">Lisa Wang</span>
+                                    </div>
+                                </td>
+                                <td class="px-lg py-md text-right">
+                                    <div class="flex items-center justify-end gap-sm">
+                                        <button
+                                            class="p-sm text-secondary hover:text-primary hover:bg-primary-fixed rounded-lg"><span
+                                                class="material-symbols-outlined"
+                                                data-icon="inventory">inventory</span></button>
+                                        <button
+                                            class="p-sm text-secondary hover:text-primary hover:bg-primary-fixed rounded-lg"><span
+                                                class="material-symbols-outlined"
+                                                data-icon="palette">palette</span></button>
+                                        <button
+                                            class="p-sm text-secondary hover:text-primary hover:bg-primary-fixed rounded-lg"><span
+                                                class="material-symbols-outlined"
+                                                data-icon="bar_chart">bar_chart</span></button>
+                                        <button
+                                            class="p-sm text-secondary hover:text-on-surface hover:bg-surface-variant rounded-lg"><span
+                                                class="material-symbols-outlined"
+                                                data-icon="more_vert">more_vert</span></button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div
+                    class="p-md bg-surface-container-low/50 flex items-center justify-between border-t border-outline-variant">
+                    <p class="text-label-md text-on-surface-variant">Showing 1 to 4 of 1,284 tenants</p>
+                    <div class="flex items-center gap-sm">
+                        <button
+                            class="p-sm border border-outline-variant rounded-lg bg-surface-container-lowest hover:bg-surface-variant transition-colors disabled:opacity-50"
+                            disabled="">
+                            <span class="material-symbols-outlined" data-icon="chevron_left">chevron_left</span>
+                        </button>
+                        <div class="flex items-center gap-xs">
+                            <button
+                                class="w-8 h-8 rounded-lg bg-primary text-on-primary font-bold text-label-md">1</button>
+                            <button
+                                class="w-8 h-8 rounded-lg hover:bg-surface-variant text-on-surface text-label-md transition-colors">2</button>
+                            <button
+                                class="w-8 h-8 rounded-lg hover:bg-surface-variant text-on-surface text-label-md transition-colors">3</button>
+                            <span class="px-sm text-on-surface-variant">...</span>
+                            <button
+                                class="w-8 h-8 rounded-lg hover:bg-surface-variant text-on-surface text-label-md transition-colors">321</button>
+                        </div>
+                        <button
+                            class="p-sm border border-outline-variant rounded-lg bg-surface-container-lowest hover:bg-surface-variant transition-colors">
+                            <span class="material-symbols-outlined" data-icon="chevron_right">chevron_right</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <!-- Footer / System Meta -->
+            <footer
+                class="mt-xl pt-lg border-t border-outline-variant flex flex-col md:flex-row items-center justify-between text-label-md text-on-surface-variant gap-md">
+                <div class="flex items-center gap-xl">
+                    <span class="">© 2024 Stitch Enterprise Console</span>
+                    <a class="hover:text-primary" href="#">Privacy Policy</a>
+                    <a class="hover:text-primary" href="#">Service Terms</a>
+                </div>
+                <div class="flex items-center gap-md">
+                    <span class="flex items-center gap-xs">
+                        <span class="w-2 h-2 rounded-full bg-green-500"></span>
+                        API: Stable
+                    </span>
+                    <span class="flex items-center gap-xs">
+                        <span class="w-2 h-2 rounded-full bg-green-500"></span>
+                        Core Engine: Active
+                    </span>
+                    <span class="ml-lg font-code">v2.4.12-build.88</span>
+                </div>
+            </footer>
+        </div>
+    </main>
+    <script>
+        // Micro-interaction for Density Toggle
+        const densityToggle = document.getElementById('density-toggle');
+        const tenantTable = document.getElementById('tenant-table');
+        let isCompact = false;
+
+        densityToggle.addEventListener('click', () => {
+            isCompact = !isCompact;
+            const cells = tenantTable.querySelectorAll('th, td');
+
+            cells.forEach(cell => {
+                if (isCompact) {
+                    cell.classList.remove('py-md');
+                    cell.classList.add('py-sm');
+                } else {
+                    cell.classList.remove('py-sm');
+                    cell.classList.add('py-md');
+                }
+            });
+
+            densityToggle.querySelector('span').innerText = isCompact ? 'density_small' : 'density_medium';
+        });
+
+        // Hover Effect on Stats
+        const statsCards = document.querySelectorAll('.md\\:col-span-4');
+        statsCards.forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-2px)';
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0px)';
+            });
+        });
+    </script>
+</body>
+
+</html>

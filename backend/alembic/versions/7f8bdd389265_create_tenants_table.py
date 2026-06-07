@@ -35,7 +35,7 @@ def upgrade() -> None:
         sa.Column("font_family", sa.String(length=100), nullable=True),
         sa.Column("font_weight", sa.String(length=20), nullable=True),
         sa.Column("domain", sa.String(length=255), nullable=True),
-        sa.Column("products", sa.JSON(), server_default="[]", nullable=False),
+        sa.Column("products", sa.Text(), nullable=False),
         sa.Column("created_at", sa.DateTime(), server_default=sa.text("CURRENT_TIMESTAMP"), nullable=False),
         sa.Column("updated_at", sa.DateTime(), server_default=sa.text("CURRENT_TIMESTAMP"), nullable=False),
         sa.PrimaryKeyConstraint("id"),

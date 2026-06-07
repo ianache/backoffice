@@ -9,10 +9,26 @@ Usage:
 """
 import time
 import httpx
+from fastapi import HTTPException
 from app.config import settings
 
 _admin_token: str | None = None
 _token_expiry: float = 0.0
+
+
+async def _safe_request(func, *args, **kwargs) -> httpx.Response:
+    """Wrap httpx request to handle connection errors and timeouts gracefully."""
+    try:
+        return await func(*args, **kwargs)
+    except httpx.TimeoutException:
+        raise HTTPException(status_code=504, detail="Keycloak connection timed out")
+    except httpx.HTTPStatusError as e:
+        raise HTTPException(
+            status_code=502,
+            detail=f"Keycloak service error: {e.response.status_code} - {e.response.text}"
+        )
+    except httpx.RequestError as e:
+        raise HTTPException(status_code=502, detail=f"Keycloak service communication failed: {str(e)}")
 
 
 async def _get_admin_token() -> str:
@@ -21,19 +37,25 @@ async def _get_admin_token() -> str:
     now = time.time()
     if _admin_token and _token_expiry - now > 30:
         return _admin_token
-    async with httpx.AsyncClient() as client:
-        resp = await client.post(
-            f"{settings.keycloak_url}/realms/{settings.keycloak_realm}/protocol/openid-connect/token",
-            data={
-                "grant_type": "client_credentials",
-                "client_id": settings.keycloak_admin_client_id,
-                "client_secret": settings.keycloak_admin_client_secret,
-            },
-        )
-        resp.raise_for_status()
-        data = resp.json()
-        _admin_token = data["access_token"]
-        _token_expiry = now + data["expires_in"]
+
+    async def _token_request():
+        async with httpx.AsyncClient() as client:
+            resp = await client.post(
+                f"{settings.keycloak_url}/realms/{settings.keycloak_realm}/protocol/openid-connect/token",
+                data={
+                    "grant_type": "client_credentials",
+                    "client_id": settings.keycloak_admin_client_id,
+                    "client_secret": settings.keycloak_admin_client_secret,
+                },
+                timeout=10.0
+            )
+            resp.raise_for_status()
+            return resp
+
+    resp = await _safe_request(_token_request)
+    data = resp.json()
+    _admin_token = data["access_token"]
+    _token_expiry = now + data["expires_in"]
     return _admin_token
 
 
@@ -43,58 +65,74 @@ def _kc_base() -> str:
 
 async def kcAdminGet(path: str, **kwargs) -> httpx.Response:
     token = await _get_admin_token()
-    async with httpx.AsyncClient() as client:
-        return await client.get(
-            _kc_base() + path,
-            headers={"Authorization": f"Bearer {token}"},
-            **kwargs,
-        )
+    async def _do_get():
+        async with httpx.AsyncClient() as client:
+            return await client.get(
+                _kc_base() + path,
+                headers={"Authorization": f"Bearer {token}"},
+                timeout=10.0,
+                **kwargs,
+            )
+    return await _safe_request(_do_get)
 
 
 async def kcAdminPost(path: str, **kwargs) -> httpx.Response:
     token = await _get_admin_token()
-    async with httpx.AsyncClient() as client:
-        return await client.post(
-            _kc_base() + path,
-            headers={
-                "Authorization": f"Bearer {token}",
-                "Content-Type": "application/json",
-            },
-            **kwargs,
-        )
+    async def _do_post():
+        async with httpx.AsyncClient() as client:
+            return await client.post(
+                _kc_base() + path,
+                headers={
+                    "Authorization": f"Bearer {token}",
+                    "Content-Type": "application/json",
+                },
+                timeout=10.0,
+                **kwargs,
+            )
+    return await _safe_request(_do_post)
 
 
 async def kcAdminPut(path: str, **kwargs) -> httpx.Response:
     token = await _get_admin_token()
-    async with httpx.AsyncClient() as client:
-        return await client.put(
-            _kc_base() + path,
-            headers={
-                "Authorization": f"Bearer {token}",
-                "Content-Type": "application/json",
-            },
-            **kwargs,
-        )
+    async def _do_put():
+        async with httpx.AsyncClient() as client:
+            return await client.put(
+                _kc_base() + path,
+                headers={
+                    "Authorization": f"Bearer {token}",
+                    "Content-Type": "application/json",
+                },
+                timeout=10.0,
+                **kwargs,
+            )
+    return await _safe_request(_do_put)
 
 
 async def kcAdminPatch(path: str, **kwargs) -> httpx.Response:
     token = await _get_admin_token()
-    async with httpx.AsyncClient() as client:
-        return await client.patch(
-            _kc_base() + path,
-            headers={
-                "Authorization": f"Bearer {token}",
-                "Content-Type": "application/json",
-            },
-            **kwargs,
-        )
+    async def _do_patch():
+        async with httpx.AsyncClient() as client:
+            return await client.patch(
+                _kc_base() + path,
+                headers={
+                    "Authorization": f"Bearer {token}",
+                    "Content-Type": "application/json",
+                },
+                timeout=10.0,
+                **kwargs,
+            )
+    return await _safe_request(_do_patch)
 
 
 async def kcAdminDelete(path: str, **kwargs) -> httpx.Response:
     token = await _get_admin_token()
-    async with httpx.AsyncClient() as client:
-        return await client.delete(
-            _kc_base() + path,
-            headers={"Authorization": f"Bearer {token}"},
-            **kwargs,
-        )
+    async def _do_delete():
+        async with httpx.AsyncClient() as client:
+            return await client.delete(
+                _kc_base() + path,
+                headers={"Authorization": f"Bearer {token}"},
+                timeout=10.0,
+                **kwargs,
+            )
+    return await _safe_request(_do_delete)
+

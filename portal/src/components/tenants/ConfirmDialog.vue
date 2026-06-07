@@ -46,7 +46,7 @@ const emit = defineEmits(['confirm', 'cancel'])
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5);
+  background: var(--scrim);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -54,12 +54,14 @@ const emit = defineEmits(['confirm', 'cancel'])
 }
 
 .modal-content {
-  background: white;
+  background: var(--surface-container-lowest);
+  color: var(--on-surface);
   padding: 1.5rem;
-  border-radius: 8px;
+  border-radius: var(--rounded-lg);
   width: 100%;
   max-width: 400px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--elevation-dialog);
+  border: 1px solid var(--outline-variant);
 }
 
 .modal-header h3 {
@@ -83,24 +85,40 @@ const emit = defineEmits(['confirm', 'cancel'])
 
 .btn {
   padding: 0.5rem 1rem;
-  border-radius: 4px;
+  border-radius: var(--rounded);
   cursor: pointer;
   border: 1px solid transparent;
   font-weight: 500;
+  font-family: var(--font-family-sans);
+  font-size: 0.875rem;
+  transition: filter 0.15s;
 }
 
 .btn-secondary {
-  background: #f3f4f6;
-  border-color: #d1d5db;
+  background: var(--surface-container-high);
+  border-color: var(--outline-variant);
+  color: var(--on-surface);
+}
+
+.btn-secondary:hover {
+  filter: brightness(0.95);
 }
 
 .btn-primary {
-  background: #2563eb;
-  color: white;
+  background: var(--primary);
+  color: var(--on-primary);
+}
+
+.btn-primary:hover {
+  filter: brightness(1.08);
 }
 
 .btn-danger {
-  background: #dc2626;
-  color: white;
+  background: var(--error);
+  color: var(--on-error);
+}
+
+.btn-danger:hover {
+  filter: brightness(1.08);
 }
 </style>

@@ -33,14 +33,14 @@ const updateField = (field: keyof UserPayload, value: string) => {
     <StitchTextField
       label="First name"
       :required="true"
-      :modelValue="form.firstName ?? ''"
-      @update:modelValue="updateField('firstName', $event as string)"
+      :modelValue="form.first_name ?? ''"
+      @update:modelValue="updateField('first_name', $event as string)"
     />
     <StitchTextField
       label="Last name"
       :required="true"
-      :modelValue="form.lastName ?? ''"
-      @update:modelValue="updateField('lastName', $event as string)"
+      :modelValue="form.last_name ?? ''"
+      @update:modelValue="updateField('last_name', $event as string)"
     />
   </div>
 </template>

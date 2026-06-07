@@ -160,6 +160,8 @@ async def create_user(
         "attributes": {"tenant_id": [tenant_id]},
     }
     resp = await kcAdminPost("/users", json=body)
+    if resp.status_code == 409:
+        raise HTTPException(status_code=409, detail="User already exists with this email")
     if resp.status_code != 201:
         detail = resp.text or "Failed to create user in Keycloak"
         raise HTTPException(status_code=502, detail=detail)
@@ -231,6 +233,8 @@ async def update_user(
 
     if update_body:
         put_resp = await kcAdminPut(f"/users/{user_id}", json=update_body)
+        if put_resp.status_code == 409:
+            raise HTTPException(status_code=409, detail="User already exists with this email")
         if put_resp.status_code not in (200, 204):
             raise HTTPException(status_code=502, detail="Failed to update user in Keycloak")
 

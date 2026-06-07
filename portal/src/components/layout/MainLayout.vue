@@ -141,10 +141,16 @@
           <span class="text-sm">WhiteLabels</span>
         </button>
 
-        <!-- Feature Flags (placeholder) -->
+        <!-- Feature Flags — PlatformAdmin, TenantAdmin, TenantOwner, ProductManager -->
         <button
-          class="w-full flex items-center gap-4 px-4 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all duration-200 text-left cursor-not-allowed opacity-70"
-          disabled
+          v-if="authStore.hasRole('PlatformAdmin') || authStore.hasRole('TenantAdmin') || authStore.hasRole('TenantOwner') || authStore.hasRole('ProductManager')"
+          @click="router.push('/flags')"
+          :class="[
+            'w-full flex items-center gap-4 px-4 py-2 rounded-lg transition-all duration-200 text-left',
+            isActive('/flags')
+              ? 'bg-primary text-on-primary font-semibold'
+              : 'text-on-surface-variant hover:bg-surface-container-high'
+          ]"
         >
           <span class="material-symbols-outlined text-[22px]">toggle_on</span>
           <span class="text-sm">Feature Flags</span>

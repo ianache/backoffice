@@ -26,3 +26,8 @@ import '@material/web/chips/assist-chip.js';
 import '@material/web/chips/filter-chip.js';
 import '@material/web/chips/input-chip.js';
 import '@material/web/chips/suggestion-chip.js';
+
+/* Labs */
+import '@material/web/labs/navigationtab/navigation-tab.js';
+import '@material/web/labs/navigationbar/navigation-bar.js';
+import '@material/web/labs/navigationdrawer/navigation-drawer.js';

@@ -23,9 +23,9 @@ See: .planning/PROJECT.md (updated 2026-06-06)
 ## Current Position
 
 Phase: 04-feature-flags IN PROGRESS
-Plan: 04 COMPLETE — Portal flags service (flagsService) and Pinia store (useFeatureFlagsStore)
-Status: Phase 4 Plan 4/5 — Portal data layer (flags.ts service + flags.ts store)
-Last activity: 2026-06-07 — Phase 04 Plan 04 complete (2 files: services/flags.ts + stores/flags.ts created)
+Plan: 05 IN PROGRESS — Feature Flags UI (FlagsView, FlagTable, FlagDrawer, FlagForm)
+Status: Phase 4 Plan 5/5 — Feature Flags UI — paused at human-verify checkpoint
+Last activity: 2026-06-07 — Tasks 1+2 complete (7 files created/modified), awaiting E2E verification
 
 Progress: [████████░░] 80% (of phase 04 plans) | [████████████████] 67% (of total roadmap)
 
@@ -135,5 +135,5 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-06-07
-Stopped at: Completed 04-04-PLAN.md — Portal flags service (flagsService) and Pinia store (useFeatureFlagsStore)
+Stopped at: Checkpoint (human-verify) Task 3 in 04-05-PLAN.md — Tasks 1 and 2 complete, awaiting E2E UI verification
 Resume file: None

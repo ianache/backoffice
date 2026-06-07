@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { useAuthStore } from './stores/auth'
+import { useUIStore } from './stores/ui'
 
 const authStore = useAuthStore()
+const uiStore = useUIStore()
 </script>
 
 <template>
@@ -12,7 +14,14 @@ const authStore = useAuthStore()
         <router-link v-if="authStore.hasRole('PlatformAdmin')" to="/tenants">Tenants</router-link>
       </div>
       <div class="user-info">
-        <span>{{ authStore.username }}</span>
+        <button 
+          @click="uiStore.toggleTheme()" 
+          class="theme-toggle" 
+          :title="`Switch to ${uiStore.theme === 'light' ? 'dark' : 'light'} mode`"
+        >
+          {{ uiStore.theme === 'light' ? '🌙' : '☀️' }}
+        </button>
+        <span>{{ authStore.user?.name || authStore.user?.email }}</span>
         <button @click="authStore.logout()">Logout</button>
       </div>
     </nav>
@@ -23,10 +32,13 @@ const authStore = useAuthStore()
 </template>
 
 <style>
+/* Base styles updated to use tokens from theme.css */
 body {
   margin: 0;
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  background-color: #f3f4f6;
+  font-family: var(--font-family-sans);
+  background-color: var(--background);
+  color: var(--on-background);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .main-nav {
@@ -34,7 +46,8 @@ body {
   justify-content: space-between;
   align-items: center;
   padding: 1rem 2rem;
-  background-color: white;
+  background-color: var(--surface-container-lowest);
+  border-bottom: 1px solid var(--outline-variant);
   box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
@@ -45,12 +58,12 @@ body {
 
 .nav-links a {
   text-decoration: none;
-  color: #4b5563;
+  color: var(--on-surface-variant);
   font-weight: 500;
 }
 
 .nav-links a.router-link-active {
-  color: #2563eb;
+  color: var(--primary);
 }
 
 .user-info {
@@ -61,15 +74,33 @@ body {
 
 .user-info span {
   font-size: 0.875rem;
-  color: #6b7280;
+  color: var(--on-surface-variant);
+}
+
+.theme-toggle {
+  background: none;
+  border: none;
+  font-size: 1.25rem;
+  padding: 0.25rem;
+  min-width: auto;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 button {
   padding: 0.5rem 1rem;
-  border-radius: 4px;
-  border: 1px solid #d1d5db;
-  background: white;
+  border-radius: var(--rounded);
+  border: 1px solid var(--outline);
+  background: var(--surface-container-low);
+  color: var(--on-surface);
   cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+button:hover {
+  background: var(--surface-container);
 }
 
 main {

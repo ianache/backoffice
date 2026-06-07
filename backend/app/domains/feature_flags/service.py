@@ -4,7 +4,7 @@ from typing import Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
-from .models import FeatureFlag, Segment
+from .models import FeatureFlag, Segment, FlagSegment
 from .schemas import FlagCreate, FlagUpdate, SegmentCreate
 
 
@@ -224,3 +224,50 @@ async def delete_segment(db: AsyncSession, segment_id: int) -> bool:
     await db.delete(segment)
     await db.commit()
     return True
+
+
+# ---------------------------------------------------------------------------
+# Flag-Segment Association
+# ---------------------------------------------------------------------------
+
+async def add_segment_to_flag(
+    db: AsyncSession,
+    flag_id: int,
+    segment_id: int,
+) -> Optional[Segment]:
+    """Link a segment to a flag via the flag_segments join table.
+
+    Returns the Segment object on success (idempotent — returns it even if already linked).
+    Returns None if flag or segment does not exist.
+    """
+    flag = await get_flag(db, flag_id)
+    segment = await get_segment(db, segment_id)
+    if not flag or not segment:
+        return None
+    # Check for existing link to avoid duplicate PK conflict
+    existing = await db.execute(
+        select(FlagSegment).where(
+            FlagSegment.flag_id == flag_id,
+            FlagSegment.segment_id == segment_id,
+        )
+    )
+    if existing.scalar_one_or_none():
+        return segment  # Already linked — idempotent
+    link = FlagSegment(flag_id=flag_id, segment_id=segment_id)
+    db.add(link)
+    await db.commit()
+    return segment
+
+
+async def get_flag_segments(
+    db: AsyncSession,
+    flag_id: int,
+) -> list[Segment]:
+    """Return all segments linked to the given flag."""
+    stmt = (
+        select(Segment)
+        .join(FlagSegment, FlagSegment.segment_id == Segment.id)
+        .where(FlagSegment.flag_id == flag_id)
+    )
+    result = await db.execute(stmt)
+    return list(result.scalars().all())

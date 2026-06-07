@@ -1,5 +1,6 @@
 from typing import Optional
 from fastapi import APIRouter, Depends, Header, HTTPException, Query, status
+from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.dependencies import get_db, verify_internal_secret
@@ -122,12 +123,39 @@ async def disable_flag(
     return FlagResponse.model_validate(flag)
 
 
+class FlagSegmentCreate(BaseModel):
+    segment_id: int
+
+
+@router.post("/{flag_id}/segments", response_model=SegmentResponse, status_code=201)
+async def add_segment_to_flag(
+    flag_id: int,
+    payload: FlagSegmentCreate,
+    x_user_roles: str = Header(...),
+    db: AsyncSession = Depends(get_db),
+):
+    result = await service.add_segment_to_flag(db, flag_id, payload.segment_id)
+    if result is None:
+        raise HTTPException(status_code=404, detail="Flag or segment not found")
+    return SegmentResponse.model_validate(result)
+
+
+@router.get("/{flag_id}/segments", response_model=list[SegmentResponse])
+async def get_flag_segments(
+    flag_id: int,
+    x_user_roles: str = Header(...),
+    db: AsyncSession = Depends(get_db),
+):
+    segments = await service.get_flag_segments(db, flag_id)
+    return [SegmentResponse.model_validate(s) for s in segments]
+
+
 # ---------------------------------------------------------------------------
 # Segments Router
 # ---------------------------------------------------------------------------
 
 segments_router = APIRouter(
-    prefix="/segments",
+    prefix="/flags/segments",
     tags=["segments"],
     dependencies=[Depends(verify_internal_secret)],
 )

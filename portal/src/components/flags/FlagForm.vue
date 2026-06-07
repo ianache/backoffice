@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import type { FeatureFlag, FlagPayload } from '../../services/flags'
+import type { FeatureFlag, FlagPayload, Segment } from '../../services/flags'
+import SegmentPicker from './SegmentPicker.vue'
 
 const props = defineProps<{
   flag?: FeatureFlag | null
+  segments?: Segment[]
+  linkedSegmentIds?: number[]
 }>()
 
 const emit = defineEmits<{
@@ -20,6 +23,7 @@ const complex = ref(false)
 const ttlDays = ref<number | null>(null)
 const tagsRaw = ref('')
 const rulesRaw = ref('')
+const selectedSegmentIds = ref<number[]>([])
 
 const errors = ref<{ name?: string; scope?: string; rules?: string }>({})
 
@@ -36,6 +40,7 @@ watch(
       ttlDays.value = flag.ttl
       tagsRaw.value = flag.tags.join(', ')
       rulesRaw.value = flag.rules.length ? JSON.stringify(flag.rules, null, 2) : ''
+      selectedSegmentIds.value = props.linkedSegmentIds ?? []
     } else {
       name.value = ''
       scope.value = ''
@@ -45,6 +50,7 @@ watch(
       ttlDays.value = null
       tagsRaw.value = ''
       rulesRaw.value = ''
+      selectedSegmentIds.value = []
     }
     errors.value = {}
   },
@@ -100,7 +106,7 @@ function handleSave() {
   emit('save', payload)
 }
 
-defineExpose({ handleSave })
+defineExpose({ handleSave, selectedSegmentIds })
 </script>
 
 <template>
@@ -194,6 +200,16 @@ defineExpose({ handleSave })
         placeholder="comma-separated: auth, payments, beta"
       />
       <span class="form-hint">Separate tags with commas</span>
+    </div>
+
+    <!-- Segments (FLAG-06) -->
+    <div class="form-field">
+      <label class="form-label">Segments</label>
+      <SegmentPicker
+        :segments="props.segments ?? []"
+        v-model="selectedSegmentIds"
+      />
+      <span class="form-hint">Users in selected segments will see this flag as enabled.</span>
     </div>
 
     <!-- Rules (JSON) -->

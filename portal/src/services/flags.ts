@@ -104,3 +104,13 @@ export async function createSegment(payload: SegmentPayload): Promise<Segment> {
   const { data } = await api.post('/flags/segments/', payload)
   return data
 }
+
+export async function addSegmentToFlag(flagId: number, segmentId: number): Promise<Segment> {
+  const { data } = await api.post(`/flags/${flagId}/segments`, { segment_id: segmentId })
+  return data
+}
+
+export async function getSegmentsByFlag(flagId: number): Promise<Segment[]> {
+  const { data } = await api.get(`/flags/${flagId}/segments`)
+  return data
+}

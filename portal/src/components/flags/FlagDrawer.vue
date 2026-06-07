@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import type { FeatureFlag, FlagPayload } from '../../services/flags'
+import { getSegmentsByFlag, addSegmentToFlag } from '../../services/flags'
+import { useFeatureFlagsStore } from '../../stores/flags'
 import FlagForm from './FlagForm.vue'
 import StitchButton from '../ui/StitchButton.vue'
 
@@ -11,24 +13,50 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   close: []
-  save: [payload: FlagPayload]
+  saved: [flag: FeatureFlag]
 }>()
+
+const flagsStore = useFeatureFlagsStore()
 
 // Key to force FlagForm to remount when drawer opens with a new flag
 const formKey = ref(0)
 const flagFormRef = ref<InstanceType<typeof FlagForm> | null>(null)
+const linkedSegmentIds = ref<number[]>([])
 
 watch(
   () => props.show,
-  (isShowing) => {
+  async (isShowing) => {
     if (isShowing) {
       formKey.value++
+      await flagsStore.fetchSegments()
+      if (props.flag?.id) {
+        const linked = await getSegmentsByFlag(props.flag.id)
+        linkedSegmentIds.value = linked.map(s => s.id)
+      } else {
+        linkedSegmentIds.value = []
+      }
     }
   }
 )
 
-function handleSave(payload: FlagPayload) {
-  emit('save', payload)
+async function handleSave(payload: FlagPayload) {
+  try {
+    let savedFlag: FeatureFlag
+    if (props.flag) {
+      savedFlag = await flagsStore.updateFlag(props.flag.id, payload)
+    } else {
+      savedFlag = await flagsStore.createFlag(payload)
+    }
+    // Link selected segments to the saved flag (FLAG-06)
+    const selectedIds = flagFormRef.value?.selectedSegmentIds ?? []
+    for (const segmentId of selectedIds) {
+      await addSegmentToFlag(savedFlag.id, segmentId)
+    }
+    emit('saved', savedFlag)
+    emit('close')
+  } catch (err: any) {
+    console.error('Save flag failed:', err)
+  }
 }
 
 function triggerSave() {
@@ -73,6 +101,8 @@ function triggerSave() {
               ref="flagFormRef"
               :key="formKey"
               :flag="flag"
+              :segments="flagsStore.segments"
+              :linked-segment-ids="linkedSegmentIds"
               @save="handleSave"
               @cancel="emit('close')"
             />

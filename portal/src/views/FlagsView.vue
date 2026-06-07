@@ -2,7 +2,7 @@
 import { ref, onMounted } from 'vue'
 import { useFeatureFlagsStore } from '../stores/flags'
 import { useToastStore, extractErrorMessage } from '../stores/toast'
-import type { FeatureFlag, FlagPayload } from '../services/flags'
+import type { FeatureFlag } from '../services/flags'
 import FlagTable from '../components/flags/FlagTable.vue'
 import FlagDrawer from '../components/flags/FlagDrawer.vue'
 import ConfirmDialog from '../components/tenants/ConfirmDialog.vue'
@@ -37,19 +37,10 @@ const openEditDrawer = (flag: FeatureFlag) => {
   showDrawer.value = true
 }
 
-const handleSave = async (payload: FlagPayload) => {
-  try {
-    if (selectedFlag.value) {
-      await flagsStore.updateFlag(selectedFlag.value.id, payload)
-      toast.success('Feature flag updated successfully')
-    } else {
-      await flagsStore.createFlag(payload)
-      toast.success('Feature flag created successfully')
-    }
-    showDrawer.value = false
-  } catch (err: any) {
-    toast.error(extractErrorMessage(err))
-  }
+const handleSaved = (flag: FeatureFlag) => {
+  const isEdit = !!selectedFlag.value
+  toast.success(isEdit ? 'Feature flag updated successfully' : 'Feature flag created successfully')
+  showDrawer.value = false
 }
 
 const handleDisable = (flag: FeatureFlag) => {
@@ -143,7 +134,7 @@ const handlePromote = (flag: FeatureFlag) => {
       :show="showDrawer"
       :flag="selectedFlag"
       @close="showDrawer = false"
-      @save="handleSave"
+      @saved="handleSaved"
     />
 
     <!-- Confirm Dialog -->

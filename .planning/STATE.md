@@ -84,6 +84,7 @@ Recent decisions affecting current work:
 - Plan Phase 3: User Management (USER-01 through USER-06)
 - Verify BFF port 3000 is free before starting (Dashboard Studio may occupy it)
 - [ui-brand] Apply Google Stitch System Design
+- [ui-brand] Implement Light and Dark Mode Toggle
 
 ### Blockers/Concerns
 

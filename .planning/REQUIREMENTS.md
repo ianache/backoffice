@@ -9,12 +9,13 @@ Requirements para la Fase 1 (Tenants + Usuarios + Feature Flags). Cada uno mapea
 
 ### Tenant Management
 
-- [ ] **TNNT-01**: PlatformAdmin puede crear un tenant con name, country, default_language, default_currency, default_units y status
-- [ ] **TNNT-02**: PlatformAdmin puede editar los datos de un tenant existente
-- [ ] **TNNT-03**: PlatformAdmin puede suspender y eliminar tenants
-- [ ] **TNNT-04**: PlatformAdmin puede configurar el whitelabel básico del tenant (logo, colores, tipografía, dominio)
-- [ ] **TNNT-05**: PlatformAdmin puede asociar y deshabilitar productos en un tenant
-- [ ] **TNNT-06**: PlatformAdmin puede buscar y filtrar la lista de tenants por estado, país y atributos clave
+- [x] **TNNT-01**: PlatformAdmin puede crear un tenant con name, country, default_language, default_currency, default_units y status
+- [x] **TNNT-02**: PlatformAdmin puede editar los datos de un tenant existente
+- [x] **TNNT-03**: PlatformAdmin puede suspender y eliminar tenants
+- [x] **TNNT-04**: PlatformAdmin puede configurar el whitelabel básico del tenant (logo, colores, tipografía, dominio)
+- [x] **TNNT-05**: PlatformAdmin puede asociar y deshabilitar productos en un tenant
+- [x] **TNNT-06**: PlatformAdmin puede buscar y filtrar la lista de tenants por estado, país y atributos clave
+
 
 ### User Management
 
@@ -97,12 +98,12 @@ Cual fase cubre cuáles requerimientos. Actualizado durante creación del roadma
 | AUTH-01 | Phase 1 | Complete |
 | AUTH-02 | Phase 1 | Complete |
 | AUTH-03 | Phase 1 | Complete |
-| TNNT-01 | Phase 2 | Pending |
-| TNNT-02 | Phase 2 | Pending |
-| TNNT-03 | Phase 2 | Pending |
-| TNNT-04 | Phase 2 | Pending |
-| TNNT-05 | Phase 2 | Pending |
-| TNNT-06 | Phase 2 | Pending |
+| TNNT-01 | Phase 2 | Complete |
+| TNNT-02 | Phase 2 | Complete |
+| TNNT-03 | Phase 2 | Complete |
+| TNNT-04 | Phase 2 | Complete |
+| TNNT-05 | Phase 2 | Complete |
+| TNNT-06 | Phase 2 | Complete |
 | USER-01 | Phase 3 | Pending |
 | USER-02 | Phase 3 | Pending |
 | USER-03 | Phase 3 | Pending |

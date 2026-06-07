@@ -13,7 +13,7 @@ La plataforma se construye de afuera hacia adentro — primero la puerta de entr
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Foundation & Auth** - Autenticación funciona; PlatformAdmin puede entrar al sistema con roles propagados
-- [ ] **Phase 2: Tenant Management** - PlatformAdmin puede crear, configurar y gestionar el ciclo de vida completo de tenants
+- [x] **Phase 2: Tenant Management** - PlatformAdmin puede crear, configurar y gestionar el ciclo de vida completo de tenants
 - [ ] **Phase 3: User Management** - TenantAdmin puede gestionar usuarios dentro de su tenant con audit completo
 - [ ] **Phase 4: Feature Flags** - Flags configurables en 4 niveles con evaluación jerárquica determinista
 - [ ] **Phase 5: Rule Builder** - Usuarios pueden crear, ordenar y previsualizar reglas de evaluación visualmente
@@ -37,17 +37,13 @@ Plans:
 - [x] 01-03-PLAN.md — Vue 3 portal shell: keycloak-js, Pinia auth store, Vue Router guards, login/dashboard views
 - [x] 01-04-PLAN.md — End-to-end integration verification (automated smoke tests + human checkpoint)
 
-### Phase 2: Tenant Management
-**Goal**: PlatformAdmin puede gestionar el ciclo de vida completo de tenants — crear, configurar, filtrar, suspender y asociar productos
-**Depends on**: Phase 1
-**Requirements**: TNNT-01, TNNT-02, TNNT-03, TNNT-04, TNNT-05, TNNT-06
-**Success Criteria** (what must be TRUE):
-  1. PlatformAdmin puede crear un tenant con todos sus atributos (name, country, default_language, default_currency, default_units, status)
-  2. PlatformAdmin puede editar cualquier atributo de un tenant existente y los cambios persisten
-  3. PlatformAdmin puede suspender un tenant (bloqueando acceso) y eliminarlo definitivamente
-  4. PlatformAdmin puede configurar logo, colores, tipografía y dominio del whitelabel del tenant
-  5. PlatformAdmin puede buscar y filtrar la lista de tenants por estado, país y atributos clave
-**Plans**: TBD
+**Plans**: 4 plans
+
+Plans:
+- [x] 02-01-PLAN.md — Bootstrap FastAPI + MySQL + Alembic
+- [x] 02-02-PLAN.md — FastAPI Tenants domain (Models, Schemas, Service, Router)
+- [x] 02-03-PLAN.md — BFF Proxy to Backend
+- [x] 02-04-PLAN.md — Portal UI (Tenants list, drawer, forms, store)
 
 ### Phase 3: User Management
 **Goal**: TenantAdmin puede gestionar usuarios dentro de su tenant — crear, asignar roles, activar/desactivar y auditar todas las acciones
@@ -91,7 +87,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation & Auth | 4/4 | Complete | 2026-06-07 |
-| 2. Tenant Management | 0/TBD | Not started | - |
+| 2. Tenant Management | 4/4 | Complete | 2026-06-07 |
 | 3. User Management | 0/TBD | Not started | - |
 | 4. Feature Flags | 0/TBD | Not started | - |
 | 5. Rule Builder | 0/TBD | Not started | - |

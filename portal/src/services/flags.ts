@@ -110,6 +110,10 @@ export async function addSegmentToFlag(flagId: number, segmentId: number): Promi
   return data
 }
 
+export async function removeSegmentFromFlag(flagId: number, segmentId: number): Promise<void> {
+  await api.delete(`/flags/${flagId}/segments/${segmentId}`)
+}
+
 export async function getSegmentsByFlag(flagId: number): Promise<Segment[]> {
   const { data } = await api.get(`/flags/${flagId}/segments`)
   return data

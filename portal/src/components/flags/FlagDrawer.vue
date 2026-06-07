@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import type { FeatureFlag, FlagPayload } from '../../services/flags'
-import { getSegmentsByFlag, addSegmentToFlag } from '../../services/flags'
+import { getSegmentsByFlag, addSegmentToFlag, removeSegmentFromFlag } from '../../services/flags'
 import { useFeatureFlagsStore } from '../../stores/flags'
 import FlagForm from './FlagForm.vue'
 import StitchButton from '../ui/StitchButton.vue'
@@ -41,16 +41,22 @@ watch(
 
 async function handleSave(payload: FlagPayload) {
   try {
+    // Capture both before any await — store update triggers props.flag change which resets selectedSegmentIds
+    const selectedIds = [...(flagFormRef.value?.selectedSegmentIds ?? [])]
+    const previousIds = [...linkedSegmentIds.value]
     let savedFlag: FeatureFlag
     if (props.flag) {
       savedFlag = await flagsStore.updateFlag(props.flag.id, payload)
     } else {
       savedFlag = await flagsStore.createFlag(payload)
     }
-    // Link selected segments to the saved flag (FLAG-06)
-    const selectedIds = flagFormRef.value?.selectedSegmentIds ?? []
-    for (const segmentId of selectedIds) {
+    const toAdd = selectedIds.filter(id => !previousIds.includes(id))
+    const toRemove = previousIds.filter(id => !selectedIds.includes(id))
+    for (const segmentId of toAdd) {
       await addSegmentToFlag(savedFlag.id, segmentId)
+    }
+    for (const segmentId of toRemove) {
+      await removeSegmentFromFlag(savedFlag.id, segmentId)
     }
     emit('saved', savedFlag)
     emit('close')

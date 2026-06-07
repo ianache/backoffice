@@ -268,6 +268,25 @@ async def add_segment_to_flag(
     return segment
 
 
+async def remove_segment_from_flag(
+    db: AsyncSession,
+    flag_id: int,
+    segment_id: int,
+) -> bool:
+    result = await db.execute(
+        select(FlagSegment).where(
+            FlagSegment.flag_id == flag_id,
+            FlagSegment.segment_id == segment_id,
+        )
+    )
+    link = result.scalar_one_or_none()
+    if not link:
+        return False
+    await db.delete(link)
+    await db.commit()
+    return True
+
+
 async def get_flag_segments(
     db: AsyncSession,
     flag_id: int,

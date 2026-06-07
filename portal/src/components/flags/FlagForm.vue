@@ -57,6 +57,12 @@ watch(
   { immediate: true }
 )
 
+// Sync pre-selected segments when they arrive asynchronously from the parent
+watch(
+  () => props.linkedSegmentIds,
+  (linkedIds) => { selectedSegmentIds.value = linkedIds ?? [] }
+)
+
 function validate(): boolean {
   errors.value = {}
   if (!name.value.trim()) {

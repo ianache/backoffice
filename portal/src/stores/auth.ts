@@ -31,7 +31,12 @@ export const useAuthStore = defineStore('auth', () => {
             logout()
           }
         }, 30_000)
+      } else {
+        _clear()
       }
+    } catch (error) {
+      console.error('Keycloak initialization failed:', error)
+      _clear()
     } finally {
       isLoading.value = false
     }
@@ -47,16 +52,23 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+  function _clear(): void {
+    if (refreshInterval) {
+      clearInterval(refreshInterval)
+      refreshInterval = null
+    }
+    isAuthenticated.value = false
+    token.value = null
+    user.value = null
+    roles.value = []
+  }
+
   function login(): void {
     keycloak.login()
   }
 
   function logout(): void {
-    if (refreshInterval) clearInterval(refreshInterval)
-    isAuthenticated.value = false
-    token.value = null
-    user.value = null
-    roles.value = []
+    _clear()
     keycloak.logout()
   }
 

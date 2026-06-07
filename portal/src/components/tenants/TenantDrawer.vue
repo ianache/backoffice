@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import type { Tenant, TenantPayload } from '../../services/tenants'
 import TenantForm from './TenantForm.vue'
 import WhitelabelForm from './WhitelabelForm.vue'
+import StitchButton from '../ui/StitchButton.vue'
 
 const props = defineProps<{
   show: boolean
@@ -11,7 +12,7 @@ const props = defineProps<{
 
 const emit = defineEmits(['close', 'save'])
 
-const activeTab = ref<'general' | 'whitelabel'>('general')
+const activeTab = ref(0)
 
 const defaultPayload: TenantPayload = {
   name: '',
@@ -32,8 +33,6 @@ const defaultPayload: TenantPayload = {
 
 const formData = ref<TenantPayload>({ ...defaultPayload })
 
-// Reset form when drawer opens
-import { watch } from 'vue'
 watch(() => props.show, (isShowing) => {
   if (isShowing) {
     if (props.tenant) {
@@ -42,7 +41,7 @@ watch(() => props.show, (isShowing) => {
     } else {
       formData.value = { ...defaultPayload }
     }
-    activeTab.value = 'general'
+    activeTab.value = 0
   }
 })
 
@@ -50,6 +49,10 @@ const isEdit = computed(() => !!props.tenant)
 
 const handleSubmit = () => {
   emit('save', formData.value)
+}
+
+const handleTabChange = (e: any) => {
+  activeTab.value = e.target.activeTabIndex
 }
 </script>
 
@@ -59,35 +62,35 @@ const handleSubmit = () => {
       <div v-if="show" class="drawer-overlay" @click="emit('close')">
         <div class="drawer-content" @click.stop>
           <div class="drawer-header">
-            <h2>{{ isEdit ? 'Edit Tenant' : 'Create Tenant' }}</h2>
-            <button class="close-btn" @click="emit('close')">&times;</button>
+            <h2 class="text-title-large">{{ isEdit ? 'Edit Tenant' : 'Create Tenant' }}</h2>
+            <md-icon-button @click="emit('close')">
+              <md-icon>close</md-icon>
+            </md-icon-button>
           </div>
 
-          <div class="tabs">
-            <button 
-              :class="{ active: activeTab === 'general' }" 
-              @click="activeTab = 'general'"
-            >
+          <md-tabs :active-tab-index="activeTab" @change="handleTabChange">
+            <md-primary-tab>
+              <md-icon slot="icon">info</md-icon>
               General Info
-            </button>
-            <button 
-              :class="{ active: activeTab === 'whitelabel' }" 
-              @click="activeTab = 'whitelabel'"
-            >
+            </md-primary-tab>
+            <md-primary-tab>
+              <md-icon slot="icon">palette</md-icon>
               Whitelabel
-            </button>
-          </div>
+            </md-primary-tab>
+          </md-tabs>
 
           <div class="drawer-body">
-            <TenantForm v-if="activeTab === 'general'" v-model="formData" />
+            <TenantForm v-if="activeTab === 0" v-model="formData" />
             <WhitelabelForm v-else v-model="formData" />
           </div>
 
+          <md-divider></md-divider>
+
           <div class="drawer-footer">
-            <button class="btn btn-secondary" @click="emit('close')">Cancel</button>
-            <button class="btn btn-primary" @click="handleSubmit">
+            <StitchButton variant="text" @click="emit('close')">Cancel</StitchButton>
+            <StitchButton variant="filled" @click="handleSubmit">
               {{ isEdit ? 'Update Tenant' : 'Create Tenant' }}
-            </button>
+            </StitchButton>
           </div>
         </div>
       </div>
@@ -102,99 +105,57 @@ const handleSubmit = () => {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.3);
+  background: rgba(0, 0, 0, 0.4);
   z-index: 1000;
   display: flex;
   justify-content: flex-end;
 }
 
 .drawer-content {
-  background: white;
+  background: var(--surface-container-low);
+  color: var(--on-surface);
   width: 100%;
-  max-width: 500px;
+  max-width: 480px;
   height: 100%;
   display: flex;
   flex-direction: column;
-  box-shadow: -4px 0 12px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--md-sys-elevation-level3);
 }
 
 .drawer-header {
-  padding: 1.5rem;
-  border-bottom: 1px solid #e5e7eb;
+  padding: var(--spacing-md) var(--spacing-lg);
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.drawer-header h2 {
+.text-title-large {
+  font-size: 1.375rem;
+  font-weight: 400;
   margin: 0;
-  font-size: 1.25rem;
-}
-
-.close-btn {
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  cursor: pointer;
-  color: #6b7280;
-}
-
-.tabs {
-  display: flex;
-  border-bottom: 1px solid #e5e7eb;
-}
-
-.tabs button {
-  flex: 1;
-  padding: 1rem;
-  background: none;
-  border: none;
-  border-bottom: 2px solid transparent;
-  cursor: pointer;
-  font-weight: 500;
-  color: #6b7280;
-}
-
-.tabs button.active {
-  color: #2563eb;
-  border-bottom-color: #2563eb;
 }
 
 .drawer-body {
   flex: 1;
   overflow-y: auto;
-  padding: 1.5rem;
+  padding: var(--spacing-lg);
 }
 
 .drawer-footer {
-  padding: 1.5rem;
-  border-top: 1px solid #e5e7eb;
+  padding: var(--spacing-md) var(--spacing-lg);
   display: flex;
   justify-content: flex-end;
-  gap: 0.75rem;
+  gap: var(--spacing-sm);
+  background: var(--surface-container-low);
 }
 
-.btn {
-  padding: 0.625rem 1.25rem;
-  border-radius: 6px;
-  font-weight: 500;
-  cursor: pointer;
-}
-
-.btn-secondary {
-  background: white;
-  border: 1px solid #d1d5db;
-  color: #374151;
-}
-
-.btn-primary {
-  background: #2563eb;
-  border: 1px solid #2563eb;
-  color: white;
+md-tabs {
+  --md-primary-tab-container-color: var(--surface-container-low);
+  --md-tabs-container-color: var(--surface-container-low);
 }
 
 .slide-enter-active, .slide-leave-active {
-  transition: transform 0.3s ease;
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .slide-enter-from, .slide-leave-to {

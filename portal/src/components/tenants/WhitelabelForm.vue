@@ -1,10 +1,8 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 import type { TenantPayload } from '../../services/tenants'
-// Assuming vue-color-input is used like this, or we can use native color input for simplicity if not.
-// For now, I'll use native color inputs with a wrapper class to match the requirement.
 import ColorInput from 'vue-color-input'
-import { computed } from 'vue'
+import StitchTextField from '../ui/StitchTextField.vue'
 
 const props = defineProps<{
   modelValue: TenantPayload
@@ -43,47 +41,58 @@ const fontWeights = ['300', '400', '500', '600', '700']
 
 <template>
   <div class="form-container">
-    <div class="form-group">
-      <label>Custom Domain</label>
-      <input v-model="formData.domain" type="text" placeholder="e.g. acme.backoffice.com" />
-    </div>
+    <StitchTextField
+      v-model="formData.domain"
+      label="Custom Domain"
+      placeholder="e.g. acme.backoffice.com"
+    />
 
-    <div class="form-group">
-      <label>Logo URL</label>
-      <input v-model="formData.logo_url" type="url" placeholder="https://example.com/logo.png" />
-      <div v-if="formData.logo_url" class="logo-preview">
-        <img :src="formData.logo_url" alt="Logo Preview" />
-      </div>
+    <StitchTextField
+      v-model="formData.logo_url"
+      label="Logo URL"
+      placeholder="https://example.com/logo.png"
+      type="url"
+    />
+    
+    <div v-if="formData.logo_url" class="logo-preview">
+      <img :src="formData.logo_url" alt="Logo Preview" />
     </div>
 
     <div class="color-section">
-      <div class="form-group">
-        <label>Primary Color</label>
+      <div class="color-item">
+        <label>Primary</label>
         <ColorInput v-model="primaryColor" format="hex" />
       </div>
-      <div class="form-group">
-        <label>Secondary Color</label>
+      <div class="color-item">
+        <label>Secondary</label>
         <ColorInput v-model="secondaryColor" format="hex" />
       </div>
-      <div class="form-group">
-        <label>Accent Color</label>
+      <div class="color-item">
+        <label>Accent</label>
         <ColorInput v-model="accentColor" format="hex" />
       </div>
     </div>
 
     <div class="form-row">
-      <div class="form-group">
-        <label>Font Family</label>
-        <select v-model="formData.font_family">
-          <option v-for="f in fontFamilies" :key="f" :value="f">{{ f }}</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Font Weight</label>
-        <select v-model="formData.font_weight">
-          <option v-for="w in fontWeights" :key="w" :value="w">{{ w }}</option>
-        </select>
-      </div>
+      <md-outlined-select
+        label="Font Family"
+        :value="formData.font_family"
+        @change="(e: any) => formData.font_family = e.target.value"
+      >
+        <md-select-option v-for="f in fontFamilies" :key="f" :value="f">
+          <div slot="headline">{{ f }}</div>
+        </md-select-option>
+      </md-outlined-select>
+
+      <md-outlined-select
+        label="Font Weight"
+        :value="formData.font_weight"
+        @change="(e: any) => formData.font_weight = e.target.value"
+      >
+        <md-select-option v-for="w in fontWeights" :key="w" :value="w">
+          <div slot="headline">{{ w }}</div>
+        </md-select-option>
+      </md-outlined-select>
     </div>
 
     <div class="preview-card" :style="{ 
@@ -91,14 +100,12 @@ const fontWeights = ['300', '400', '500', '600', '700']
       fontFamily: formData.font_family || 'sans-serif',
       fontWeight: formData.font_weight || '400'
     }">
-      <p :style="{ color: formData.primary_color || '#2563eb' }">Preview Text</p>
-      <button :style="{ 
-        backgroundColor: formData.accent_color || '#10b981',
-        color: 'white',
-        border: 'none',
-        padding: '0.25rem 0.5rem',
-        borderRadius: '4px'
-      }">Button</button>
+      <p :style="{ color: formData.primary_color || '#2563eb' }">Design System Preview</p>
+      <div class="preview-actions">
+        <button class="preview-btn" :style="{ backgroundColor: formData.accent_color || '#10b981' }">
+          Action Button
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -107,49 +114,41 @@ const fontWeights = ['300', '400', '500', '600', '700']
 .form-container {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
+  gap: var(--spacing-lg);
 }
 
 .form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1rem;
+  gap: var(--spacing-md);
 }
 
 .color-section {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 1rem;
+  gap: var(--spacing-md);
 }
 
-label {
+.color-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.color-item label {
+  font-size: 0.75rem;
   font-weight: 500;
-  font-size: 0.875rem;
-  color: #374151;
-}
-
-input, select {
-  padding: 0.5rem;
-  border: 1px solid #d1d5db;
-  border-radius: 4px;
-  font-size: 0.875rem;
+  color: var(--on-surface-variant);
 }
 
 .logo-preview {
-  margin-top: 0.5rem;
-  max-width: 100px;
-  max-height: 50px;
-  border: 1px solid #eee;
-  padding: 0.25rem;
+  height: 64px;
+  background: var(--surface-container);
+  border-radius: var(--rounded);
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: var(--spacing-sm);
 }
 
 .logo-preview img {
@@ -159,10 +158,27 @@ input, select {
 }
 
 .preview-card {
-  margin-top: 1rem;
-  padding: 1rem;
-  background: #f9fafb;
-  border-radius: 4px;
-  box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+  margin-top: var(--spacing-md);
+  padding: var(--spacing-md);
+  background: var(--surface-container-lowest);
+  border: 1px solid var(--outline-variant);
+  border-radius: var(--rounded);
+}
+
+.preview-actions {
+  margin-top: var(--spacing-sm);
+}
+
+.preview-btn {
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: var(--rounded);
+  font-size: 0.875rem;
+  cursor: default;
+}
+
+md-outlined-select {
+  width: 100%;
 }
 </style>

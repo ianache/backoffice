@@ -23,11 +23,11 @@ See: .planning/PROJECT.md (updated 2026-06-06)
 ## Current Position
 
 Phase: 04-feature-flags IN PROGRESS
-Plan: 02 COMPLETE — 26 unit tests for evaluate_flag() + _evaluate_rule(), no DB required
-Status: Phase 4 Plan 2/5 — evaluation engine TDD (SimpleNamespace make_flag() helper, 5 operators, hierarchy priority)
-Last activity: 2026-06-07 — Phase 04 Plan 02 complete (26 eval tests, 65 total passing)
+Plan: 03 COMPLETE — BFF /flags proxy route with 4-role guard + full user header injection
+Status: Phase 4 Plan 3/5 — BFF flags proxy (flagsRouter, PlatformAdmin|TenantAdmin|TenantOwner|ProductManager)
+Last activity: 2026-06-07 — Phase 04 Plan 03 complete (2 files: flags.ts created, index.ts updated)
 
-Progress: [████░░░░░░] 40% (of phase 04 plans) | [█████████████░] 58% (of total roadmap)
+Progress: [██████░░░░] 60% (of phase 04 plans) | [██████████████] 63% (of total roadmap)
 
 ## Performance Metrics
 
@@ -62,6 +62,7 @@ Progress: [████░░░░░░] 40% (of phase 04 plans) | [███�
 | Phase 03-user-management P06 | 20m | 3 tasks (2 auto + 1 human-verify) | 3 files |
 | Phase 04-feature-flags P01 | 5m | 2 tasks (TDD) | 9 files |
 | Phase 04-feature-flags P02 | 1m | 1 task (TDD) | 1 file |
+| Phase 04-feature-flags P03 | 5m | 2 tasks (1 impl + 1 smoke) | 2 files |
 
 ## Accumulated Context
 
@@ -114,6 +115,9 @@ Recent decisions affecting current work:
 - [Phase 04-02]: Tests import evaluate_flag/_evaluate_rule at module level — collection errors surface immediately (not as test failures)
 - [Phase 04-02]: make_flag() uses SimpleNamespace per plan spec — minimal flag objects, no DB overhead for pure evaluation tests
 - [Phase 04-02]: test_scope_priority_not_recency proves SCOPE_PRIORITY dict used (not list-order) — global first in list still loses to tenant
+- [Phase 04-03]: flagsRouter uses all 4 roles (PlatformAdmin | TenantAdmin | TenantOwner | ProductManager) — feature flags are cross-role, unlike /tenants (PlatformAdmin only)
+- [Phase 04-03]: /flags injects X-User-Tenant-Id (like /users, unlike /tenants) — backend evaluate_flag() uses tenant context for scoped evaluation
+- [Phase 04-03]: express.json() deliberately excluded on /flags mount — proxy streams raw body, established pattern from /tenants and /users
 
 ### Pending Todos
 
@@ -130,5 +134,5 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-06-07
-Stopped at: Completed 04-02-PLAN.md — Evaluation engine TDD (26 tests, make_flag() SimpleNamespace helper, 65 total passing)
+Stopped at: Completed 04-03-PLAN.md — BFF /flags proxy route (flagsRouter, 4-role guard, full user header injection)
 Resume file: None

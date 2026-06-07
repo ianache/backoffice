@@ -22,10 +22,10 @@ See: .planning/PROJECT.md (updated 2026-06-06)
 
 ## Current Position
 
-Phase: 04-feature-flags (gap-closure)
-Plan: 06 COMPLETE — Segments routing fix + flag-segment link endpoints + evaluate_flag() segment membership
-Status: Phase 4 gap-closure in progress — 04-06 complete, 04-07 portal wiring pending
-Last activity: 2026-06-07 — segments_router prefix fixed, POST/GET /flags/{flag_id}/segments added, evaluate_flag() extended (31 tests green)
+Phase: 04-feature-flags — COMPLETE
+Plan: 07 COMPLETE — SegmentPicker wired into FlagForm/FlagDrawer, FLAG-06 human-verified, segment add/remove both working
+Status: Phase 4 fully complete — all 7 plans done including gap-closure plans 04-06 and 04-07
+Last activity: 2026-06-07 — segment sync bugs fixed (race condition, async prop, diff logic, remove endpoint), FLAG-06 approved by user
 
 Progress: [██████████] 100% (of phase 04 core plans) | [████████████████████] 96% (of total roadmap)
 
@@ -66,7 +66,7 @@ Progress: [██████████] 100% (of phase 04 core plans) | [█�
 | Phase 04-feature-flags P04 | 6 | 2 tasks | 2 files |
 | Phase 04-feature-flags P05 | 15m | 3 tasks | 7 files |
 | Phase 04-feature-flags P06 | 4 | 2 tasks | 3 files |
-| Phase 04-feature-flags P07 | 2 | 1 tasks | 4 files |
+| Phase 04-feature-flags P07 | ~30m | 2 tasks (1 auto + 1 human-verify) | 7 files |
 
 ## Accumulated Context
 
@@ -126,6 +126,9 @@ Recent decisions affecting current work:
 - [Phase 04-feature-flags]: [Phase 04-05]: FlagTable emits disable(flag)/enable(flag) separately — parent FlagsView decides confirm dialog vs direct toggleFlag call
 - [Phase 04-feature-flags]: segment_members keyed by flag_id dict for O(1) lookup in evaluate_flag(); any-match semantics; user_id dual key fallback (id/sub) [04-06]
 - [Phase 04-feature-flags]: FlagDrawer takes ownership of save flow (store calls + segment linking) — emits @saved(flag); FlagsView shows toast only [04-07]
+- [Phase 04-feature-flags]: Capture-before-await pattern: snapshot reactive refs to local const before first async call to prevent reactivity teardown mid-handler [04-07]
+- [Phase 04-feature-flags]: Diff-based segment sync (toAdd/toRemove) in FlagDrawer — correct general pattern for many-to-many UI associations; segment removal from flags implemented in Phase 4 (not deferred) [04-07]
+- [Phase 04-feature-flags]: PlatformAdmin/ProductManager bypass tenant_id filter in list_flags — global roles see all flags across tenants [04-07]
 
 ### Pending Todos
 
@@ -142,5 +145,5 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-06-07
-Stopped at: Completed 04-06-PLAN.md — segments routing fixed, flag-segment endpoints added, evaluate_flag() extended with segment membership
+Stopped at: Completed 04-07-PLAN.md — FLAG-06 segment integration human-verified; Phase 4 fully complete
 Resume file: None

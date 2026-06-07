@@ -86,6 +86,8 @@ Recent decisions affecting current work:
 - [Phase 06-stitch-ui-implementation]: Visual regression baselines captured for light, dark, and error states with maxDiffPixelRatio 0.1 tolerance
 - [Phase 06-04]: Use color-mix(in srgb, var(--primary) 8%, transparent) for M3 state-layer hover — correct Stitch pattern (not brightness filter)
 - [Phase 06-04]: md-menu requires positioning="popover" inside overflow:hidden table containers to avoid invisible menus
+- [Phase 03-02]: req.user in auth.ts has no tenantId/attributes — X-User-Tenant-Id will be empty until Keycloak protocol mapper for tenant_id attribute is added
+- [Phase 03-02]: Native fetch (Node 18+) used in keycloak-admin.ts — no additional HTTP library dependency needed
 - [Phase 03-03]: UserPayload.productRoles uses Record<string, string> for multi-product role assignment
 - [Phase 03-03]: setEnabled uses separate /enable and /disable endpoints (not a PATCH with body)
 - [Phase 03-03]: activeCount/pendingCount exposed as plain functions (not computed refs) for simplicity
@@ -104,5 +106,5 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-06-07
-Stopped at: Completed 03-03-PLAN.md (Users Data Layer — service + Pinia store)
+Stopped at: Completed 03-02-PLAN.md (BFF User Management Layer — /users proxy + Keycloak admin token cache) — CHECKPOINT: awaiting backoffice-admin-svc Keycloak provisioning
 Resume file: None

@@ -3,7 +3,7 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-last_updated: "2026-06-07T14:32:06.220Z"
+last_updated: "2026-06-07T15:00:17.359Z"
 progress:
   total_phases: 5
   completed_phases: 5
@@ -23,9 +23,9 @@ See: .planning/PROJECT.md (updated 2026-06-06)
 ## Current Position
 
 Phase: 03-user-management COMPLETE
-Plan: 05 COMPLETE — all tasks done, E2E verified and approved by human
-Status: Phase 3 COMPLETE — all 5 plans executed, USER-01 through USER-06 requirements met
-Last activity: 2026-06-07 — Phase 03 Plan 05 complete (E2E verification approved, SUMMARY written)
+Plan: 06 COMPLETE — tenant isolation gap closed, E2E verified and approved by human
+Status: Phase 3 COMPLETE — all 6 plans executed, USER-01 through USER-06 requirements met, tenant isolation confirmed
+Last activity: 2026-06-07 — Phase 03 Plan 06 complete (Keycloak protocol mapper configured, cross-tenant isolation verified)
 
 Progress: [██████████] 100% (of phase 03 plans) | [██████████░░░░] 75% (of total roadmap)
 
@@ -59,7 +59,7 @@ Progress: [██████████] 100% (of phase 03 plans) | [███
 | Phase 03-user-management P01 | 20m | 2 tasks | 12 files |
 | Phase 03-user-management P04 | 5m | 2 tasks | 7 files |
 | Phase 03-user-management P05 | 10m | 2 tasks (1 auto + 1 human-verify) | 2 files |
-| Phase 03-user-management P06 | 15 | 2 tasks | 3 files |
+| Phase 03-user-management P06 | 20m | 3 tasks (2 auto + 1 human-verify) | 3 files |
 
 ## Accumulated Context
 
@@ -104,6 +104,7 @@ Recent decisions affecting current work:
 - [Phase 03-05]: Router /users roles narrowed to TenantAdmin + TenantOwner only — PlatformAdmin removed (was permissive in 03-04)
 - [Phase 03-05]: Tenants nav button gained explicit v-if PlatformAdmin guard — TenantAdmins no longer see Tenants nav item
 - [Phase 03-user-management]: Dual JWT claim name fallback (tenant_id / tenantId) in requireAuth covers both Keycloak mapper emission styles [03-06]
+- [Phase 03-user-management]: Keycloak protocol mapper configured on usuario scope (covers both portal+bff clients) — tenant_id flows in JWT, cross-tenant isolation E2E verified [03-06]
 
 ### Pending Todos
 
@@ -120,5 +121,5 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-06-07
-Stopped at: Completed 03-05-PLAN.md — Phase 3 User Management fully complete, E2E verified
+Stopped at: Completed 03-06-PLAN.md — Phase 3 User Management fully complete with tenant isolation gap closed and E2E verified
 Resume file: None

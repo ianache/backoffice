@@ -53,10 +53,10 @@ completed: 2026-06-07
 
 ## Performance
 
-- **Duration:** ~15 min
+- **Duration:** ~20 min (including Keycloak configuration time)
 - **Started:** 2026-06-07T14:29:23Z
-- **Completed:** 2026-06-07T14:44:00Z
-- **Tasks:** 2 auto tasks complete, 1 human-verify checkpoint pending
+- **Completed:** 2026-06-07T14:55:54Z
+- **Tasks:** 3 (2 auto + 1 human-verify checkpoint — all complete)
 - **Files modified:** 3 (docs/KEYCLOAK_SETUP.md created, auth.ts modified, users.ts modified)
 
 ## Accomplishments
@@ -66,6 +66,7 @@ completed: 2026-06-07
 - Dev-mode `console.warn` fires when claim is absent — misconfiguration caught at request time, not silently
 - `users.ts` simplified: `req.user?.tenantId` used directly, no more unsafe `any` cast
 - TypeScript compiles without errors across all BFF files
+- Human checkpoint approved: Keycloak protocol mapper configured on `usuario` scope (assigned to both clients), JWT contains `tenant_id` claim, no `[warn]` in BFF console, cross-tenant isolation confirmed (bo.admin@backoffice.dev tenant_id=5, bo.admin2@backoffice.dev tenant_id=2 — users invisible across tenants), invite flow stamps correct tenant_id
 
 ## Task Commits
 
@@ -74,7 +75,9 @@ Each task was committed atomically:
 1. **Task 1: Document Keycloak protocol mapper setup** - `e9024b1` (docs)
 2. **Task 2: Extend AuthUser with tenantId and extract claim in requireAuth** - `5bb525b` (feat)
 
-**Checkpoint 3 (human-verify):** Awaiting Keycloak mapper configuration and runtime tenant isolation verification.
+3. **Task 3: Checkpoint — Verify tenant isolation with protocol mapper configured** - human-verified and approved (runtime verification: JWT claim present, no [warn], cross-tenant isolation confirmed)
+
+**Plan metadata:** `f9161ec` (docs: complete plan — at checkpoint)
 
 ## Files Created/Modified
 - `docs/KEYCLOAK_SETUP.md` - Step-by-step Keycloak protocol mapper setup, attribute setting for existing users, verification commands
@@ -96,15 +99,15 @@ None — TypeScript compiled clean on first attempt. No type conflicts.
 
 ## User Setup Required
 
-**Manual Keycloak configuration required before tenant isolation is fully functional.** See `docs/KEYCLOAK_SETUP.md`:
-- Configure User Attribute protocol mapper on `backoffice-portal` and `backoffice-bff` clients in Keycloak Apps realm
-- Set `tenant_id` attribute on existing test users (new invite-flow users get it automatically)
-- Verify: BFF console should NOT print `[warn] X-User-Tenant-Id will be empty` after mapper is active
+None — Keycloak protocol mapper was configured during this plan's human checkpoint (applied to `usuario` client scope which covers both clients). No further setup required for existing test environments.
+
+For new environments: see `docs/KEYCLOAK_SETUP.md`.
 
 ## Next Phase Readiness
-- BFF code changes are complete and type-safe — ready for Phase 4 (Feature Flags) once human checkpoint is approved
-- Keycloak protocol mapper must be provisioned before tenant isolation works at runtime
-- Human checkpoint (Task 3) confirms mapper is active and cross-tenant isolation verified
+- Tenant isolation fully operational — X-User-Tenant-Id header carries real tenant UUID for every authenticated request
+- Backend tenant scoping (enforced via `actor_tenant_id` in service layer) is now correctly populated from Keycloak attributes
+- Phase 4 (Feature Flags) can proceed — BFF auth foundation complete and structurally sound
+- No blockers or open concerns
 
 ---
 *Phase: 03-user-management*

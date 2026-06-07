@@ -83,6 +83,15 @@ def evaluate_flag(flags: list, context: dict) -> bool:
         if _evaluate_rule(rule, user):
             return bool(rule.get('result', winner.default_val))
 
+    # If no inline rule matched, check segment membership.
+    # context['segment_members'] is a dict: {flag_id: [user_uuid, ...]}
+    # any-match semantics: if the user is in ANY linked segment, flag evaluates as enabled.
+    segment_members = context.get('segment_members', {})
+    user_id = user.get('id') or user.get('sub')  # Support both common key names
+    if user_id and winner.id in segment_members:
+        if user_id in segment_members[winner.id]:
+            return True  # User is in a linked segment
+
     return bool(winner.default_val)
 
 

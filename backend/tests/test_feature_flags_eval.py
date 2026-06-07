@@ -24,9 +24,11 @@ def make_flag(
     enabled=1,
     default_val=0,
     rules=None,
+    id=None,
 ):
     """Build a minimal FeatureFlag-like object without a DB session."""
     return SimpleNamespace(
+        id=id,
         scope=scope,
         tenant_id=tenant_id,
         product_id=product_id,
@@ -201,3 +203,74 @@ class TestEvaluateRule:
         """Ensure all 5 operators produce True when conditions match."""
         from app.domains.feature_flags.service import OPERATORS
         assert set(OPERATORS.keys()) == {'equals', 'in', 'notIn', 'contains', 'regex'}
+
+
+# ---------------------------------------------------------------------------
+# FLAG-06: Segment membership evaluation
+# ---------------------------------------------------------------------------
+
+class TestEvaluateFlagSegments:
+    """evaluate_flag() checks segment_members from context after inline rules."""
+
+    def test_user_in_segment_returns_true(self):
+        """Flag with no inline rules + user in linked segment → returns True.
+
+        segment_members = {flag_id: [user_uuid, ...]}
+        flag.default_val=1, so segment match returns True.
+        """
+        flag = make_flag('global', enabled=1, default_val=1, id=10)
+        context = {
+            'user': {'id': 'user-uuid-001'},
+            'segment_members': {10: ['user-uuid-001', 'user-uuid-002']},
+        }
+        assert evaluate_flag([flag], context) is True
+
+    def test_user_not_in_segment_returns_default_val(self):
+        """Flag with a linked segment, user NOT in it → returns bool(default_val).
+
+        default_val=0, user not in segment → False.
+        """
+        flag = make_flag('global', enabled=1, default_val=0, id=10)
+        context = {
+            'user': {'id': 'user-uuid-999'},
+            'segment_members': {10: ['user-uuid-001', 'user-uuid-002']},
+        }
+        assert evaluate_flag([flag], context) is False
+
+    def test_inline_rule_match_takes_priority_over_segment(self):
+        """When an inline rule matches, it wins — segment_members not consulted.
+
+        Rule result=True with matching country; flag.default_val=0; user in segment.
+        Result must be True (from rule), not from segment logic.
+        """
+        rule = {'attribute': 'country', 'operator': 'equals', 'value': 'PE', 'result': True}
+        flag = make_flag('global', enabled=1, default_val=0, rules=[rule], id=10)
+        context = {
+            'user': {'id': 'user-uuid-001', 'country': 'PE'},
+            'segment_members': {10: ['user-uuid-001']},
+        }
+        # Rule matches → True, even though default_val=0
+        assert evaluate_flag([flag], context) is True
+
+    def test_no_segment_members_in_context_is_backward_compatible(self):
+        """When context has no segment_members key, evaluate_flag falls back to default_val.
+
+        This ensures all existing tests (FLAG-04/FLAG-05) continue to pass unchanged.
+        """
+        flag = make_flag('global', enabled=1, default_val=0, id=10)
+        context = {'user': {'id': 'user-uuid-001'}}
+        # No segment_members in context → falls back to default_val=0
+        assert evaluate_flag([flag], context) is False
+
+    def test_user_in_second_of_two_segments_returns_true(self):
+        """Multiple segments linked to flag; user is in the second segment → True.
+
+        segment_members is a flat list of all member UUIDs across all linked segments.
+        Any-match semantics: if user is in ANY segment, flag is True.
+        """
+        flag = make_flag('global', enabled=1, default_val=0, id=20)
+        context = {
+            'user': {'sub': 'user-uuid-555'},  # Use 'sub' key (alternative to 'id')
+            'segment_members': {20: ['user-uuid-111', 'user-uuid-555', 'user-uuid-999']},
+        }
+        assert evaluate_flag([flag], context) is True

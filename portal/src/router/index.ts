@@ -6,6 +6,8 @@ declare module 'vue-router' {
   interface RouteMeta {
     requiresAuth?: boolean
     roles?: string[]
+    layout?: 'main' | 'auth'
+    title?: string
   }
 }
 
@@ -17,21 +19,23 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/login',
     component: () => import('../views/LoginView.vue'),
+    meta: { layout: 'auth', title: 'Login' }
   },
   {
     path: '/unauthorized',
     component: () => import('../views/UnauthorizedView.vue'),
+    meta: { layout: 'main', title: 'Unauthorized', requiresAuth: true }
   },
   {
     path: '/dashboard',
     component: () => import('../views/DashboardView.vue'),
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: true, layout: 'main', title: 'Dashboard' },
   },
   {
     path: '/tenants',
     name: 'tenants',
     component: () => import('../views/TenantsView.vue'),
-    meta: { requiresAuth: true, roles: ['PlatformAdmin'] },
+    meta: { requiresAuth: true, roles: ['PlatformAdmin'], layout: 'main', title: 'Tenant Management' },
   },
 ]
 

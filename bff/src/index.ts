@@ -3,6 +3,7 @@ import cors from 'cors'
 import { config } from './config/index.js'
 import { authRouter } from './routes/auth.js'
 import { tenantsRouter } from './routes/tenants.js'
+import { usersRouter } from './routes/users.js'
 
 const app = express()
 
@@ -10,7 +11,6 @@ app.use(cors({
   origin: config.frontendUrl,
   credentials: true,
 }))
-app.use(express.json())
 
 // Health check — no auth required
 app.get('/health', (_req, res) => {
@@ -18,10 +18,16 @@ app.get('/health', (_req, res) => {
 })
 
 // Auth routes: /auth/me, etc.
-app.use('/auth', authRouter)
+// express.json() only on non-proxy routes — proxy middleware needs the raw body stream
+app.use('/auth', express.json(), authRouter)
 
 // Tenant management: proxied to backend
+// NOTE: express.json() is intentionally NOT applied here; the proxy streams the raw body
 app.use('/tenants', tenantsRouter)
+
+// User management: proxied to backend, TenantAdmin/TenantOwner only
+// NOTE: express.json() is intentionally NOT applied here; the proxy streams the raw body
+app.use('/users', usersRouter)
 
 app.listen(config.port, () => {
   console.log(`BFF running on http://localhost:${config.port}`)

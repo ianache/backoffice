@@ -1,0 +1,105 @@
+:root {
+  /* Light Mode Tokens */
+  --surface: #f6faff;
+  --surface-dim: #d6dadf;
+  --surface-bright: #f6faff;
+  --surface-container-lowest: #ffffff;
+  --surface-container-low: #f0f4f9;
+  --surface-container: #eaeef3;
+  --surface-container-high: #e5e8ee;
+  --surface-container-highest: #dfe3e8;
+  --on-surface: #181c20;
+  --on-surface-variant: #414754;
+  --inverse-surface: #2c3135;
+  --inverse-on-surface: #edf1f6;
+  --outline: #727785;
+  --outline-variant: #c1c6d6;
+  --surface-tint: #005bc0;
+  --primary: #005bbf;
+  --on-primary: #ffffff;
+  --primary-container: #1a73e8;
+  --on-primary-container: #ffffff;
+  --inverse-primary: #adc7ff;
+  --secondary: #5b5f64;
+  --on-secondary: #ffffff;
+  --secondary-container: #dde0e6;
+  --on-secondary-container: #5f6368;
+  --tertiary: #9e4300;
+  --on-tertiary: #ffffff;
+  --tertiary-container: #c55500;
+  --on-tertiary-container: #0e0200;
+  --error: #ba1a1a;
+  --on-error: #ffffff;
+  --error-container: #ffdad6;
+  --on-error-container: #93000a;
+  --background: #f6faff;
+  --on-background: #181c20;
+  --surface-variant: #dfe3e8;
+
+  /* Typography */
+  --font-family-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  --font-family-mono: 'JetBrains Mono', source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+
+  /* Shapes */
+  --rounded-sm: 0.25rem;
+  --rounded: 0.5rem;
+  --rounded-md: 0.75rem;
+  --rounded-lg: 1rem;
+  --rounded-xl: 1.5rem;
+  --rounded-full: 9999px;
+
+  /* Spacing */
+  --spacing-base: 4px;
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+}
+
+[data-theme='dark'] {
+  /* Dark Mode Tokens */
+  --surface: #0b141c;
+  --surface-dim: #0b141c;
+  --surface-bright: #313a43;
+  --surface-container-lowest: #060f16;
+  --surface-container-low: #141c24;
+  --surface-container: #182028;
+  --surface-container-high: #222b33;
+  --surface-container-highest: #2d363e;
+  --on-surface: #dae3ee;
+  --on-surface-variant: #c1c6d5;
+  --inverse-surface: #dae3ee;
+  --inverse-on-surface: #29313a;
+  --outline: #8b919e;
+  --outline-variant: #414753;
+  --surface-tint: #abc7ff;
+  --primary: #abc7ff;
+  --on-primary: #002f65;
+  --primary-container: #4d94ff;
+  --on-primary-container: #002c60;
+  --inverse-primary: #005cba;
+  --secondary: #a2c9ff;
+  --on-secondary: #00315c;
+  --secondary-container: #0071c7;
+  --on-secondary-container: #f0f4ff;
+  --tertiary: #67df70;
+  --on-tertiary: #00390d;
+  --tertiary-container: #2eab44;
+  --on-tertiary-container: #00360c;
+  --error: #ffb4ab;
+  --on-error: #690005;
+  --error-container: #93000a;
+  --on-error-container: #ffdad6;
+  --background: #0b141c;
+  --on-background: #dae3ee;
+  --surface-variant: #2d363e;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--on-background);
+  font-family: var(--font-family-sans);
+  margin: 0;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}

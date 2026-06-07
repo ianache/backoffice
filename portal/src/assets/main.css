@@ -1,0 +1,12 @@
+@import './theme.css';
+
+/* Global styles */
+* {
+  box-sizing: border-box;
+}
+
+#app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}

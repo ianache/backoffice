@@ -4,16 +4,17 @@ import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 import App from './App.vue'
 import router from './router/index'
 import { useAuthStore } from './stores/auth'
+import './assets/main.css'
 
 const app = createApp(App)
 const pinia = createPinia()
 pinia.use(piniaPluginPersistedstate)
 
 app.use(pinia)
-app.use(router)
 
-// Init Keycloak BEFORE mounting — prevents flash of unauthenticated content
-const authStore = useAuthStore()
+// Init Keycloak BEFORE registering the router or mounting — prevents flash of unauthenticated content and race conditions
+const authStore = useAuthStore(pinia)
 await authStore.init()
 
+app.use(router)
 app.mount('#app')

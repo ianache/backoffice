@@ -3,7 +3,7 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: complete
-last_updated: "2026-06-07T10:56:00Z"
+last_updated: "2026-06-07T11:15:00Z"
 progress:
   total_phases: 4
   completed_phases: 4
@@ -23,9 +23,9 @@ See: .planning/PROJECT.md (updated 2026-06-06)
 ## Current Position
 
 Phase: 03-user-management IN PROGRESS
-Plan: 03 of 05
-Status: 03-03 COMPLETE — Users data layer (service + Pinia store) done
-Last activity: 2026-06-07 — Phase 03 Plan 03 completed (Portal users service + store — TypeScript interfaces and API calls)
+Plan: 01 COMPLETE (re-run), then 02/03 earlier
+Status: 03-01 COMPLETE — Backend users domain (FastAPI /users endpoints + Keycloak Admin service + audit log migration)
+Last activity: 2026-06-07 — Phase 03 Plan 01 completed (8 /users endpoints, keycloak_admin.py, UserEvent model, user_events migration)
 
 Progress: [██████████] 100% (of phase 06 plans) | [████████░░] 80% (of total roadmap)
 
@@ -56,6 +56,7 @@ Progress: [██████████] 100% (of phase 06 plans) | [███
 | Phase 06-stitch-ui-implementation P03 | 20m | 2 tasks | 4 files |
 | Phase 06-stitch-ui-implementation P04 | 18m | 3 tasks | 6 files |
 | Phase 03-user-management P03 | 2m | 2 tasks | 2 files |
+| Phase 03-user-management P01 | 20m | 2 tasks | 12 files |
 
 ## Accumulated Context
 
@@ -91,6 +92,9 @@ Recent decisions affecting current work:
 - [Phase 03-03]: UserPayload.productRoles uses Record<string, string> for multi-product role assignment
 - [Phase 03-03]: setEnabled uses separate /enable and /disable endpoints (not a PATCH with body)
 - [Phase 03-03]: activeCount/pendingCount exposed as plain functions (not computed refs) for simplicity
+- [Phase 03-01]: MySQL 5.6 has no JSON column type — user_events.context stored as TEXT with JSON serialize/deserialize in service layer
+- [Phase 03-01]: Keycloak role assignment requires GET /roles/{name} first for UUID — cannot assign by name only (returns 400)
+- [Phase 03-01]: Tenant scoping enforced at service layer via actor_tenant_id parameter, never trusting request body for listing
 
 ### Pending Todos
 
@@ -106,5 +110,5 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-06-07
-Stopped at: Completed 03-02-PLAN.md (BFF User Management Layer — /users proxy + Keycloak admin token cache) — CHECKPOINT: awaiting backoffice-admin-svc Keycloak provisioning
+Stopped at: Completed 03-01-PLAN.md (Backend User Management — FastAPI /users endpoints + keycloak_admin service + UserEvent migration)
 Resume file: None

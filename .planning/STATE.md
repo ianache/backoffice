@@ -23,9 +23,9 @@ See: .planning/PROJECT.md (updated 2026-06-06)
 ## Current Position
 
 Phase: 03-user-management IN PROGRESS
-Plan: 04 COMPLETE — 03-01 (backend), 03-02 (BFF layer), 03-03 (portal store+service), 03-04 (portal UI) all done
-Status: 03-04 COMPLETE — Full Users UI: UserTable, UserForm, UserRolesForm, UserActivityTab, UserDrawer, UsersView at /users
-Last activity: 2026-06-07 — Phase 03 Plan 04 completed (portal user management UI, 6 files, /users route)
+Plan: 05 AT CHECKPOINT — automated task complete, awaiting human E2E verification
+Status: 03-05 CHECKPOINT — /users route + role-guarded nav wired; waiting for human sign-off on 6 test scenarios
+Last activity: 2026-06-07 — Phase 03 Plan 05 task 1 completed (router roles + MainLayout Users nav item)
 
 Progress: [██████████] 100% (of phase 06 plans) | [████████░░] 80% (of total roadmap)
 
@@ -58,6 +58,7 @@ Progress: [██████████] 100% (of phase 06 plans) | [███
 | Phase 03-user-management P03 | 2m | 2 tasks | 2 files |
 | Phase 03-user-management P01 | 20m | 2 tasks | 12 files |
 | Phase 03-user-management P04 | 5m | 2 tasks | 7 files |
+| Phase 03-user-management P05 | 5m | 1 task (+ checkpoint) | 2 files |
 
 ## Accumulated Context
 
@@ -99,6 +100,8 @@ Recent decisions affecting current work:
 - [Phase 03-04]: Router /users roles include PlatformAdmin + TenantAdmin + TenantOwner — permissive for Phase 3, can be narrowed later
 - [Phase 03-04]: UserDrawer uses custom CSS tab bar (not md-tabs) — allows disabled Activity tab when user=null without MDWC disabled attribute inconsistencies
 - [Phase 03-04]: UserActivityTab calls usersService.listEvents() directly on mount, not through store (per-user transient data pattern)
+- [Phase 03-05]: Router /users roles narrowed to TenantAdmin + TenantOwner only — PlatformAdmin removed (was permissive in 03-04)
+- [Phase 03-05]: Tenants nav button gained explicit v-if PlatformAdmin guard — TenantAdmins no longer see Tenants nav item
 
 ### Pending Todos
 
@@ -114,5 +117,5 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-06-07
-Stopped at: Completed 03-04-PLAN.md (Users Portal UI — UserTable, UserDrawer, UsersView, /users route — Phase 03 complete)
+Stopped at: 03-05-PLAN.md — Task 1 complete (router + nav); at checkpoint:human-verify awaiting E2E sign-off
 Resume file: None

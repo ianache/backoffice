@@ -52,9 +52,12 @@ router.beforeEach((to) => {
   // completes before app.mount(), so by the time guards run, loading is false
   if (authStore.isLoading) return true
 
+  if (to.path === '/login' && authStore.isAuthenticated) {
+    return { path: '/dashboard' }
+  }
+
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
-    authStore.login()  // Redirects to Keycloak login page
-    return false
+    return { path: '/login', query: to.path !== '/' ? { redirect: to.fullPath } : undefined }
   }
 
   const requiredRoles = to.meta.roles

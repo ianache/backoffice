@@ -70,13 +70,14 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import StitchTextField from '../components/ui/StitchTextField.vue'
 import StitchButton from '../components/ui/StitchButton.vue'
 
 const authStore = useAuthStore()
 const router = useRouter()
+const route = useRoute()
 
 const email = ref('')
 const password = ref('')
@@ -85,15 +86,13 @@ const error = ref('')
 
 async function handleLogin() {
   if (isLoading.value) return
-  
   isLoading.value = true
   error.value = ''
-  
   try {
     await authStore.loginWithCredentials(email.value, password.value)
-    router.push('/dashboard')
+    const redirect = typeof route.query.redirect === 'string' ? route.query.redirect : '/dashboard'
+    router.push(redirect)
   } catch (e: any) {
-    console.error('Login error:', e)
     error.value = e.message || 'Failed to sign in. Please check your credentials.'
   } finally {
     isLoading.value = false

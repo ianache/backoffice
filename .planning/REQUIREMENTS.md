@@ -41,12 +41,12 @@ Requirements para la Fase 1 (Tenants + Usuarios + Feature Flags). Cada uno mapea
 
 ### Feature Flags
 
-- [ ] **FLAG-01**: PlatformAdmin puede crear flags a nivel Global con name, default, complex, ttl, enabled, environment
-- [ ] **FLAG-02**: TenantAdmin puede crear flags a nivel Tenant que sobrescriben el nivel Global
-- [ ] **FLAG-03**: ProductManager puede crear flags a nivel Producto que sobrescriben el nivel Tenant
-- [ ] **FLAG-04**: La evaluación de flags sigue jerarquía determinista: Empresa > Producto > Tenant > Global
-- [ ] **FLAG-05**: Reglas de evaluación soportan los operadores: equals, in, notIn, contains, regex
-- [ ] **FLAG-06**: Segmentos de usuarios son reutilizables y pueden aplicarse en múltiples flags de distintos niveles
+- [x] **FLAG-01**: PlatformAdmin puede crear flags a nivel Global con name, default, complex, ttl, enabled, environment
+- [x] **FLAG-02**: TenantAdmin puede crear flags a nivel Tenant que sobrescriben el nivel Global
+- [x] **FLAG-03**: ProductManager puede crear flags a nivel Producto que sobrescriben el nivel Tenant
+- [x] **FLAG-04**: La evaluación de flags sigue jerarquía determinista: Empresa > Producto > Tenant > Global
+- [x] **FLAG-05**: Reglas de evaluación soportan los operadores: equals, in, notIn, contains, regex
+- [x] **FLAG-06**: Segmentos de usuarios son reutilizables y pueden aplicarse en múltiples flags de distintos niveles
 
 ### Rule Builder
 
@@ -117,12 +117,12 @@ Cual fase cubre cuáles requerimientos. Actualizado durante creación del roadma
 | USER-04 | Phase 3 | Complete |
 | USER-05 | Phase 3 | Complete |
 | USER-06 | Phase 3 | Complete |
-| FLAG-01 | Phase 4 | Pending |
-| FLAG-02 | Phase 4 | Pending |
-| FLAG-03 | Phase 4 | Pending |
-| FLAG-04 | Phase 4 | Pending |
-| FLAG-05 | Phase 4 | Pending |
-| FLAG-06 | Phase 4 | Pending |
+| FLAG-01 | Phase 4 | Complete |
+| FLAG-02 | Phase 4 | Complete |
+| FLAG-03 | Phase 4 | Complete |
+| FLAG-04 | Phase 4 | Complete |
+| FLAG-05 | Phase 4 | Complete |
+| FLAG-06 | Phase 4 | Complete |
 | RULE-01 | Phase 5 | Pending |
 | RULE-02 | Phase 5 | Pending |
 | RULE-03 | Phase 5 | Pending |

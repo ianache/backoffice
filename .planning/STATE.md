@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-last_updated: "2026-06-07T15:05:20.546Z"
+last_updated: "2026-06-07T16:14:30Z"
 progress:
   total_phases: 5
-  completed_phases: 5
+  completed_phases: 3
   total_plans: 19
-  completed_plans: 19
+  completed_plans: 10
 ---
 
 # Project State
@@ -22,12 +22,12 @@ See: .planning/PROJECT.md (updated 2026-06-06)
 
 ## Current Position
 
-Phase: 03-user-management COMPLETE
-Plan: 06 COMPLETE — tenant isolation gap closed, E2E verified and approved by human
-Status: Phase 3 COMPLETE — all 6 plans executed, USER-01 through USER-06 requirements met, tenant isolation confirmed
-Last activity: 2026-06-07 — Phase 03 Plan 06 complete (Keycloak protocol mapper configured, cross-tenant isolation verified)
+Phase: 04-feature-flags IN PROGRESS
+Plan: 01 COMPLETE — backend domain with evaluation engine, /flags + /segments endpoints
+Status: Phase 4 Plan 1/5 — feature_flags DB tables + FastAPI domain + 28 unit tests
+Last activity: 2026-06-07 — Phase 04 Plan 01 complete (evaluation engine, CRUD, routers)
 
-Progress: [██████████] 100% (of phase 03 plans) | [██████████░░░░] 75% (of total roadmap)
+Progress: [██░░░░░░░░] 20% (of phase 04 plans) | [████████████░░] 53% (of total roadmap)
 
 ## Performance Metrics
 
@@ -60,6 +60,7 @@ Progress: [██████████] 100% (of phase 03 plans) | [███
 | Phase 03-user-management P04 | 5m | 2 tasks | 7 files |
 | Phase 03-user-management P05 | 10m | 2 tasks (1 auto + 1 human-verify) | 2 files |
 | Phase 03-user-management P06 | 20m | 3 tasks (2 auto + 1 human-verify) | 3 files |
+| Phase 04-feature-flags P01 | 5m | 2 tasks (TDD) | 9 files |
 
 ## Accumulated Context
 
@@ -105,6 +106,10 @@ Recent decisions affecting current work:
 - [Phase 03-05]: Tenants nav button gained explicit v-if PlatformAdmin guard — TenantAdmins no longer see Tenants nav item
 - [Phase 03-user-management]: Dual JWT claim name fallback (tenant_id / tenantId) in requireAuth covers both Keycloak mapper emission styles [03-06]
 - [Phase 03-user-management]: Keycloak protocol mapper configured on usuario scope (covers both portal+bff clients) — tenant_id flows in JWT, cross-tenant isolation E2E verified [03-06]
+- [Phase 04-01]: evaluate_flag() uses SCOPE_PRIORITY dict + max() for deterministic priority — company(4)>product(3)>tenant(2)>global(1), not recency-based
+- [Phase 04-01]: _evaluate_rule() uses OPERATORS dispatch dict (not if/elif chain) — returns False on unknown operator or missing user attribute, never raises
+- [Phase 04-01]: rules, tags, members stored as TEXT (JSON arrays) in feature_flags/segments tables — MySQL 5.6 safe, json.dumps/loads in service layer
+- [Phase 04-01]: FlagResponse.model_validator(mode='before') handles both dict input and ORM objects for TEXT deserialization
 
 ### Pending Todos
 
@@ -121,5 +126,5 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-06-07
-Stopped at: Completed 03-06-PLAN.md — Phase 3 User Management fully complete with tenant isolation gap closed and E2E verified
+Stopped at: Completed 04-01-PLAN.md — Feature Flags backend domain complete (evaluation engine, /flags, /segments, 28 tests)
 Resume file: None

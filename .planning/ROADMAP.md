@@ -12,7 +12,7 @@ La plataforma se construye de afuera hacia adentro — primero la puerta de entr
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Foundation & Auth** - Autenticación funciona; PlatformAdmin puede entrar al sistema con roles propagados
+- [x] **Phase 1: Foundation & Auth** - Autenticación funciona; PlatformAdmin puede entrar al sistema con roles propagados
 - [ ] **Phase 2: Tenant Management** - PlatformAdmin puede crear, configurar y gestionar el ciclo de vida completo de tenants
 - [ ] **Phase 3: User Management** - TenantAdmin puede gestionar usuarios dentro de su tenant con audit completo
 - [ ] **Phase 4: Feature Flags** - Flags configurables en 4 niveles con evaluación jerárquica determinista
@@ -32,10 +32,10 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 4 plans
 
 Plans:
-- [ ] 01-01-PLAN.md — Monorepo scaffold (pnpm workspaces) + Keycloak Docker Compose with pre-configured backoffice realm
-- [ ] 01-02-PLAN.md — BFF Node.js/Express: jose JWT validation middleware, /auth/me endpoint, role enforcement
-- [ ] 01-03-PLAN.md — Vue 3 portal shell: keycloak-js, Pinia auth store, Vue Router guards, login/dashboard views
-- [ ] 01-04-PLAN.md — End-to-end integration verification (automated smoke tests + human checkpoint)
+- [x] 01-01-PLAN.md — Monorepo scaffold (pnpm workspaces) + Keycloak Docker Compose with pre-configured backoffice realm
+- [x] 01-02-PLAN.md — BFF Node.js/Express: jose JWT validation middleware, /auth/me endpoint, role enforcement
+- [x] 01-03-PLAN.md — Vue 3 portal shell: keycloak-js, Pinia auth store, Vue Router guards, login/dashboard views
+- [x] 01-04-PLAN.md — End-to-end integration verification (automated smoke tests + human checkpoint)
 
 ### Phase 2: Tenant Management
 **Goal**: PlatformAdmin puede gestionar el ciclo de vida completo de tenants — crear, configurar, filtrar, suspender y asociar productos
@@ -90,7 +90,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation & Auth | 2/4 | In Progress|  |
+| 1. Foundation & Auth | 4/4 | Complete | 2026-06-07 |
 | 2. Tenant Management | 0/TBD | Not started | - |
 | 3. User Management | 0/TBD | Not started | - |
 | 4. Feature Flags | 0/TBD | Not started | - |

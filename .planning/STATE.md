@@ -2,13 +2,13 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: unknown
-last_updated: "2026-06-06T22:24:45.815Z"
+status: phase-complete
+last_updated: "2026-06-07T00:06:38Z"
 progress:
-  total_phases: 1
-  completed_phases: 0
+  total_phases: 5
+  completed_phases: 1
   total_plans: 4
-  completed_plans: 2
+  completed_plans: 4
 ---
 
 # Project State
@@ -18,33 +18,33 @@ progress:
 See: .planning/PROJECT.md (updated 2026-06-06)
 
 **Core value:** Los feature flags jerárquicos con evaluación determinista deben funcionar — sin esto, los tenants no pueden controlar su funcionalidad y el sistema no tiene razón de existir.
-**Current focus:** Phase 1 — Foundation & Auth
+**Current focus:** Phase 2 — Tenant Management (next phase)
 
 ## Current Position
 
-Phase: 1 of 5 (Foundation & Auth)
-Plan: 2 of 4 in current phase
-Status: Executing
-Last activity: 2026-06-06 — Plan 01-02 completed (BFF auth layer: JWT middleware + /auth/me endpoint)
+Phase: 1 of 5 COMPLETE (Foundation & Auth)
+Plan: 4 of 4 COMPLETE
+Status: Phase 1 complete — ready for Phase 2 planning
+Last activity: 2026-06-07 — Plan 01-04 completed (E2E integration verified, human-approved)
 
-Progress: [██░░░░░░░░] 10%
+Progress: [████░░░░░░] 20%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 2
-- Average duration: 5.5 min
-- Total execution time: 0.18 hours
+- Total plans completed: 4
+- Average duration: ~12 min (including human checkpoint time)
+- Total execution time: ~1.5 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 01-foundation-and-auth | 2 | 11 min | 5.5 min |
+| 01-foundation-and-auth | 4 | ~50 min | ~12.5 min |
 
 **Recent Trend:**
-- Last 5 plans: 7 min, 4 min
-- Trend: improving
+- Last 5 plans: 7 min, 4 min, 4 min, ~30 min (incl. QA Keycloak setup + human verify)
+- Trend: stable
 
 *Updated after each plan completion*
 
@@ -65,17 +65,22 @@ Recent decisions affecting current work:
 - [Phase 01-02]: JWKS singleton (createRemoteJWKSet) prevents per-request key fetching — caches and handles Keycloak key rotation
 - [Phase 01-02]: APP_ROLES allowlist in auth middleware strips Keycloak internals (offline_access, uma_authorization) before propagating roles to frontend
 - [Phase 01-02]: clockTolerance: 10s in jwtVerify to handle BFF/Keycloak clock skew
+- [Phase 01-04]: Remote QA Keycloak (oauth2.qa.comsatel.com.pe, realm Apps) used instead of local Docker — eliminates Docker Desktop dependency
+- [Phase 01-04]: checkLoginIframe: false required for cross-origin Keycloak (CSP frame-ancestors block)
+- [Phase 01-04]: backoffice-portal (public PKCE) + backoffice-bff (confidential) clients provisioned in Apps realm
+- [Phase 01-04]: Test user bo.admin / Backoffice1! with PlatformAdmin role — E2E verified
 
 ### Pending Todos
 
-- Start Docker Desktop and run `docker compose up -d` to complete Keycloak runtime verification
+- Plan Phase 2: Tenant Management (TNNT-01 through TNNT-06)
+- Verify BFF port 3000 is free before starting (Dashboard Studio may occupy it)
 
 ### Blockers/Concerns
 
-- Docker Desktop not in PATH during plan execution — Keycloak runtime verification deferred to user
+- None — Phase 1 complete, all auth requirements verified by human
 
 ## Session Continuity
 
-Last session: 2026-06-06
-Stopped at: Completed 01-02-PLAN.md (BFF auth layer: JWT middleware + /auth/me endpoint)
+Last session: 2026-06-07
+Stopped at: Completed 01-04-PLAN.md (E2E integration verified — Phase 1 complete)
 Resume file: None

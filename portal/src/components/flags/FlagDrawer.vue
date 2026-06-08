@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import type { FeatureFlag, FlagPayload } from '../../services/flags'
 import { getSegmentsByFlag, addSegmentToFlag, removeSegmentFromFlag } from '../../services/flags'
 import { useFeatureFlagsStore } from '../../stores/flags'
@@ -17,6 +18,7 @@ const emit = defineEmits<{
 }>()
 
 const flagsStore = useFeatureFlagsStore()
+const router = useRouter()
 
 // Key to force FlagForm to remount when drawer opens with a new flag
 const formKey = ref(0)
@@ -67,6 +69,13 @@ async function handleSave(payload: FlagPayload) {
 
 function triggerSave() {
   flagFormRef.value?.handleSave()
+}
+
+function openRuleBuilder() {
+  if (props.flag?.id) {
+    emit('close')
+    router.push({ name: 'rule-builder', params: { id: props.flag.id } })
+  }
 }
 </script>
 
@@ -119,6 +128,11 @@ function triggerSave() {
           <!-- Footer -->
           <div class="drawer-footer">
             <StitchButton variant="text" @click="emit('close')">Cancel</StitchButton>
+            <button v-if="props.flag?.id" type="button" @click="openRuleBuilder"
+              class="flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-primary border border-primary rounded-lg hover:bg-primary hover:text-on-primary transition-colors">
+              <span class="material-symbols-outlined text-base">rule</span>
+              Edit Rules
+            </button>
             <StitchButton variant="filled" @click="triggerSave">
               {{ flag ? 'Save Changes' : 'Create Flag' }}
             </StitchButton>

@@ -49,6 +49,17 @@ const routes: RouteRecordRaw[] = [
     component: () => import('../views/FlagsView.vue'),
     meta: { requiresAuth: true, roles: ['PlatformAdmin', 'TenantAdmin', 'TenantOwner', 'ProductManager'], layout: 'main', title: 'Feature Flags' },
   },
+  {
+    path: '/flags/:id/rules',
+    name: 'rule-builder',
+    component: () => import('../views/RuleBuilderView.vue'),
+    meta: {
+      requiresAuth: true,
+      roles: ['PlatformAdmin', 'TenantAdmin', 'TenantOwner', 'ProductManager'],
+      layout: 'main',
+      title: 'Rule Builder'
+    },
+  },
 ]
 
 const router = createRouter({

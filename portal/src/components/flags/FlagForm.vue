@@ -22,10 +22,9 @@ const environment = ref('production')
 const complex = ref(false)
 const ttlDays = ref<number | null>(null)
 const tagsRaw = ref('')
-const rulesRaw = ref('')
 const selectedSegmentIds = ref<number[]>([])
 
-const errors = ref<{ name?: string; scope?: string; rules?: string }>({})
+const errors = ref<{ name?: string; scope?: string }>({})
 
 // Reset form when flag changes
 watch(
@@ -39,7 +38,6 @@ watch(
       complex.value = flag.complex
       ttlDays.value = flag.ttl
       tagsRaw.value = flag.tags.join(', ')
-      rulesRaw.value = flag.rules.length ? JSON.stringify(flag.rules, null, 2) : ''
       selectedSegmentIds.value = props.linkedSegmentIds ?? []
     } else {
       name.value = ''
@@ -49,7 +47,6 @@ watch(
       complex.value = false
       ttlDays.value = null
       tagsRaw.value = ''
-      rulesRaw.value = ''
       selectedSegmentIds.value = []
     }
     errors.value = {}
@@ -71,13 +68,6 @@ function validate(): boolean {
   if (!scope.value) {
     errors.value.scope = 'Scope is required'
   }
-  if (rulesRaw.value.trim()) {
-    try {
-      JSON.parse(rulesRaw.value)
-    } catch {
-      errors.value.rules = 'Rules must be valid JSON array'
-    }
-  }
   return Object.keys(errors.value).length === 0
 }
 
@@ -89,15 +79,6 @@ function handleSave() {
     .map(t => t.trim())
     .filter(t => t.length > 0)
 
-  let rules = undefined
-  if (rulesRaw.value.trim()) {
-    try {
-      rules = JSON.parse(rulesRaw.value)
-    } catch {
-      return
-    }
-  }
-
   const payload: FlagPayload = {
     name: name.value.trim(),
     scope: scope.value,
@@ -106,7 +87,6 @@ function handleSave() {
     complex: complex.value,
     ttl: ttlDays.value ?? undefined,
     tags: tags.length ? tags : undefined,
-    rules: rules,
   }
 
   emit('save', payload)
@@ -218,18 +198,14 @@ defineExpose({ handleSave, selectedSegmentIds })
       <span class="form-hint">Users in selected segments will see this flag as enabled.</span>
     </div>
 
-    <!-- Rules (JSON) -->
+    <!-- Rules (read-only notice) -->
     <div class="form-field">
-      <label class="form-label">Rules (JSON array)</label>
-      <textarea
-        v-model="rulesRaw"
-        class="form-input form-textarea form-textarea--code"
-        :class="{ 'form-input--error': errors.rules }"
-        placeholder='[{"attribute":"country","operator":"equals","value":"PE","result":true}]'
-        rows="4"
-      ></textarea>
-      <span v-if="errors.rules" class="form-error">{{ errors.rules }}</span>
-      <span v-else class="form-hint">Optional. Phase 5 will add a visual rule builder.</span>
+      <label class="form-label">Rules</label>
+      <p class="text-sm text-on-surface-variant bg-surface-container rounded-lg px-3 py-2 border border-outline-variant">
+        Rules are managed in the
+        <span class="text-primary font-medium">Rule Builder</span>
+        — open it from the drawer header when editing a flag.
+      </p>
     </div>
   </form>
 </template>

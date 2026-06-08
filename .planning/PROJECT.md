@@ -2,7 +2,7 @@
 
 ## What This Is
 
-Plataforma empresarial de administración multi-tenant que permite gestionar tenants, usuarios por tenant y feature flags jerárquicos con evaluación determinista. Diseñada para operar en entornos multi-producto, multi-país y multi-idioma, con personalización whitelabel a dos niveles (tenant → empresa). La arquitectura sigue el patrón Web App (Vue + Pinia) + BFF Node.js + Backend Python + PostgreSQL + Keycloak.
+Plataforma empresarial de administración multi-tenant que permite gestionar tenants, usuarios por tenant y feature flags jerárquicos con evaluación determinista. Incluye un rule builder visual con drag & drop, evaluación en tiempo real, e interfaz alineada al design system de Google Stitch (Material 3). Diseñada para operar en entornos multi-producto, multi-país y multi-idioma. Stack: Vue 3 + Pinia / Node.js BFF / Python FastAPI / MySQL / Keycloak.
 
 ## Core Value
 
@@ -10,54 +10,53 @@ Los feature flags jerárquicos con evaluación determinista deben funcionar — 
 
 ## Requirements
 
-### Validated
+### Validated (v1.0)
 
-(None yet — ship to validate)
+- ✓ PlatformAdmin puede crear, editar, suspender y eliminar tenants — v1.0
+- ✓ Tenant almacena: name, country, language, currency, units, whitelabel_config, status — v1.0
+- ✓ PlatformAdmin puede asociar productos habilitados a un tenant — v1.0
+- ✓ TenantAdmin puede gestionar usuarios (crear, editar, activar/desactivar, resetear MFA) — v1.0
+- ✓ Roles asignables: TenantOwner, TenantAdmin, TenantViewer, ProductManager, ProductDeveloper, ProductQA — v1.0
+- ✓ Toda acción de usuario genera entrada en audit log — v1.0
+- ✓ Autenticación via Keycloak con PKCE y ROPC — v1.0
+- ✓ Feature flags configurables en 3 niveles: Global → Tenant → Producto — v1.0
+- ✓ Resolución jerárquica: Producto > Tenant > Global — v1.0
+- ✓ Operadores de evaluación: equals, in, notIn, contains, regex — v1.0
+- ✓ Segmentos reutilizables en múltiples flags y niveles — v1.0
+- ✓ Rule Builder visual: crear/editar reglas sin código — v1.0
+- ✓ Drag & drop para prioridad de reglas — v1.0
+- ✓ Live simulator: previsualización de evaluación con JSON de contexto — v1.0
+- ✓ UI alineada a Google Stitch (Material 3, Nav Rail, high-density) — v1.0
+- ✓ Soporte Light/Dark mode persistente — v1.0
 
-### Active
+### Active (v1.1+)
 
-#### Tenant Management
-- [ ] PlatformAdmin puede crear, editar, suspender y eliminar tenants
-- [ ] Tenant almacena: name, country, default_language, default_currency, default_units, whitelabel_config, status
-- [ ] PlatformAdmin puede asociar productos habilitados a un tenant
+#### Client Management
+- [ ] TenantAdmin puede crear clientes tipo Persona y Empresa
+- [ ] Doble whitelabel: Empresa hereda y sobrescribe configuración de Tenant
 
-#### User Management
-- [ ] TenantAdmin puede crear usuarios dentro de su tenant
-- [ ] Usuarios tienen roles asignables: TenantOwner, TenantAdmin, TenantViewer, ProductManager, ProductDeveloper, ProductQA
-- [ ] TenantAdmin puede activar/desactivar usuarios
-- [ ] TenantAdmin puede resetear MFA de un usuario
-- [ ] Toda acción de usuario genera entrada en audit log
+#### Feature Flags Avanzados
+- [ ] Rollout porcentual — activación gradual de flag para porcentaje configurable de usuarios
+- [ ] Nivel Empresa en jerarquía de flags (Empresa > Producto > Tenant > Global)
 
-#### Authentication & MFA
-- [ ] Autenticación via Keycloak como IdP
+#### Dashboard & Observabilidad
+- [ ] KPI cards en dashboard (Active Tenants, Total Products, System Health)
+- [ ] Sección de eventos, alertas y notificaciones en tiempo real
+
+#### MFA Avanzado
 - [ ] MFA obligatorio para roles críticos (PlatformAdmin, TenantOwner, TenantAdmin)
-- [ ] Factores soportados: TOTP, WebAuthn/FIDO2, OTP (fallback)
-- [ ] Autenticación adaptativa basada en riesgo
-
-#### Feature Flags
-- [ ] Feature flags configurables en 4 niveles: Global → Tenant → Producto → Empresa
-- [ ] Atributos de flag: name, default, complex, ttl, enabled, environment
-- [ ] Resolución jerárquica: Empresa > Producto > Tenant > Global
-- [ ] Reglas de evaluación: equals, in, notIn, contains, regex, rollout porcentual
-- [ ] Segmentos reutilizables y jerárquicos
-- [ ] Evaluación local < 1ms, evaluación remota < 50ms
-
-#### Rule Builder
-- [ ] Crear y editar reglas visualmente
-- [ ] Ordenar reglas via drag & drop
-- [ ] Previsualización de resultados de evaluación
+- [ ] TOTP, WebAuthn/FIDO2, OTP como fallback
 
 ### Out of Scope
 
-- Gestión de clientes (personas y empresas) — Fase 2
-- Doble whitelabel (tenant + empresa) — Fase 2
-- Localización avanzada (idioma, moneda, formatos por nivel) — Fase 2
-- Observabilidad / SLA / SLO / Alertas — Fase 3
-- MFA avanzado (Biométricos), Experimentos A/B — Fase 4
-- Integraciones externas — Fase 4
-- Mobile app — fuera de scope
+- Localización avanzada (idioma, moneda, formatos por nivel) — diferido v2.0
+- Experimentos A/B — diferido v2.0
+- Mobile app — web-first strategy
+- Integraciones externas — diferido v2.0
 
 ## Context
+
+**v1.0 shipped 2026-06-08** — 7 fases, 29 planes, ~8,016 LOC (5,882 TS/Vue + 1,629 Python + 505 Node.js).
 
 El PRD completo está en `PRD.md` en la raíz del proyecto. Contiene el modelo de datos completo (15+ tablas), ADRs, ICD (Interface Control Document) con todas las rutas Web→BFF→Backend→Keycloak, y el modelo de permisos detallado.
 
@@ -69,9 +68,12 @@ El diseño UX/UI vive en Google Stitch: https://stitch.withgoogle.com/u/1/projec
 3. Soluciones aburridas, legibles y seguras para producción
 4. Explicar POR QUÉ antes de generar cambios grandes
 
+**Deuda técnica conocida:**
+- Visual baselines de `portal/tests/visual/internal.spec.ts` no generadas (4/5 faltantes) — nav timing issue en Playwright, infra E2E lista en `portal/.env.playwright`
+
 ## Constraints
 
-- **Stack**: Vue 3 + Pinia / Node.js BFF / Python Backend / PostgreSQL / Keycloak — cerrado, ya decidido
+- **Stack**: Vue 3 + Pinia / Node.js BFF / Python FastAPI / MySQL / Keycloak — cerrado
 - **Multi-tenant**: Aislamiento lógico (no físico) — decisión de arquitectura
 - **Performance**: Evaluación local flags < 1ms, remota < 50ms, health checks < 100ms
 - **Disponibilidad**: 99.9% uptime target
@@ -81,13 +83,17 @@ El diseño UX/UI vive en Google Stitch: https://stitch.withgoogle.com/u/1/projec
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Vue 3 + Pinia para Web App | Ecosistema reactivo moderno, composición flexible | — Pending |
-| Node.js BFF como capa intermedia | Desacopla Web de Backend, permite transformación de datos | — Pending |
-| Python Backend | Stack elegido para lógica de negocio y servicios internos | — Pending |
-| Keycloak como IdP | Solución enterprise para auth + MFA + roles | — Pending |
-| Multi-tenant lógico | Simplifica operaciones frente a aislamiento físico | — Pending |
-| Feature Flags como core value | Sin evaluación determinista, el sistema no diferencia | — Pending |
-| Evaluación jerárquica: Empresa > Producto > Tenant > Global | Permite personalización granular sin conflictos | — Pending |
+| Vue 3 + Pinia para Web App | Ecosistema reactivo moderno, composición flexible | ✓ Funcionó bien — tipado con composables limpio |
+| Node.js BFF como capa intermedia | Desacopla Web de Backend, permite transformación de datos | ✓ Proxy pattern con jose JWT validation probado |
+| Python FastAPI Backend | Stack elegido para lógica de negocio y servicios internos | ✓ SQLAlchemy + Alembic migrations sólido |
+| Keycloak como IdP | Solución enterprise para auth + MFA + roles | ✓ PKCE + ROPC ambos funcionales en QA |
+| MySQL (no PostgreSQL) | Decisión de infra del cliente | ✓ Alembic migrations compatibles |
+| Multi-tenant lógico | Simplifica operaciones frente a aislamiento físico | ✓ tenant_id en JWT claims propagado a toda la stack |
+| Feature Flags como core value | Sin evaluación determinista, el sistema no diferencia | ✓ Jerarquía 3 niveles + segmentos reutilizables |
+| Evaluación jerárquica: Producto > Tenant > Global | Permite personalización granular sin conflictos | ✓ TypeScript port de Python en rule builder verified |
+| Google Stitch (Material 3) como design system | Coherencia visual con Google Cloud Console style | ✓ Nav Rail 72px + high-density table + M3 tokens |
+| vuedraggable@next para rule builder | Única lib drag-and-drop compatible con Vue 3 | ✓ Funcionó con handle=".drag-handle" |
+| VITE_E2E_SKIP_AUTH para Playwright E2E | Evita Keycloak init en tests visuales | ⚠️ Infra lista, snapshots pendientes de generar |
 
 ---
-*Last updated: 2026-06-06 after initialization*
+*Last updated: 2026-06-08 after v1.0 milestone*

@@ -1,148 +1,39 @@
 # Roadmap: BackOffice Multi-Tenant Platform
 
-## Overview
+## Milestones
 
-La plataforma se construye de afuera hacia adentro — primero la puerta de entrada (autenticación), luego el contenedor (tenants), luego los habitantes (usuarios), luego el núcleo de valor del producto (feature flags con evaluación jerárquica), y finalmente la interfaz visual que hace todo eso operable (rule builder). Cada fase entrega una capacidad completa y verificable antes de que empiece la siguiente.
+- ✅ **v1.0 BackOffice MVP** — Phases 1-6 (shipped 2026-06-08)
+- 📋 **v1.1** — Phases 7+ (planned)
 
 ## Phases
 
-**Phase Numbering:**
-- Integer phases (1, 2, 3): Planned milestone work
-- Decimal phases (2.1, 2.2): Urgent insertions (marked with INSERTED)
+<details>
+<summary>✅ v1.0 BackOffice MVP (Phases 1-6) — SHIPPED 2026-06-08</summary>
 
-Decimal phases appear between their surrounding integers in numeric order.
+- [x] Phase 1: Foundation & Auth (4/4 plans) — completed 2026-06-07
+- [x] Phase 2: Tenant Management (4/4 plans) — completed 2026-06-07
+- [x] Phase 2.1: UI System & Brand Alignment (1/1 plan) — completed 2026-06-07
+- [x] Phase 3: User Management (6/6 plans) — completed 2026-06-07
+- [x] Phase 4: Feature Flags (7/7 plans) — completed 2026-06-07
+- [x] Phase 5: Rule Builder (3/3 plans) — completed 2026-06-08
+- [x] Phase 6: Stitch UI Implementation (4/4 plans) — completed 2026-06-06
 
-- [x] **Phase 1: Foundation & Auth** - Autenticación funciona; PlatformAdmin puede entrar al sistema con roles propagados
-- [x] **Phase 2: Tenant Management** - PlatformAdmin puede crear, configurar y gestionar el ciclo de vida completo de tenants
-- [x] **Phase 2.1: UI System & Brand Alignment** (INSERTED) - Alineación con Google Stitch y sistema de temas Light/Dark
-- [x] **Phase 3: User Management** - TenantAdmin puede gestionar usuarios dentro de su tenant con audit completo
-- [x] **Phase 4: Feature Flags** - Flags configurables en 4 niveles con evaluación jerárquica determinista; segmentos reutilizables; FLAG-06 wired and human-verified (7/7 plans done)
-- [x] **Phase 5: Rule Builder** - Usuarios pueden crear, ordenar y previsualizar reglas de evaluación visualmente; RULE-01/02/03 E2E verified (3/3 plans done)
-- [ ] **Phase 6: Stitch UI Implementation** - Implementación de la página de login y ajuste de páginas internas según Google Stitch
+Full archive: `.planning/milestones/v1.0-ROADMAP.md`
 
-## Phase Details
+</details>
 
-### Phase 1: Foundation & Auth
-**Goal**: Los usuarios autorizados pueden acceder al sistema con sus roles correctamente propagados desde Keycloak al frontend
-**Depends on**: Nothing (first phase)
-**Requirements**: AUTH-01, AUTH-02, AUTH-03
-**Success Criteria** (what must be TRUE):
-  1. Un usuario puede ingresar con email/password y Keycloak autentica la sesión
-  2. La sesión persiste con JWT válido entre recargas de página y navegación interna
-  3. Los roles del usuario (PlatformAdmin, TenantAdmin, etc.) son visibles y correctamente aplicados en el frontend
-  4. Un usuario sin los permisos correctos no puede acceder a rutas protegidas
-**Plans**: 4 plans
+### 📋 v1.1 (Planned)
 
-Plans:
-- [x] 01-01-PLAN.md — Monorepo scaffold (pnpm workspaces) + Keycloak Docker Compose with pre-configured backoffice realm
-- [x] 01-02-PLAN.md — BFF Node.js/Express: jose JWT validation middleware, /auth/me endpoint, role enforcement
-- [x] 01-03-PLAN.md — Vue 3 portal shell: keycloak-js, Pinia auth store, Vue Router guards, login/dashboard views
-- [x] 01-04-PLAN.md — End-to-end integration verification (automated smoke tests + human checkpoint)
-
-**Plans**: 4 plans
-
-Plans:
-- [x] 02-01-PLAN.md — Bootstrap FastAPI + MySQL + Alembic
-- [x] 02-02-PLAN.md — FastAPI Tenants domain (Models, Schemas, Service, Router)
-- [x] 02-03-PLAN.md — BFF Proxy to Backend
-- [x] 02-04-PLAN.md — Portal UI (Tenants list, drawer, forms, store)
-
-### Phase 2.1: UI System & Brand Alignment
-**Goal**: El portal sigue los lineamientos de diseño de Google Stitch y soporta temas Light/Dark para mejorar la experiencia de usuario y coherencia visual
-**Depends on**: Phase 2
-**Requirements**: UI-01, UI-02
-**Success Criteria** (what must be TRUE):
-  1. Los componentes visuales y espaciado siguen las especificaciones de Google Stitch
-  2. El usuario puede alternar entre modo Light y Dark mediante un toggle en el menú principal
-  3. La preferencia de tema persiste entre sesiones
-**Plans**: 1 plan
-
-Plans:
-- [x] 02.1-01-PLAN.md — Research & UI Planning (Stitch alignment + Theme System)
-
-### Phase 3: User Management
-**Goal**: TenantAdmin puede gestionar usuarios dentro de su tenant — crear, asignar roles, activar/desactivar y auditar todas las acciones
-**Depends on**: Phase 2
-**Requirements**: USER-01, USER-02, USER-03, USER-04, USER-05, USER-06
-**Success Criteria** (what must be TRUE):
-  1. TenantAdmin puede crear un usuario en su tenant con email, nombre y rol asignado
-  2. TenantAdmin puede asignar y modificar roles de tenant (TenantOwner, TenantAdmin, TenantViewer) y de producto (ProductManager, ProductDeveloper, ProductQA)
-  3. TenantAdmin puede activar y desactivar usuarios — los desactivados no pueden autenticarse
-  4. TenantAdmin puede resetear los dispositivos MFA de un usuario
-  5. Toda acción sobre usuarios aparece en el audit log con actor, acción, timestamp y contexto
-**Plans**: 6 plans
-
-Plans:
-- [x] 03-01-PLAN.md — Backend: UserEvent model + Alembic migration + Keycloak Admin service + users domain (CRUD, roles, MFA reset, audit)
-- [x] 03-02-PLAN.md — BFF: Keycloak admin token cache + /users proxy route (TenantAdmin/TenantOwner guarded) + Keycloak client provisioning checkpoint
-- [x] 03-03-PLAN.md — Portal: users service (TypeScript interfaces + API calls) + useUsersStore Pinia store
-- [x] 03-04-PLAN.md — Portal UI: UserTable + UserDrawer + UserForm + UserRolesForm (radio cards) + UserActivityTab + UsersView
-- [x] 03-05-PLAN.md — Portal wiring: /users route + role-guarded nav item + end-to-end human verification
-- [x] 03-06-PLAN.md — Gap closure: AuthUser.tenantId from JWT claim + Keycloak protocol mapper setup + tenant isolation verification
-
-### Phase 4: Feature Flags
-**Goal**: Los feature flags funcionan con evaluación jerárquica determinista en 4 niveles, con soporte completo de operadores de reglas y segmentos reutilizables
-**Depends on**: Phase 3
-**Requirements**: FLAG-01, FLAG-02, FLAG-03, FLAG-04, FLAG-05, FLAG-06
-**Success Criteria** (what must be TRUE):
-  1. PlatformAdmin puede crear un flag a nivel Global con todos sus atributos (name, default, complex, ttl, enabled, environment)
-  2. TenantAdmin puede crear un flag a nivel Tenant y ProductManager a nivel Producto; ambos sobrescriben el nivel superior según la jerarquía
-  3. La evaluación de un flag sigue el orden determinista Empresa > Producto > Tenant > Global — el nivel más específico gana siempre
-  4. Las reglas de evaluación funcionan con los operadores equals, in, notIn, contains y regex
-  5. Un segmento de usuarios puede definirse una vez y aplicarse a múltiples flags en distintos niveles
-**Plans**: 7 plans
-
-Plans:
-- [x] 04-01-PLAN.md — Backend domain: feature_flags + segments models, evaluate_flag() engine, FastAPI router
-- [x] 04-02-PLAN.md — TDD: evaluation engine unit tests (hierarchy + all 5 operators)
-- [x] 04-03-PLAN.md — BFF /flags proxy route with multi-role guard
-- [x] 04-04-PLAN.md — Portal service (TypeScript interfaces) + Pinia useFeatureFlagsStore
-- [x] 04-05-PLAN.md — Portal UI: FlagsView + FlagTable + FlagDrawer + wiring + E2E checkpoint
-- [x] 04-06-PLAN.md — Gap closure (FLAG-06): backend routing fix + flag-segment link endpoints + evaluate_flag() segment expansion
-- [x] 04-07-PLAN.md — Gap closure (FLAG-06): portal SegmentPicker wiring into FlagForm/FlagDrawer + E2E human verify
-
-### Phase 5: Rule Builder
-**Goal**: Los usuarios pueden crear, ordenar y previsualizar reglas de evaluación visualmente sin escribir código
-**Depends on**: Phase 4
-**Requirements**: RULE-01, RULE-02, RULE-03
-**Success Criteria** (what must be TRUE):
-  1. Un usuario puede crear y editar reglas de evaluación usando una interfaz visual sin escribir código
-  2. Un usuario puede reordenar reglas arrastrando y soltando (drag & drop) para cambiar su prioridad de evaluación
-  3. Un usuario puede previsualizar el resultado de evaluación de una regla antes de activarla en producción
-**Plans**: 3 plans
-
-Plans:
-- [x] 05-01-PLAN.md — Foundation: install vuedraggable@next, useRuleSimulator composable, ChipTagInput
-- [x] 05-02-PLAN.md — Components: RuleCard logic block + RuleSimulator sidebar panel
-- [x] 05-03-PLAN.md — Integration: RuleBuilderView full page + router + FlagDrawer/FlagForm wiring + E2E verify
-
-### Phase 6: Stitch UI Implementation
-**Goal**: Implementar la página de login y ajustar todas las páginas internas siguiendo los diseños de Google Stitch para asegurar coherencia visual completa
-**Depends on**: Phase 2.1
-**Requirements**: UI-03, UI-04
-**Success Criteria** (what must be TRUE):
-  1. La página de login refleja fielmente el diseño de Google Stitch (node-id: 501bb1...)
-  2. Todas las páginas internas (excepto login) se ajustan al diseño de 'Tenant Management' de Google Stitch (node-id: acc51e...)
-  3. El flujo de autenticación y la funcionalidad de negocio se mantienen intactos tras el rediseño
-**Plans**: 4 plans
-
-Plans:
-- [x] 06-01-PLAN.md — Foundation & Base Components (Tailwind + @material/web)
-- [x] 06-02-PLAN.md — Layout & Navigation Shell (Rail + App Bar)
-- [x] 06-03-PLAN.md — Stitch Login Implementation
-- [x] 06-04-PLAN.md — Internal Pages Refactoring (Tenants View)
+- [ ] Phase 7: TBD — define via `/gsd:new-milestone`
 
 ## Progress
 
-**Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
-
-| Phase | Plans Complete | Status | Completed |
-|-------|----------------|--------|-----------|
-| 1. Foundation & Auth | 4/4 | Complete | 2026-06-07 |
-| 2. Tenant Management | 4/4 | Complete | 2026-06-07 |
-| 2.1. UI System & Brand Alignment | 1/1 | Complete | 2026-06-07 |
-| 3. User Management | 6/6 | Complete | 2026-06-07 |
-| 4. Feature Flags | 7/7 | Complete | 2026-06-07 |
-| 5. Rule Builder | 3/3 | Complete | 2026-06-08 |
-| 6. Stitch UI Implementation | 4/4 | Complete | 2026-06-06 |
+| Phase | Milestone | Plans Complete | Status | Completed |
+|-------|-----------|----------------|--------|-----------|
+| 1. Foundation & Auth | v1.0 | 4/4 | Complete | 2026-06-07 |
+| 2. Tenant Management | v1.0 | 4/4 | Complete | 2026-06-07 |
+| 2.1. UI System & Brand Alignment | v1.0 | 1/1 | Complete | 2026-06-07 |
+| 3. User Management | v1.0 | 6/6 | Complete | 2026-06-07 |
+| 4. Feature Flags | v1.0 | 7/7 | Complete | 2026-06-07 |
+| 5. Rule Builder | v1.0 | 3/3 | Complete | 2026-06-08 |
+| 6. Stitch UI Implementation | v1.0 | 4/4 | Complete | 2026-06-06 |

@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-last_updated: "2026-06-07T18:21:40.287Z"
+last_updated: "2026-06-07T18:30:00.000Z"
 progress:
   total_phases: 6
-  completed_phases: 6
-  total_plans: 26
-  completed_plans: 26
+  completed_phases: 4
+  total_plans: 29
+  completed_plans: 18
 ---
 
 # Project State
@@ -18,16 +18,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-06-06)
 
 **Core value:** Los feature flags jerárquicos con evaluación determinista deben funcionar — sin esto, los tenants no pueden controlar su funcionalidad y el sistema no tiene razón de existir.
-**Current focus:** Phase 4 — Feature Flags (next phase)
+**Current focus:** Phase 5 — Rule Builder
 
 ## Current Position
 
-Phase: 04-feature-flags — COMPLETE
-Plan: 07 COMPLETE — SegmentPicker wired into FlagForm/FlagDrawer, FLAG-06 human-verified, segment add/remove both working
-Status: Phase 4 fully complete — all 7 plans done including gap-closure plans 04-06 and 04-07
-Last activity: 2026-06-07 — segment sync bugs fixed (race condition, async prop, diff logic, remove endpoint), FLAG-06 approved by user
+Phase: 05-rule-builder — IN PROGRESS
+Plan: 01 COMPLETE — vuedraggable@next installed; useRuleSimulator composable and ChipTagInput component built (Wave 1 foundations)
+Status: Phase 5 plan 01/03 done — Wave 1 leaf-level pieces complete, Wave 2 (RuleCard + RuleBuilderView) ready to start
+Last activity: 2026-06-07 — 05-01 foundations built: evaluation composable + chip-tag input
 
-Progress: [██████████] 100% (of phase 04 core plans) | [████████████████████] 96% (of total roadmap)
+Progress: [████████░░] 62% (of phase 05, plan 1/3 done) | [█████████████████░░░] ~62% (of total roadmap)
 
 ## Performance Metrics
 
@@ -67,6 +67,7 @@ Progress: [██████████] 100% (of phase 04 core plans) | [█�
 | Phase 04-feature-flags P05 | 15m | 3 tasks | 7 files |
 | Phase 04-feature-flags P06 | 4 | 2 tasks | 3 files |
 | Phase 04-feature-flags P07 | ~30m | 2 tasks (1 auto + 1 human-verify) | 7 files |
+| Phase 05-rule-builder P01 | 8m | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -129,6 +130,9 @@ Recent decisions affecting current work:
 - [Phase 04-feature-flags]: Capture-before-await pattern: snapshot reactive refs to local const before first async call to prevent reactivity teardown mid-handler [04-07]
 - [Phase 04-feature-flags]: Diff-based segment sync (toAdd/toRemove) in FlagDrawer — correct general pattern for many-to-many UI associations; segment removal from flags implemented in Phase 4 (not deferred) [04-07]
 - [Phase 04-feature-flags]: PlatformAdmin/ProductManager bypass tenant_id filter in list_flags — global roles see all flags across tenants [04-07]
+- [Phase 05-01]: useRuleSimulator uses watchEffect (not watch+deep) — auto-tracks rules and contextJson refs without explicit dep list
+- [Phase 05-01]: OPERATORS in/notIn use Array.isArray guard — matches Python isinstance(expected, list) semantics
+- [Phase 05-01]: regex operator wraps new RegExp() in try/catch returning false — safe against malformed patterns
 
 ### Pending Todos
 
@@ -145,5 +149,5 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-06-07
-Stopped at: Completed 04-07-PLAN.md — FLAG-06 segment integration human-verified; Phase 4 fully complete
+Stopped at: Completed 05-01-PLAN.md — Wave 1 foundations (useRuleSimulator + ChipTagInput) complete; ready for 05-02 (RuleCard)
 Resume file: None

@@ -2,13 +2,13 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: MVP2
-status: in_progress
-last_updated: "2026-06-08T05:57:50Z"
+status: unknown
+last_updated: "2026-06-08T12:22:53.749Z"
 progress:
-  total_phases: 5
-  completed_phases: 0
-  total_plans: 4
-  completed_plans: 3
+  total_phases: 8
+  completed_phases: 8
+  total_plans: 33
+  completed_plans: 33
 ---
 
 # Project State
@@ -52,6 +52,7 @@ Progress: [███░░] 15% (v1.1) | [████████████�
 - Trend: stable
 
 *Updated after each plan completion*
+| Phase 07-products-domain P04 | 6 | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -75,6 +76,9 @@ Recent decisions affecting v1.1:
 - [07-03]: 3-step migration used (expand/backfill/cleanup) — prevents irreversible data loss on MySQL 5.6
 - [07-03]: INSERT IGNORE in b002 ensures idempotency — safe to re-run if migration partially fails
 - [07-03]: b003 downgrade re-adds column as nullable TEXT (not JSON) — MySQL 5.6 lacks native JSON type
+- [Phase 07-04]: subscribe_product raises ValueError('inactive_product') — service stays pure, router owns HTTP 422 semantics
+- [Phase 07-04]: Subscription and association endpoints are idempotent — re-subscribing returns 200, concurrent calls safe
+- [Phase 07-04]: TenantOwner OR PlatformAdmin required for subscription operations (TenantAdmin alone insufficient)
 
 ### Pending Todos
 

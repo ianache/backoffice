@@ -45,8 +45,8 @@ async def list_flags(
             raise HTTPException(status_code=403, detail="Not authorized to view this scope")
         scope_filter = [scope]
     tenant_id = x_user_tenant_id if x_user_tenant_id else None
-    if 'PlatformAdmin' in roles or 'ProductManager' in roles:
-        tenant_id = None  # Global roles see flags across all tenants/scopes
+    if 'PlatformAdmin' in roles:
+        tenant_id = None  # PlatformAdmin sees all flags
     flags = await service.list_flags(db, scope_filter=scope_filter, tenant_id=tenant_id, q=q)
     return [FlagResponse.model_validate(f) for f in flags]
 
@@ -150,18 +150,6 @@ async def get_flag_segments(
 ):
     segments = await service.get_flag_segments(db, flag_id)
     return [SegmentResponse.model_validate(s) for s in segments]
-
-
-@router.delete("/{flag_id}/segments/{segment_id}", status_code=204)
-async def remove_segment_from_flag(
-    flag_id: int,
-    segment_id: int,
-    x_user_roles: str = Header(...),
-    db: AsyncSession = Depends(get_db),
-):
-    removed = await service.remove_segment_from_flag(db, flag_id, segment_id)
-    if not removed:
-        raise HTTPException(status_code=404, detail="Link not found")
 
 
 # ---------------------------------------------------------------------------

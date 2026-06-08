@@ -6,6 +6,7 @@ defineProps<{
   confirmText?: string
   cancelText?: string
   type?: 'danger' | 'info'
+  action?: any
 }>()
 
 const emit = defineEmits(['confirm', 'cancel'])

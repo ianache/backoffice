@@ -2,3 +2,11 @@ node_modules/
 dist/
 .env
 *.local
+__pycache__/
+*.pyc
+.pytest_cache/
+playwright-report/
+test-results/
+venv/
+.claude/
+.planning/

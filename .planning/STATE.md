@@ -23,11 +23,11 @@ See: .planning/PROJECT.md (updated 2026-06-06)
 ## Current Position
 
 Phase: 05-rule-builder — IN PROGRESS
-Plan: 01 COMPLETE — vuedraggable@next installed; useRuleSimulator composable and ChipTagInput component built (Wave 1 foundations)
-Status: Phase 5 plan 01/03 done — Wave 1 leaf-level pieces complete, Wave 2 (RuleCard + RuleBuilderView) ready to start
-Last activity: 2026-06-07 — 05-01 foundations built: evaluation composable + chip-tag input
+Plan: 02 COMPLETE — RuleCard (stateless card with drag handle, 4 fields, operator coercion) and RuleSimulator (live evaluation sidebar) built as Wave 2
+Status: Phase 5 plan 02/03 done — Wave 2 mid-level components complete, Wave 3 (RuleBuilderView) ready to start
+Last activity: 2026-06-08 — 05-02 RuleCard + RuleSimulator built and TypeScript-verified
 
-Progress: [████████░░] 62% (of phase 05, plan 1/3 done) | [█████████████████░░░] ~62% (of total roadmap)
+Progress: [█████████░] 67% (of phase 05, plan 2/3 done) | [██████████████████░░] ~65% (of total roadmap)
 
 ## Performance Metrics
 
@@ -68,6 +68,7 @@ Progress: [████████░░] 62% (of phase 05, plan 1/3 done) | [�
 | Phase 04-feature-flags P06 | 4 | 2 tasks | 3 files |
 | Phase 04-feature-flags P07 | ~30m | 2 tasks (1 auto + 1 human-verify) | 7 files |
 | Phase 05-rule-builder P01 | 8m | 2 tasks | 3 files |
+| Phase 05-rule-builder P02 | 3m | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -133,6 +134,9 @@ Recent decisions affecting current work:
 - [Phase 05-01]: useRuleSimulator uses watchEffect (not watch+deep) — auto-tracks rules and contextJson refs without explicit dep list
 - [Phase 05-01]: OPERATORS in/notIn use Array.isArray guard — matches Python isinstance(expected, list) semantics
 - [Phase 05-01]: regex operator wraps new RegExp() in try/catch returning false — safe against malformed patterns
+- [Phase 05-02]: RuleCard uses scoped form-label/form-input styles — FlagForm.vue styles are scoped, not global; CSS token consistency maintained
+- [Phase 05-02]: RuleSimulator uses computed<RuleSchema[]>() cast as Readonly<Ref> — Vue readonly() creates deep-readonly mismatch with composable signature
+- [Phase 05-02]: onOperatorChange coerces value type (scalar<->array) on operator family switch — preserves user data across operator changes
 
 ### Pending Todos
 
@@ -148,6 +152,6 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-06-07
-Stopped at: Completed 05-01-PLAN.md — Wave 1 foundations (useRuleSimulator + ChipTagInput) complete; ready for 05-02 (RuleCard)
+Last session: 2026-06-08
+Stopped at: Completed 05-02-PLAN.md — Wave 2 components (RuleCard + RuleSimulator) complete; ready for 05-03 (RuleBuilderView)
 Resume file: None

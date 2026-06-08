@@ -51,7 +51,7 @@ Requirements para la Fase 1 (Tenants + Usuarios + Feature Flags). Cada uno mapea
 ### Rule Builder
 
 - [x] **RULE-01**: Usuario puede crear y editar reglas visualmente sin escribir código
-- [ ] **RULE-02**: Usuario puede reordenar reglas con prioridad via drag & drop
+- [x] **RULE-02**: Usuario puede reordenar reglas con prioridad via drag & drop
 - [x] **RULE-03**: Usuario puede previsualizar el resultado de evaluación de una regla antes de activarla
 
 ## v2 Requirements
@@ -124,7 +124,7 @@ Cual fase cubre cuáles requerimientos. Actualizado durante creación del roadma
 | FLAG-05 | Phase 4 | Complete |
 | FLAG-06 | Phase 4 | Complete |
 | RULE-01 | Phase 5 | Complete |
-| RULE-02 | Phase 5 | Pending |
+| RULE-02 | Phase 5 | Complete |
 | RULE-03 | Phase 5 | Complete |
 
 **Coverage:**

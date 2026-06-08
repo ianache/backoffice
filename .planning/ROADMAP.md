@@ -109,7 +109,12 @@ Plans:
   1. Un usuario puede crear y editar reglas de evaluación usando una interfaz visual sin escribir código
   2. Un usuario puede reordenar reglas arrastrando y soltando (drag & drop) para cambiar su prioridad de evaluación
   3. Un usuario puede previsualizar el resultado de evaluación de una regla antes de activarla en producción
-**Plans**: TBD
+**Plans**: 3 plans
+
+Plans:
+- [ ] 05-01-PLAN.md — Foundation: install vuedraggable@next, useRuleSimulator composable, ChipTagInput
+- [ ] 05-02-PLAN.md — Components: RuleCard logic block + RuleSimulator sidebar panel
+- [ ] 05-03-PLAN.md — Integration: RuleBuilderView full page + router + FlagDrawer/FlagForm wiring + E2E verify
 
 ### Phase 6: Stitch UI Implementation
 **Goal**: Implementar la página de login y ajustar todas las páginas internas siguiendo los diseños de Google Stitch para asegurar coherencia visual completa

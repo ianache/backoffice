@@ -66,9 +66,9 @@
 
 ### Products
 
-- [ ] **PROD-01**: PlatformAdmin puede crear un producto con id alfanumÃ©rico, name, description, status y labels (tags)
-- [ ] **PROD-02**: PlatformAdmin puede editar metadatos de un producto y activarlo/desactivarlo
-- [ ] **PROD-03**: La lista de productos soporta filtro por status y por label tags
+- [x] **PROD-01**: PlatformAdmin puede crear un producto con id alfanumÃ©rico, name, description, status y labels (tags)
+- [x] **PROD-02**: PlatformAdmin puede editar metadatos de un producto y activarlo/desactivarlo
+- [x] **PROD-03**: La lista de productos soporta filtro por status y por label tags
 - [ ] **PROD-04**: TenantOwner puede suscribir y desuscribir productos para su tenant desde la UI de gestiÃ³n de tenants
 - [ ] **PROD-05**: Las feature flags pueden asociarse a uno o mÃ¡s productos (migraciÃ³n desde campo JSON en tenants a tabla relacional `flag_products`)
 - [ ] **PROD-06**: La migraciÃ³n de productos usa tres revisiones Alembic separadas (expand: crear tablas â†’ backfill: migrar datos â†’ cleanup: eliminar campo JSON) para evitar pÃ©rdida de datos en MySQL 5.6
@@ -190,9 +190,9 @@ QuÃ© fases cubren quÃ© requerimientos. Actualizado durante creaciÃ³n del r
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| PROD-01 | Phase 7 | Pending |
-| PROD-02 | Phase 7 | Pending |
-| PROD-03 | Phase 7 | Pending |
+| PROD-01 | Phase 7 | Complete |
+| PROD-02 | Phase 7 | Complete |
+| PROD-03 | Phase 7 | Complete |
 | PROD-04 | Phase 7 | Pending |
 | PROD-05 | Phase 7 | Pending |
 | PROD-06 | Phase 7 | Pending |

@@ -71,7 +71,7 @@
 - [x] **PROD-03**: La lista de productos soporta filtro por status y por label tags
 - [ ] **PROD-04**: TenantOwner puede suscribir y desuscribir productos para su tenant desde la UI de gestiÃ³n de tenants
 - [ ] **PROD-05**: Las feature flags pueden asociarse a uno o mÃ¡s productos (migraciÃ³n desde campo JSON en tenants a tabla relacional `flag_products`)
-- [ ] **PROD-06**: La migraciÃ³n de productos usa tres revisiones Alembic separadas (expand: crear tablas â†’ backfill: migrar datos â†’ cleanup: eliminar campo JSON) para evitar pÃ©rdida de datos en MySQL 5.6
+- [x] **PROD-06**: La migraciÃ³n de productos usa tres revisiones Alembic separadas (expand: crear tablas â†’ backfill: migrar datos â†’ cleanup: eliminar campo JSON) para evitar pÃ©rdida de datos en MySQL 5.6
 
 ### Advanced Segments
 
@@ -195,7 +195,7 @@ QuÃ© fases cubren quÃ© requerimientos. Actualizado durante creaciÃ³n del r
 | PROD-03 | Phase 7 | Complete |
 | PROD-04 | Phase 7 | Pending |
 | PROD-05 | Phase 7 | Pending |
-| PROD-06 | Phase 7 | Pending |
+| PROD-06 | Phase 7 | Complete |
 | SEG-01 | Phase 8 | Pending |
 | SEG-02 | Phase 8 | Pending |
 | SEG-03 | Phase 8 | Pending |

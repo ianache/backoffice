@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: MVP2
 status: in_progress
-last_updated: "2026-06-08T05:57:10Z"
+last_updated: "2026-06-08T05:57:50Z"
 progress:
   total_phases: 5
   completed_phases: 0
   total_plans: 4
-  completed_plans: 2
+  completed_plans: 3
 ---
 
 # Project State
@@ -18,16 +18,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-06-07)
 
 **Core value:** Los feature flags jerárquicos con evaluación determinista deben funcionar — sin esto, los tenants no pueden controlar su funcionalidad y el sistema no tiene razón de existir.
-**Current focus:** Phase 7 — Products Domain (plan 02 complete, 2 remaining)
+**Current focus:** Phase 7 — Products Domain (plan 03 complete, 1 remaining)
 
 ## Current Position
 
 Phase: 7 of 11 (Products Domain)
-Plan: 2 of 4 complete
+Plan: 3 of 4 complete
 Status: In progress
-Last activity: 2026-06-08 — 07-02 complete (products CRUD service + HTTP router + main.py registration)
+Last activity: 2026-06-08 — 07-03 complete (3-step Alembic migrations: expand/backfill/cleanup for products domain)
 
-Progress: [██░░░] 10% (v1.1) | [████████████████████░░░░░] ~65% (overall)
+Progress: [███░░] 15% (v1.1) | [████████████████████░░░░░] ~65% (overall)
 
 ## Performance Metrics
 
@@ -72,6 +72,9 @@ Recent decisions affecting v1.1:
 - [07-01]: labels stored as TEXT JSON array (MySQL 5.6 safe) — deserialized to List[str] in ProductResponse model_validator
 - [07-02]: IntegrityError caught in router layer (not service) — service stays pure, router owns HTTP 409 semantics
 - [07-02]: label filtering Python-side in list_products — json.loads membership check, no SQL LIKE or JSON_CONTAINS
+- [07-03]: 3-step migration used (expand/backfill/cleanup) — prevents irreversible data loss on MySQL 5.6
+- [07-03]: INSERT IGNORE in b002 ensures idempotency — safe to re-run if migration partially fails
+- [07-03]: b003 downgrade re-adds column as nullable TEXT (not JSON) — MySQL 5.6 lacks native JSON type
 
 ### Pending Todos
 
@@ -86,5 +89,5 @@ Recent decisions affecting v1.1:
 ## Session Continuity
 
 Last session: 2026-06-08
-Stopped at: Completed 07-02-PLAN.md — products CRUD service, HTTP router, main.py registration
+Stopped at: Completed 07-03-PLAN.md — 3-step Alembic migrations (expand/backfill/cleanup) for products domain
 Resume file: None

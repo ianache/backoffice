@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import List, Optional
 from fastapi import APIRouter, Depends, Header, HTTPException, Query, status
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -6,6 +6,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.dependencies import get_db, verify_internal_secret
 from . import service
 from .schemas import FlagCreate, FlagUpdate, FlagResponse, SegmentCreate, SegmentResponse
+from app.domains.products import service as products_service
+from app.domains.products.schemas import ProductResponse
 
 # ---------------------------------------------------------------------------
 # Flags Router
@@ -150,6 +152,30 @@ async def get_flag_segments(
 ):
     segments = await service.get_flag_segments(db, flag_id)
     return [SegmentResponse.model_validate(s) for s in segments]
+
+
+@router.post("/{flag_id}/products/{product_id}", status_code=200)
+async def add_product_to_flag(
+    flag_id: int,
+    product_id: str,
+    x_user_roles: str = Header(...),
+    db: AsyncSession = Depends(get_db),
+):
+    roles = [r.strip() for r in x_user_roles.split(',') if r.strip()]
+    if not {'PlatformAdmin', 'TenantAdmin', 'ProductManager'}.intersection(set(roles)):
+        raise HTTPException(status_code=403, detail="Insufficient role to associate products to flags")
+    result = await products_service.add_flag_product(db, flag_id, product_id)
+    if result is None:
+        raise HTTPException(status_code=404, detail="Product not found")
+    return {"flag_id": flag_id, "product_id": product_id, "associated": True}
+
+
+@router.get("/{flag_id}/products", response_model=List[ProductResponse])
+async def get_products_for_flag(
+    flag_id: int,
+    db: AsyncSession = Depends(get_db),
+):
+    return await products_service.get_flag_products(db, flag_id)
 
 
 # ---------------------------------------------------------------------------

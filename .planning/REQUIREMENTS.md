@@ -21,7 +21,7 @@ Requirements para la Fase 1 (Tenants + Usuarios + Feature Flags). Cada uno mapea
 - [x] **UI-01**: La interfaz del portal sigue el System Design de Google Stitch
 - [x] **UI-02**: El sistema soporta modos Light y Dark con un toggle persistente en la barra de navegación
 - [x] **UI-03**: La página de login sigue el diseño de Google Stitch (https://stitch.withgoogle.com/projects/5651761190718398526?node-id=501bb1c4dfdb456d9cd2672135daee2d)
-- [ ] **UI-04**: Todas las páginas internas (excepto login) siguen el diseño de 'Tenant Management' de Google Stitch (https://stitch.withgoogle.com/projects/5651761190718398526?node-id=acc51e9c26554064a2e0a45864688b85)
+- [x] **UI-04**: Todas las páginas internas (excepto login) siguen el diseño de 'Tenant Management' de Google Stitch (https://stitch.withgoogle.com/projects/5651761190718398526?node-id=acc51e9c26554064a2e0a45864688b85)
 
 
 ### User Management
@@ -126,12 +126,16 @@ Cual fase cubre cuáles requerimientos. Actualizado durante creación del roadma
 | RULE-01 | Phase 5 | Complete |
 | RULE-02 | Phase 5 | Complete |
 | RULE-03 | Phase 5 | Complete |
+| UI-01 | Phase 2.1 | Complete |
+| UI-02 | Phase 2.1 | Complete |
+| UI-03 | Phase 6 | Complete |
+| UI-04 | Phase 6 | Complete |
 
 **Coverage:**
-- v1 requirements: 24 total
-- Mapped to phases: 24
+- v1 requirements: 28 total
+- Mapped to phases: 28
 - Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-06-06*
-*Last updated: 2026-06-06 after roadmap creation*
+*Last updated: 2026-06-08 — UI-04 marked complete, UI-01..04 added to traceability, coverage corrected to 28*

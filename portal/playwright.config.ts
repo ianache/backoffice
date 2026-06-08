@@ -19,7 +19,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: 'pnpm run dev',
+    command: 'pnpm exec vite --port 5173 --mode playwright',
     url: 'http://localhost:5173',
     reuseExistingServer: !process.env.CI,
     cwd: './',

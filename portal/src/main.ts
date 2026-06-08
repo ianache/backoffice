@@ -16,8 +16,13 @@ pinia.use(piniaPluginPersistedstate)
 app.use(pinia)
 
 // Init Keycloak BEFORE registering the router or mounting — prevents flash of unauthenticated content and race conditions
+// In Playwright E2E mode (VITE_E2E_SKIP_AUTH=true), skip Keycloak init so tests can inject auth via sessionStorage
 const authStore = useAuthStore(pinia)
-await authStore.init()
+if (import.meta.env.VITE_E2E_SKIP_AUTH !== 'true') {
+  await authStore.init()
+} else {
+  authStore.$patch({ isLoading: false })
+}
 
 app.use(router)
 app.mount('#app')

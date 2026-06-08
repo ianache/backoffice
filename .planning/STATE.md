@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-last_updated: "2026-06-07T18:30:00.000Z"
+last_updated: "2026-06-08T02:35:19.554Z"
 progress:
-  total_phases: 6
-  completed_phases: 4
+  total_phases: 7
+  completed_phases: 7
   total_plans: 29
-  completed_plans: 18
+  completed_plans: 29
 ---
 
 # Project State
@@ -22,12 +22,12 @@ See: .planning/PROJECT.md (updated 2026-06-06)
 
 ## Current Position
 
-Phase: 05-rule-builder — IN PROGRESS
-Plan: 02 COMPLETE — RuleCard (stateless card with drag handle, 4 fields, operator coercion) and RuleSimulator (live evaluation sidebar) built as Wave 2
-Status: Phase 5 plan 02/03 done — Wave 2 mid-level components complete, Wave 3 (RuleBuilderView) ready to start
-Last activity: 2026-06-08 — 05-02 RuleCard + RuleSimulator built and TypeScript-verified
+Phase: 05-rule-builder — CHECKPOINT (awaiting human E2E verification)
+Plan: 03 CHECKPOINT — RuleBuilderView assembled with draggable canvas, router wired, FlagDrawer navigation, FlagForm cleanup complete; awaiting E2E human verification
+Status: Phase 5 plan 03/03 at checkpoint — Task 1 complete and committed; Task 2 (human-verify) awaiting user
+Last activity: 2026-06-08 — 05-03 RuleBuilderView assembled and TypeScript-verified; at E2E checkpoint
 
-Progress: [█████████░] 67% (of phase 05, plan 2/3 done) | [██████████████████░░] ~65% (of total roadmap)
+Progress: [██████████] 100% (of phase 05, plan 3/3 built) | [████████████████████░░] ~68% (of total roadmap)
 
 ## Performance Metrics
 
@@ -137,6 +137,9 @@ Recent decisions affecting current work:
 - [Phase 05-02]: RuleCard uses scoped form-label/form-input styles — FlagForm.vue styles are scoped, not global; CSS token consistency maintained
 - [Phase 05-02]: RuleSimulator uses computed<RuleSchema[]>() cast as Readonly<Ref> — Vue readonly() creates deep-readonly mismatch with composable signature
 - [Phase 05-02]: onOperatorChange coerces value type (scalar<->array) on operator family switch — preserves user data across operator changes
+- [Phase 05-rule-builder]: [Phase 05-03]: splice-in-place (localRules.splice(index, 1, updated)) avoids vuedraggable reactivity pitfall vs full array assignment
+- [Phase 05-rule-builder]: [Phase 05-03]: complex auto-derived from rules.length > 0 in RuleBuilderView saveChanges — no manual toggle needed in rule editor
+- [Phase 05-rule-builder]: [Phase 05-03]: FlagForm.rules field removed from emitted FlagPayload — rules exclusively owned by RuleBuilderView PATCH flow, preventing double-write
 
 ### Pending Todos
 
@@ -153,5 +156,5 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-06-08
-Stopped at: Completed 05-02-PLAN.md — Wave 2 components (RuleCard + RuleSimulator) complete; ready for 05-03 (RuleBuilderView)
+Stopped at: 05-03 checkpoint — Task 1 complete (RuleBuilderView assembled, TypeScript build OK, commit 9c467a9); Task 2 human-verify checkpoint reached — awaiting E2E user verification
 Resume file: None

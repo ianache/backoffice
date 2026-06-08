@@ -17,7 +17,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 2.1: UI System & Brand Alignment** (INSERTED) - Alineación con Google Stitch y sistema de temas Light/Dark
 - [x] **Phase 3: User Management** - TenantAdmin puede gestionar usuarios dentro de su tenant con audit completo
 - [x] **Phase 4: Feature Flags** - Flags configurables en 4 niveles con evaluación jerárquica determinista; segmentos reutilizables; FLAG-06 wired and human-verified (7/7 plans done)
-- [ ] **Phase 5: Rule Builder** - Usuarios pueden crear, ordenar y previsualizar reglas de evaluación visualmente
+- [x] **Phase 5: Rule Builder** - Usuarios pueden crear, ordenar y previsualizar reglas de evaluación visualmente; RULE-01/02/03 E2E verified (3/3 plans done)
 - [ ] **Phase 6: Stitch UI Implementation** - Implementación de la página de login y ajuste de páginas internas según Google Stitch
 
 ## Phase Details
@@ -113,8 +113,8 @@ Plans:
 
 Plans:
 - [x] 05-01-PLAN.md — Foundation: install vuedraggable@next, useRuleSimulator composable, ChipTagInput
-- [ ] 05-02-PLAN.md — Components: RuleCard logic block + RuleSimulator sidebar panel
-- [ ] 05-03-PLAN.md — Integration: RuleBuilderView full page + router + FlagDrawer/FlagForm wiring + E2E verify
+- [x] 05-02-PLAN.md — Components: RuleCard logic block + RuleSimulator sidebar panel
+- [x] 05-03-PLAN.md — Integration: RuleBuilderView full page + router + FlagDrawer/FlagForm wiring + E2E verify
 
 ### Phase 6: Stitch UI Implementation
 **Goal**: Implementar la página de login y ajustar todas las páginas internas siguiendo los diseños de Google Stitch para asegurar coherencia visual completa
@@ -144,5 +144,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 2.1. UI System & Brand Alignment | 1/1 | Complete | 2026-06-07 |
 | 3. User Management | 6/6 | Complete | 2026-06-07 |
 | 4. Feature Flags | 7/7 | Complete | 2026-06-07 |
-| 5. Rule Builder | 2/3 | In Progress|  |
+| 5. Rule Builder | 3/3 | Complete | 2026-06-08 |
 | 6. Stitch UI Implementation | 4/4 | Complete | 2026-06-06 |

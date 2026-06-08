@@ -56,14 +56,14 @@ completed: 2026-06-08
 
 # Phase 05 Plan 03: RuleBuilderView Assembly Summary
 
-**Full-page rule editor at /flags/:id/rules assembled with vuedraggable canvas (drag/add/delete/reorder), rollout slider, live RuleSimulator sidebar, and FlagDrawer navigation — TypeScript build clean; awaiting E2E human verification**
+**Full-page rule editor at /flags/:id/rules assembled with vuedraggable canvas (drag/add/delete/reorder), rollout slider, live RuleSimulator sidebar, and FlagDrawer navigation — TypeScript build clean and E2E human verification approved**
 
 ## Performance
 
-- **Duration:** ~10 min
+- **Duration:** ~15 min (including E2E human checkpoint)
 - **Started:** 2026-06-08T02:31:20Z
-- **Completed:** 2026-06-08T02:41:00Z (checkpoint reached)
-- **Tasks:** 1 auto (+ 1 checkpoint pending human verification)
+- **Completed:** 2026-06-08 (E2E approved)
+- **Tasks:** 2 (1 auto + 1 human-verify — both complete)
 - **Files modified:** 4
 
 ## Accomplishments
@@ -72,15 +72,16 @@ completed: 2026-06-08
 - Added /flags/:id/rules route to router/index.ts with rule-builder name and same role guards as /flags
 - Added openRuleBuilder() to FlagDrawer.vue — emits close then router.push to rule-builder; "Edit Rules" button shown only when editing existing flag (v-if props.flag?.id)
 - Cleaned up FlagForm.vue — removed rulesRaw ref, JSON textarea, JSON.parse validation, rules field from FlagPayload; replaced with read-only informational label pointing to Rule Builder
+- E2E human verification passed: navigation from FlagDrawer, draggable cards, chip input for in/notIn, live simulator, save/cancel all confirmed working
 
 ## Task Commits
 
 Each task was committed atomically:
 
 1. **Task 1: Create RuleBuilderView and wire router + FlagDrawer + FlagForm** - `9c467a9` (feat)
-2. **Task 2: E2E human verification checkpoint** - pending
+2. **Task 2: E2E human verification checkpoint** - `fcb6338` (docs — checkpoint approved)
 
-**Plan metadata:** (included in final docs commit)
+**Plan metadata:** `8badec5` (docs: complete plan — initial checkpoint commit)
 
 ## Files Created/Modified
 
@@ -110,9 +111,9 @@ None - no external service configuration required.
 
 ## Next Phase Readiness
 
-- Rule Builder is feature-complete pending E2E human checkpoint approval
-- RULE-01 (navigate to rule builder), RULE-02 (drag/add/delete rules), RULE-03 (live simulator) all implemented
-- Awaiting human verification checkpoint: login, navigate to /flags, open drawer, click Edit Rules, verify full flow
+- Rule Builder is feature-complete — E2E human verification approved
+- RULE-01 (navigate to rule builder), RULE-02 (drag/add/delete rules), RULE-03 (live simulator) all verified E2E
+- Phase 05-rule-builder fully delivered; no blockers for subsequent phases
 
 ---
 *Phase: 05-rule-builder*

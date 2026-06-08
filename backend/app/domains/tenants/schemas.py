@@ -1,6 +1,6 @@
 from __future__ import annotations
 from datetime import datetime
-from typing import Optional, List
+from typing import Optional
 import pycountry
 from pydantic import BaseModel, ConfigDict, field_validator
 
@@ -49,7 +49,6 @@ class TenantCreate(BaseModel):
     font_family: Optional[str] = None
     font_weight: Optional[str] = None
     domain: Optional[str] = None
-    products: List[str] = []
 
     @field_validator('country')
     @classmethod
@@ -81,7 +80,6 @@ class TenantUpdate(BaseModel):
     font_family: Optional[str] = None
     font_weight: Optional[str] = None
     domain: Optional[str] = None
-    products: Optional[List[str]] = None
 
     @field_validator('country')
     @classmethod

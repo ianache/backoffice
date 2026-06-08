@@ -1,8 +1,7 @@
-from sqlalchemy import String, Enum as SaEnum, JSON, func
+from sqlalchemy import String, func
 from sqlalchemy.orm import Mapped, mapped_column
 from app.database import Base
 from datetime import datetime
-from typing import List
 
 class Tenant(Base):
     __tablename__ = "tenants"
@@ -23,8 +22,6 @@ class Tenant(Base):
     font_family: Mapped[str | None] = mapped_column(String(100), nullable=True)
     font_weight: Mapped[str | None] = mapped_column(String(20), nullable=True)
     domain: Mapped[str | None] = mapped_column(String(255), nullable=True)
-    
-    products: Mapped[List[str]] = mapped_column(JSON, default=list, nullable=False)
     
     created_at: Mapped[datetime] = mapped_column(server_default=func.now(), nullable=False)
     updated_at: Mapped[datetime] = mapped_column(server_default=func.now(), onupdate=func.now(), nullable=False)

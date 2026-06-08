@@ -1,31 +1,31 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.0
-milestone_name: milestone
-status: unknown
-last_updated: "2026-06-08T03:59:19.840Z"
+milestone: v1.1
+milestone_name: MVP2
+status: defining_requirements
+last_updated: "2026-06-07T00:00:00.000Z"
 progress:
-  total_phases: 7
-  completed_phases: 7
-  total_plans: 29
-  completed_plans: 29
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
 ---
 
 # Project State
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-06-06)
+See: .planning/PROJECT.md (updated 2026-06-07)
 
 **Core value:** Los feature flags jerárquicos con evaluación determinista deben funcionar — sin esto, los tenants no pueden controlar su funcionalidad y el sistema no tiene razón de existir.
-**Current focus:** Phase 05 complete — Rule Builder delivered E2E
+**Current focus:** Defining requirements for v1.1 MVP2
 
 ## Current Position
 
-Phase: 05-rule-builder — COMPLETE
-Plan: 03/03 COMPLETE — RuleBuilderView assembled, draggable canvas, router wired, FlagDrawer navigation, FlagForm cleanup; E2E human verification approved
-Status: Phase 05 fully complete — all 3 plans done (05-01, 05-02, 05-03); RULE-01, RULE-02, RULE-03 all verified
-Last activity: 2026-06-08 — 05-03 E2E verified and approved; phase 05 complete
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-06-07 — Milestone v1.1 MVP2 started
 
 Progress: [██████████] 100% (phase 05 complete, 3/3 plans) | [████████████████████░░] ~68% (of total roadmap)
 

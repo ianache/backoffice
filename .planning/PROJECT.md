@@ -8,6 +8,16 @@ Plataforma empresarial de administración multi-tenant que permite gestionar ten
 
 Los feature flags jerárquicos con evaluación determinista deben funcionar — sin esto, los tenants no pueden controlar su funcionalidad y el sistema no tiene razón de existir.
 
+## Current Milestone: v1.1 MVP2
+
+**Goal:** Refactorizar el portal en arquitectura Shell + Micro-UIs y entregar Productos, Segmentos Avanzados y Feature Flag SDK como entidades y capacidades de primer nivel.
+
+**Target features:**
+- Portal Shell + 3 Micro-UIs remotas (mui-security, mui-tenants, mui-feature-flags) via Vite Module Federation — clean cutover
+- Productos como entidad relacional de primer nivel con CRUD y suscripciones por tenant
+- Segmentos dinámicos basados en reglas (rule-based) con detección de segmentos huérfanos
+- Feature Flag SDK completo: cliente JS/TS + servidor Python, evaluación local, WebSocket sync, telemetría en batch
+
 ## Requirements
 
 ### Validated (v1.0)
@@ -29,7 +39,37 @@ Los feature flags jerárquicos con evaluación determinista deben funcionar — 
 - ✓ UI alineada a Google Stitch (Material 3, Nav Rail, high-density) — v1.0
 - ✓ Soporte Light/Dark mode persistente — v1.0
 
-### Active (v1.1+)
+### Active (v1.1)
+
+#### Micro-UI Architecture
+- [ ] portal refactorizado a Shell ligero (auth, layout, routing — sin lógica de dominio)
+- [ ] mui-security: gestión de usuarios extraída como MUI remota (Vite Module Federation)
+- [ ] mui-tenants: gestión de tenants extraída como MUI remota
+- [ ] mui-feature-flags: feature flags + rule builder + segmentos extraído como MUI remota
+
+#### Products
+- [ ] PlatformAdmin puede crear, editar, activar/desactivar productos del catálogo
+- [ ] Producto almacena: id, name, description, status, labels, created_by, created_at, updated_at
+- [ ] TenantOwner puede suscribir/desuscribir productos para su tenant
+- [ ] Feature flags pueden asociarse a uno o más productos
+
+#### Advanced Segments
+- [ ] Segmentos pueden ser tipo manual (lista estática de UUIDs) o rule-based (condiciones dinámicas)
+- [ ] Evaluación de segmentos rule-based usa mismo motor de operadores que feature flags
+- [ ] Dashboard de segmentos muestra conteo de flags que referencian cada segmento
+- [ ] Segmentos sin referencias activas se marcan como huérfanos en la UI
+
+#### Feature Flag SDK
+- [ ] SDK cliente JS/TS: bootstrap inicial de flags, evaluación local (<1ms), cache en memoria
+- [ ] SDK cliente JS/TS: evaluación remota vía POST /api/v1/sdk/evaluate como fallback
+- [ ] SDK cliente JS/TS: sincronización en tiempo real vía WebSocket (invalidación de caché)
+- [ ] SDK cliente JS/TS: telemetría en batch (cada 60s o 100 eventos) a /api/v1/sdk/eval-events
+- [ ] SDK servidor Python: evaluación local async con caché, evaluación remota, sincronización
+- [ ] Backend: endpoint GET /api/v1/sdk/bootstrap retorna config consolidada de flags por tenant/producto
+- [ ] Backend: endpoint POST /api/v1/sdk/evaluate para evaluación remota con contexto de usuario
+- [ ] Backend: endpoint POST /api/v1/sdk/eval-events para ingesta de telemetría
+
+### Deferred (v1.2+)
 
 #### Client Management
 - [ ] TenantAdmin puede crear clientes tipo Persona y Empresa
@@ -96,4 +136,4 @@ El diseño UX/UI vive en Google Stitch: https://stitch.withgoogle.com/u/1/projec
 | VITE_E2E_SKIP_AUTH para Playwright E2E | Evita Keycloak init en tests visuales | ⚠️ Infra lista, snapshots pendientes de generar |
 
 ---
-*Last updated: 2026-06-08 after v1.0 milestone*
+*Last updated: 2026-06-07 after v1.1 milestone start*

@@ -44,7 +44,13 @@ Full archive: `.planning/milestones/v1.0-ROADMAP.md`
   3. TenantOwner can subscribe and unsubscribe products for their tenant from the tenant management UI; subscribed products appear in the tenant detail view
   4. A feature flag can be associated to one or more products via `flag_products` relational table; existing product associations from the legacy JSON field are preserved after migration
   5. Three separate Alembic revisions (expand, backfill, cleanup) can each be applied and rolled back independently without destroying existing tenant or flag data
-**Plans**: TBD
+**Plans**: 4 plans
+
+Plans:
+- [ ] 07-01-PLAN.md — Products domain foundation: ORM models, Pydantic schemas, Alembic env.py registration
+- [ ] 07-02-PLAN.md — Products CRUD service, router (POST/GET/PATCH), main.py registration
+- [ ] 07-03-PLAN.md — Alembic 3-step migration: expand, backfill, cleanup revisions
+- [ ] 07-04-PLAN.md — Tenant subscription endpoints + flag-product association endpoints
 
 ### Phase 8: Advanced Segments + SDK Backend
 **Goal**: Segments support rule-based dynamic conditions using the existing evaluation engine; SDK backend endpoints expose a consolidated flag bootstrap, remote evaluation, telemetry ingestion, and real-time WebSocket invalidation — all composing from existing `list_flags()` and `evaluate_flag()` without changes to their signatures.
@@ -105,7 +111,7 @@ Phases execute in numeric order: 7 → 8 → 9 → 10 → 11
 | 4. Feature Flags | v1.0 | 7/7 | Complete | 2026-06-07 |
 | 5. Rule Builder | v1.0 | 3/3 | Complete | 2026-06-08 |
 | 6. Stitch UI Implementation | v1.0 | 4/4 | Complete | 2026-06-06 |
-| 7. Products Domain | v1.1 | 0/TBD | Not started | - |
+| 7. Products Domain | v1.1 | 0/4 | Planning complete | - |
 | 8. Advanced Segments + SDK Backend | v1.1 | 0/TBD | Not started | - |
 | 9. Shell Cutover | v1.1 | 0/TBD | Not started | - |
 | 10. mui-tenants + mui-security | v1.1 | 0/TBD | Not started | - |

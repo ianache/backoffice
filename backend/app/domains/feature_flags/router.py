@@ -1,5 +1,5 @@
 from typing import List, Optional
-from fastapi import APIRouter, Depends, Header, HTTPException, Query, status
+from fastapi import APIRouter, Depends, Header, HTTPException, Query, Request, status
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -80,12 +80,20 @@ async def create_flag(
 async def update_flag(
     flag_id: int,
     payload: FlagUpdate,
+    request: Request,
     x_user_roles: str = Header(...),
     db: AsyncSession = Depends(get_db),
 ):
     flag = await service.update_flag(db, flag_id, payload)
     if not flag:
         raise HTTPException(status_code=404, detail="Flag not found")
+    # Broadcast flag change to SDK WebSocket clients for this tenant
+    manager = request.app.state.ws_manager
+    if flag.tenant_id:
+        await manager.broadcast(flag.tenant_id, {
+            "type": "flag_updated",
+            "flag_key": flag.name,
+        })
     return FlagResponse.model_validate(flag)
 
 
@@ -106,24 +114,40 @@ async def delete_flag(
 @router.post("/{flag_id}/enable", response_model=FlagResponse)
 async def enable_flag(
     flag_id: int,
+    request: Request,
     x_user_roles: str = Header(...),
     db: AsyncSession = Depends(get_db),
 ):
     flag = await service.set_enabled(db, flag_id, True)
     if not flag:
         raise HTTPException(status_code=404, detail="Flag not found")
+    # Broadcast flag change to SDK WebSocket clients for this tenant
+    manager = request.app.state.ws_manager
+    if flag.tenant_id:
+        await manager.broadcast(flag.tenant_id, {
+            "type": "flag_updated",
+            "flag_key": flag.name,
+        })
     return FlagResponse.model_validate(flag)
 
 
 @router.post("/{flag_id}/disable", response_model=FlagResponse)
 async def disable_flag(
     flag_id: int,
+    request: Request,
     x_user_roles: str = Header(...),
     db: AsyncSession = Depends(get_db),
 ):
     flag = await service.set_enabled(db, flag_id, False)
     if not flag:
         raise HTTPException(status_code=404, detail="Flag not found")
+    # Broadcast flag change to SDK WebSocket clients for this tenant
+    manager = request.app.state.ws_manager
+    if flag.tenant_id:
+        await manager.broadcast(flag.tenant_id, {
+            "type": "flag_updated",
+            "flag_key": flag.name,
+        })
     return FlagResponse.model_validate(flag)
 
 

@@ -101,6 +101,6 @@ Recent decisions affecting v1.1:
 
 ## Session Continuity
 
-Last session: 2026-06-08
-Stopped at: Completed 08-01-PLAN.md — segments data layer: c001/c002 migrations, Segment ORM extension, EvalEvent model, list_segments() tuple refactor
+Last session: 2026-06-09
+Stopped at: Completed 08-03-PLAN.md — SDK HTTP backend (bootstrap, evaluate, eval-events) with ConnectionManager, verify_sdk_secret, pool_size=10/max_overflow=20
 Resume file: None

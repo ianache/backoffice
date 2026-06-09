@@ -50,6 +50,17 @@ const getCountryName = (code: string) => {
 const toggleMenu = (id: number) => {
   activeMenu.value = activeMenu.value === id ? null : id
 }
+
+const mockOwners: Record<string, { name: string; initials: string; bg: string; text: string; border: string }> = {
+  "Acme Global": { name: "John Doe", initials: "JD", bg: "bg-primary-fixed", text: "text-on-primary-fixed", border: "border-primary-container" },
+  "Stellar Ventures": { name: "Sarah Miller", initials: "SM", bg: "bg-tertiary-fixed", text: "text-on-tertiary-fixed", border: "border-tertiary-container" },
+  "TechX Systems": { name: "Alex Kim", initials: "AK", bg: "bg-surface-dim", text: "text-on-surface-variant", border: "border-outline" },
+  "Hyperion Data": { name: "Lisa Wang", initials: "LW", bg: "bg-primary-fixed", text: "text-on-primary-fixed", border: "border-primary-container" }
+}
+
+const getOwner = (tenantName: string) => {
+  return mockOwners[tenantName] || { name: "John Doe", initials: "JD", bg: "bg-primary-fixed", text: "text-on-primary-fixed", border: "border-primary-container" }
+}
 </script>
 
 <template>
@@ -101,7 +112,7 @@ const toggleMenu = (id: number) => {
             <th :class="['px-lg table-col-header', isCompact ? 'py-sm' : 'py-md']">Status</th>
             <th :class="['px-lg table-col-header', isCompact ? 'py-sm' : 'py-md']">Plan</th>
             <th :class="['px-lg table-col-header', isCompact ? 'py-sm' : 'py-md']">Created At</th>
-            <th :class="['px-lg table-col-header', isCompact ? 'py-sm' : 'py-md']">Country</th>
+            <th :class="['px-lg table-col-header', isCompact ? 'py-sm' : 'py-md']">Owner</th>
             <th :class="['px-lg table-col-header text-right', isCompact ? 'py-sm' : 'py-md']">Actions</th>
           </tr>
         </thead>
@@ -152,29 +163,29 @@ const toggleMenu = (id: number) => {
             <td :class="['px-lg text-body-md text-on-surface-variant font-mono tabular-nums', isCompact ? 'py-sm' : 'py-md']">
               {{ formatDate(tenant.created_at) }}
             </td>
-            <!-- Country -->
+            <!-- Owner -->
             <td :class="['px-lg', isCompact ? 'py-sm' : 'py-md']">
               <div class="flex items-center gap-xs">
-                <div class="w-6 h-6 rounded-full bg-surface-container-high border border-outline-variant flex items-center justify-center shrink-0 country-initials">
-                  {{ tenant.country.slice(0, 2).toUpperCase() }}
+                <div :class="['w-6 h-6 rounded-full border flex items-center justify-center text-[10px] font-bold shrink-0', getOwner(tenant.name).bg, getOwner(tenant.name).text, getOwner(tenant.name).border]">
+                  {{ getOwner(tenant.name).initials }}
                 </div>
-                <span class="text-body-md text-on-surface">{{ getCountryName(tenant.country) }}</span>
+                <span class="text-body-md">{{ getOwner(tenant.name).name }}</span>
               </div>
             </td>
             <!-- Actions -->
             <td :class="['px-lg text-right', isCompact ? 'py-sm' : 'py-md']">
               <div class="flex items-center justify-end gap-xs">
-                <button @click="emit('edit', tenant)" class="action-btn" title="Manage Products">
+                <button @click="emit('edit', tenant)" class="p-sm text-secondary hover:text-primary hover:bg-primary-fixed rounded-lg transition-all active:scale-95 flex items-center" title="Manage Products">
                   <span class="material-symbols-outlined icon-action">inventory</span>
                 </button>
-                <button @click="emit('edit', tenant)" class="action-btn" title="Configure WhiteLabel">
+                <button @click="emit('edit', tenant)" class="p-sm text-secondary hover:text-primary hover:bg-primary-fixed rounded-lg transition-all active:scale-95 flex items-center" title="Configure WhiteLabel">
                   <span class="material-symbols-outlined icon-action">palette</span>
                 </button>
-                <button class="action-btn action-btn--disabled" title="View Analytics" disabled>
+                <button @click="emit('edit', tenant)" class="p-sm text-secondary hover:text-primary hover:bg-primary-fixed rounded-lg transition-all active:scale-95 flex items-center" title="View Analytics">
                   <span class="material-symbols-outlined icon-action">bar_chart</span>
                 </button>
                 <div class="relative">
-                  <button :id="`anchor-${tenant.id}`" @click="toggleMenu(tenant.id)" class="action-btn-muted" title="More actions">
+                  <button :id="`anchor-${tenant.id}`" @click="toggleMenu(tenant.id)" class="p-sm text-secondary hover:text-on-surface hover:bg-surface-variant rounded-lg flex items-center" title="More actions">
                     <span class="material-symbols-outlined icon-action">more_vert</span>
                   </button>
                   <md-menu

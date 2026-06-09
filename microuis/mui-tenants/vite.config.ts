@@ -3,7 +3,7 @@ import vue from '@vitejs/plugin-vue'
 import federation from '@originjs/vite-plugin-federation'
 
 export default defineConfig({
-  base: 'http://localhost:5176',
+  base: 'http://localhost:5176/',
   plugins: [
     vue(),
     federation({

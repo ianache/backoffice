@@ -60,8 +60,8 @@
 - [ ] **MUI-01**: El portal se refactoriza en Shell ligero: maneja auth (Keycloak), layout, navegaciÃ³n y servicios transversales; no contiene lÃ³gica de dominio
 - [ ] **MUI-02**: Vue, Pinia, Vue Router y Axios se exponen como singletons (`singleton: true`) desde el Shell; los remotos no instancian estas librerÃ­as
 - [ ] **MUI-03**: El Shell registra rutas de los remotos de forma asÃ­ncrona y espera `loadMicroUIRoutes()` antes de `app.mount()` para evitar race condition en hard refresh
-- [ ] **MUI-04**: `mui-security` extraÃ­do como MUI remota (Module Federation) que expone `./routes` con las vistas de gestiÃ³n de usuarios
-- [ ] **MUI-05**: `mui-tenants` creado como MUI remota que expone `./routes` con las vistas de gestiÃ³n de tenants y productos
+- [x] **MUI-04**: `mui-security` extraÃ­do como MUI remota (Module Federation) que expone `./routes` con las vistas de gestiÃ³n de usuarios
+- [x] **MUI-05**: `mui-tenants` creado como MUI remota que expone `./routes` con las vistas de gestiÃ³n de tenants y productos
 - [ ] **MUI-06**: `mui-feature-flags` extraÃ­do como MUI remota que expone `./routes` con las vistas de feature flags, rule builder, simulador y segmentos
 
 ### Products
@@ -208,8 +208,8 @@ QuÃ© fases cubren quÃ© requerimientos. Actualizado durante creaciÃ³n del r
 | MUI-01 | Phase 9 | Pending |
 | MUI-02 | Phase 9 | Pending |
 | MUI-03 | Phase 9 | Pending |
-| MUI-04 | Phase 10 | Pending |
-| MUI-05 | Phase 10 | Pending |
+| MUI-04 | Phase 10 | Complete |
+| MUI-05 | Phase 10 | Complete |
 | MUI-06 | Phase 11 | Pending |
 | SDK-05 | Phase 11 | Pending |
 | SDK-06 | Phase 11 | Pending |

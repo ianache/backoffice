@@ -3,11 +3,11 @@ import vue from '@vitejs/plugin-vue'
 import federation from '@originjs/vite-plugin-federation'
 
 export default defineConfig({
-  base: 'http://localhost:5174',
+  base: 'http://localhost:5176',
   plugins: [
     vue(),
     federation({
-      name: 'mui-security',
+      name: 'mui-tenants',
       filename: 'remoteEntry.js',
       remotes: {
         shell: 'http://localhost:5173/assets/remoteEntry.js',
@@ -29,7 +29,7 @@ export default defineConfig({
     outDir: 'dist',
   },
   preview: {
-    port: 5174,
+    port: 5176,
     strictPort: true,
     cors: true,
   },

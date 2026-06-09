@@ -5,6 +5,8 @@
   "engines": { "node": ">=20", "pnpm": ">=9" },
   "scripts": {
     "dev": "pnpm --parallel -r run dev",
+    "preview:remotes": "pnpm --parallel --filter mui-security --filter mui-tenants run preview",
+    "preview:all": "pnpm --parallel --filter @backoffice/portal --filter mui-security --filter mui-tenants run preview",
     "build": "pnpm -r run build",
     "test": "pnpm -r run test",
     "lint": "pnpm -r run lint"

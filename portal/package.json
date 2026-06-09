@@ -5,6 +5,8 @@
   "scripts": {
     "dev": "vite --port 5173",
     "build": "vue-tsc && vite build",
+    "build:watch": "vue-tsc --noEmit && vite build --watch",
+    "preview": "vite preview",
     "test": "vitest run",
     "lint": "eslint src --ext .ts,.vue"
   },
@@ -20,6 +22,7 @@
     "vuedraggable": "^4.1.0"
   },
   "devDependencies": {
+    "@originjs/vite-plugin-federation": "1.4.1",
     "@playwright/test": "^1.60.0",
     "@vitejs/plugin-vue": "^5.0.5",
     "@vue/tsconfig": "^0.5.1",

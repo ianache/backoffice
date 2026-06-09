@@ -3,7 +3,7 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: MVP2
 status: unknown
-last_updated: "2026-06-09T17:20:34.144Z"
+last_updated: "2026-06-09T17:43:10Z"
 progress:
   total_phases: 11
   completed_phases: 11
@@ -23,9 +23,9 @@ See: .planning/PROJECT.md (updated 2026-06-07)
 ## Current Position
 
 Phase: 10 of 11 IN PROGRESS (mui-tenants-security microfrontend)
-Plan: 3 of 3 complete — Phase 10 done
-Status: Complete — mui-security user management domain fully committed and building
-Last activity: 2026-06-09 — 10-03 complete; UsersView + users store/service + components committed to mui-security
+Plan: 5 of 6 complete (gap-closure plans underway)
+Status: In progress — BFF /products proxy route created; SDK WebSocket proxy (ws: true) enabled
+Last activity: 2026-06-09 — 10-05 complete; productsRouter registered at /products, sdk.ts upgraded with ws: true for WebSocket tunneling to /ws/flags/:tenant_id
 
 Progress: [████████░░] 60% (v1.1) | [███████████████████████░░] ~80% (overall)
 
@@ -58,6 +58,7 @@ Progress: [████████░░] 60% (v1.1) | [███████�
 | Phase 08-advanced-segments-sdk-backend P02 | 25 | 2 tasks | 7 files |
 | Phase 08-advanced-segments-sdk-backend P04 | 8 | 2 tasks | 5 files |
 | Phase 10-mui-tenants-security P03 | 1 | 3 tasks | 14 files |
+| Phase 10-mui-tenants-security P04 | 1 | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -99,12 +100,15 @@ Recent decisions affecting v1.1:
 - [Phase 08-04]: WS BFF proxy (ws: true) deferred to Phase 10 — SDK clients connect directly to backend in Phase 8
 - [Phase 10-mui-tenants-security]: ConfirmDialog.vue stored as UTF-16 LE (auto-fixed to UTF-8) — Vite Vue parser requires UTF-8 encoded SFCs
 - [Phase 10-mui-tenants-security]: All shell/* imports declared in env.d.ts using declare module pattern for TypeScript type safety across federation boundary
+- [10-04]: REMOTE_MANIFEST entries activated for mui-security and mui-tenants — loadMicroUIRoutes() now registers both remotes when env vars are set
+- [10-04]: Default redirect changed from /stub to /tenants — authenticated users land on primary domain
+- [10-04]: Preview ports corrected: mui-security=5174, mui-tenants=5176 — aligns with vite.config.ts and Shell .env.example
 
 ### Pending Todos
 
 - alembic.ini: EXISTS at backend/alembic.ini (confirmed during 07-01 execution)
 - SDK telemetry data model: decide DB table vs log file before Phase 8 schema (affects eval-events endpoint design)
-- WebSocket BFF proxy validation: spike task at start of Phase 11 for http-proxy-middleware ws:true + Keycloak token refresh in long-lived WS connection
+- WebSocket BFF proxy validation: spike task at start of Phase 11 for Keycloak token refresh in long-lived WS connection (ws: true proxy itself implemented in 10-05)
 
 ### Blockers/Concerns
 
@@ -113,5 +117,5 @@ Recent decisions affecting v1.1:
 ## Session Continuity
 
 Last session: 2026-06-09
-Stopped at: Completed 10-03-PLAN.md — mui-security user management domain fully committed and building. Phase 10 complete.
+Stopped at: Completed 10-04-PLAN.md — Shell REMOTE_MANIFEST activated for mui-security and mui-tenants; preview ports corrected to 5174 and 5176.
 Resume file: None

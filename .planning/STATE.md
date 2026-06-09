@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: MVP2
 status: unknown
-last_updated: "2026-06-09T03:50:47.390Z"
+last_updated: "2026-06-09T03:56:42.242Z"
 progress:
   total_phases: 9
   completed_phases: 8
   total_plans: 37
-  completed_plans: 35
+  completed_plans: 36
 ---
 
 # Project State
@@ -55,6 +55,7 @@ Progress: [███░░] 15% (v1.1) | [████████████�
 | Phase 07-products-domain P04 | 6 | 2 tasks | 3 files |
 | Phase 08-advanced-segments-sdk-backend P01 | 12 | 2 tasks | 6 files |
 | Phase 08-advanced-segments-sdk-backend P03 | 3 | 2 tasks | 10 files |
+| Phase 08-advanced-segments-sdk-backend P02 | 25 | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -88,6 +89,8 @@ Recent decisions affecting v1.1:
 - [Phase 08-03]: bulk_insert_events uses single INSERT statement (insert().values) to avoid N+1 DB writes
 - [Phase 08-03]: resolve_segment_members keys by flag_id (int) to match evaluate_flag context segment_members format
 - [Phase 08-03]: tenant_id hardcoded to unknown in eval-events Phase 8 (per-tenant keys deferred to Phase 11)
+- [Phase 08-02]: update_segment() uses SegmentCreate schema (full replacement) not partial — keeps service simple for Phase 8 scope
+- [Phase 08-02]: Segments nav item uses same role check as Feature Flags (PlatformAdmin|TenantAdmin|TenantOwner|ProductManager)
 
 ### Pending Todos
 

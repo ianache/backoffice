@@ -77,9 +77,9 @@
 
 - [x] **SEG-01**: Los segmentos tienen campo `type`: `manual` (lista estÃ¡tica de UUIDs, comportamiento existente) o `rule_based` (condiciones dinÃ¡micas)
 - [x] **SEG-02**: Segmentos `rule_based` almacenan condiciones en formato JSON idÃ©ntico al de las reglas de feature flags (mismos operadores, mismo motor de evaluaciÃ³n)
-- [ ] **SEG-03**: El editor de condiciones de segmentos `rule_based` reutiliza `RuleCard.vue` (no nuevo editor)
+- [x] **SEG-03**: El editor de condiciones de segmentos `rule_based` reutiliza `RuleCard.vue` (no nuevo editor)
 - [x] **SEG-04**: La lista de segmentos muestra el conteo de feature flags que referencian activamente cada segmento
-- [ ] **SEG-05**: Segmentos con cero referencias activas a feature flags se marcan visualmente como huÃ©rfanos en la UI
+- [x] **SEG-05**: Segmentos con cero referencias activas a feature flags se marcan visualmente como huÃ©rfanos en la UI
 
 ### Feature Flag SDK
 
@@ -198,9 +198,9 @@ QuÃ© fases cubren quÃ© requerimientos. Actualizado durante creaciÃ³n del r
 | PROD-06 | Phase 7 | Complete |
 | SEG-01 | Phase 8 | Complete |
 | SEG-02 | Phase 8 | Complete |
-| SEG-03 | Phase 8 | Pending |
+| SEG-03 | Phase 8 | Complete |
 | SEG-04 | Phase 8 | Complete |
-| SEG-05 | Phase 8 | Pending |
+| SEG-05 | Phase 8 | Complete |
 | SDK-01 | Phase 8 | Complete |
 | SDK-02 | Phase 8 | Complete |
 | SDK-03 | Phase 8 | Complete |

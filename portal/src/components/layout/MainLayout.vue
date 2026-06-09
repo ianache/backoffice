@@ -22,7 +22,7 @@
           <a
             href="#"
             class="flex items-center hover:text-primary transition-colors"
-            @click.prevent="router.push('/dashboard')"
+            @click.prevent="router.push('/stub')"
           >
             <span class="material-symbols-outlined text-[20px]">home</span>
           </a>
@@ -37,7 +37,7 @@
             <span class="material-symbols-outlined text-on-surface-variant text-[20px]">search</span>
             <input
               type="text"
-              placeholder="Search tenants..."
+              placeholder="Search..."
               class="bg-transparent border-none focus:ring-0 text-sm w-48 outline-none placeholder:text-on-surface-variant"
             />
           </div>
@@ -93,34 +93,22 @@
     <!-- ─── Left Sidebar ───────────────────────────────────────────────────── -->
     <aside class="fixed left-0 top-16 bottom-0 w-64 bg-surface-container-low border-r border-outline-variant flex flex-col z-40">
       <nav class="flex-1 flex flex-col gap-0.5 overflow-y-auto p-2 pt-3">
-        <!-- Tenants — only for PlatformAdmin -->
+        <!-- Stub Domain — Testing for Phase 9 -->
         <button
           v-if="authStore.hasRole('PlatformAdmin')"
-          @click="router.push('/tenants')"
+          @click="router.push('/stub')"
           :class="[
             'w-full flex items-center gap-4 px-4 py-2 rounded-lg transition-all duration-200 text-left',
-            isActive('/tenants')
+            remoteStatuses['mui-stub'] === 'error' ? 'opacity-50 cursor-not-allowed' : '',
+            isActive('/stub')
               ? 'bg-primary text-on-primary font-semibold'
               : 'text-on-surface-variant hover:bg-surface-container-high'
           ]"
+          :disabled="remoteStatuses['mui-stub'] === 'error'"
+          title="Stub Domain"
         >
-          <span class="material-symbols-outlined text-[22px]">corporate_fare</span>
-          <span class="text-sm">Tenants</span>
-        </button>
-
-        <!-- Users — only for TenantAdmin and TenantOwner -->
-        <button
-          v-if="authStore.hasRole('TenantAdmin') || authStore.hasRole('TenantOwner')"
-          @click="router.push('/users')"
-          :class="[
-            'w-full flex items-center gap-4 px-4 py-2 rounded-lg transition-all duration-200 text-left',
-            isActive('/users')
-              ? 'bg-primary text-on-primary font-semibold'
-              : 'text-on-surface-variant hover:bg-surface-container-high'
-          ]"
-        >
-          <span class="material-symbols-outlined text-[22px]">people</span>
-          <span class="text-sm">Users</span>
+          <span class="material-symbols-outlined text-[22px]">widgets</span>
+          <span class="text-sm">Stub Domain</span>
         </button>
 
         <!-- Products (placeholder) -->
@@ -139,36 +127,6 @@
         >
           <span class="material-symbols-outlined text-[22px]">branding_watermark</span>
           <span class="text-sm">WhiteLabels</span>
-        </button>
-
-        <!-- Feature Flags — PlatformAdmin, TenantAdmin, TenantOwner, ProductManager -->
-        <button
-          v-if="authStore.hasRole('PlatformAdmin') || authStore.hasRole('TenantAdmin') || authStore.hasRole('TenantOwner') || authStore.hasRole('ProductManager')"
-          @click="router.push('/flags')"
-          :class="[
-            'w-full flex items-center gap-4 px-4 py-2 rounded-lg transition-all duration-200 text-left',
-            isActive('/flags')
-              ? 'bg-primary text-on-primary font-semibold'
-              : 'text-on-surface-variant hover:bg-surface-container-high'
-          ]"
-        >
-          <span class="material-symbols-outlined text-[22px]">toggle_on</span>
-          <span class="text-sm">Feature Flags</span>
-        </button>
-
-        <!-- Segments — PlatformAdmin, TenantAdmin, TenantOwner, ProductManager -->
-        <button
-          v-if="authStore.hasRole('PlatformAdmin') || authStore.hasRole('TenantAdmin') || authStore.hasRole('TenantOwner') || authStore.hasRole('ProductManager')"
-          @click="router.push('/segments')"
-          :class="[
-            'w-full flex items-center gap-4 px-4 py-2 rounded-lg transition-all duration-200 text-left',
-            isActive('/segments')
-              ? 'bg-primary text-on-primary font-semibold'
-              : 'text-on-surface-variant hover:bg-surface-container-high'
-          ]"
-        >
-          <span class="material-symbols-outlined text-[22px]">group</span>
-          <span class="text-sm">Segments</span>
         </button>
 
         <!-- Audit Log (placeholder) -->
@@ -217,6 +175,7 @@ import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '../../stores/auth'
 import { useUIStore } from '../../stores/ui'
+import { remoteStatuses } from '../../router/index'
 
 const route = useRoute()
 const router = useRouter()
@@ -226,10 +185,12 @@ const uiStore = useUIStore()
 const breadcrumbLabel = computed(() => {
   const segment = route.path.split('/').filter(Boolean)[0]
   if (!segment || segment === 'dashboard') return 'Dashboard'
+  if (segment === 'stub') return 'Stub Domain'
+  if (segment === 'tenants') return 'Tenant Management'
+  if (segment === 'users') return 'Access Management'
   return segment.charAt(0).toUpperCase() + segment.slice(1)
 })
 
-function isActive(path: string): boolean {
-  return route.path.startsWith(path) || (path === '/tenants' && route.path === '/')
+  return route.path.startsWith(path) || (path === '/tenants' && route.path === '/') || (path === '/users' && route.path === '/') || (path === '/stub' && route.path === '/')
 }
 </script>

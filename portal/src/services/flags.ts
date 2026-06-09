@@ -56,6 +56,9 @@ export interface Segment {
   description: string | null
   tenant_id: string | null
   members: string[]       // array of user UUIDs
+  type: 'manual' | 'rule_based'
+  conditions: RuleSchema[]
+  flag_count: number
   created_at: string
   updated_at: string
 }
@@ -65,6 +68,8 @@ export interface SegmentPayload {
   description?: string
   tenant_id?: string
   members?: string[]
+  type?: 'manual' | 'rule_based'
+  conditions?: RuleSchema[]
 }
 
 // Flags
@@ -117,4 +122,13 @@ export async function removeSegmentFromFlag(flagId: number, segmentId: number): 
 export async function getSegmentsByFlag(flagId: number): Promise<Segment[]> {
   const { data } = await api.get(`/flags/${flagId}/segments`)
   return data
+}
+
+export async function updateSegment(id: number, payload: Partial<SegmentPayload>): Promise<Segment> {
+  const { data } = await api.patch(`/flags/segments/${id}`, payload)
+  return data
+}
+
+export async function deleteSegment(id: number): Promise<void> {
+  await api.delete(`/flags/segments/${id}`)
 }

@@ -190,7 +190,7 @@ segments_router = APIRouter(
 
 
 @segments_router.get("/", response_model=list[SegmentResponse])
-async def list_segments(
+async def list_segments_handler(
     x_user_roles: str = Header(...),
     x_user_tenant_id: str = Header(default=''),
     db: AsyncSession = Depends(get_db),
@@ -199,8 +199,13 @@ async def list_segments(
     tenant_id = x_user_tenant_id if x_user_tenant_id else None
     if 'PlatformAdmin' in roles:
         tenant_id = None  # PlatformAdmin sees all segments
-    segments = await service.list_segments(db, tenant_id=tenant_id)
-    return [SegmentResponse.model_validate(s) for s in segments]
+    rows = await service.list_segments(db, tenant_id=tenant_id)
+    result = []
+    for seg, fc in rows:
+        resp = SegmentResponse.model_validate(seg)
+        resp.flag_count = fc
+        result.append(resp)
+    return result
 
 
 @segments_router.post("/", response_model=SegmentResponse, status_code=status.HTTP_201_CREATED)
@@ -210,6 +215,19 @@ async def create_segment(
     db: AsyncSession = Depends(get_db),
 ):
     segment = await service.create_segment(db, payload)
+    return SegmentResponse.model_validate(segment)
+
+
+@segments_router.patch("/{segment_id}", response_model=SegmentResponse)
+async def update_segment(
+    segment_id: int,
+    payload: SegmentCreate,
+    x_user_roles: str = Header(...),
+    db: AsyncSession = Depends(get_db),
+):
+    segment = await service.update_segment(db, segment_id, payload)
+    if not segment:
+        raise HTTPException(status_code=404, detail="Segment not found")
     return SegmentResponse.model_validate(segment)
 
 

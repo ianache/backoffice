@@ -248,6 +248,25 @@ async def get_segment(db: AsyncSession, segment_id: int) -> Optional[Segment]:
     return result.scalar_one_or_none()
 
 
+async def update_segment(
+    db: AsyncSession,
+    segment_id: int,
+    payload: SegmentCreate,
+) -> Optional[Segment]:
+    segment = await get_segment(db, segment_id)
+    if not segment:
+        return None
+    segment.name = payload.name
+    segment.description = payload.description
+    segment.tenant_id = payload.tenant_id
+    segment.members = json.dumps(payload.members) if payload.members else None
+    segment.type = payload.type
+    segment.conditions = json.dumps([c.model_dump() for c in payload.conditions]) if payload.conditions else None
+    await db.commit()
+    await db.refresh(segment)
+    return segment
+
+
 async def delete_segment(db: AsyncSession, segment_id: int) -> bool:
     segment = await get_segment(db, segment_id)
     if not segment:

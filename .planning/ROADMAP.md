@@ -78,7 +78,13 @@ Plans:
   1. Hard refresh on any deep route (e.g., `/flags`, `/tenants/123`) resolves correctly; `loadMicroUIRoutes()` is awaited before `app.mount()` so no race condition redirects to `/unauthorized`
   2. Vue, Pinia, Vue Router and Axios each appear exactly once in the browser's loaded modules when the Shell boots with all remotes connected (verifiable via browser devtools network tab or `__webpack_modules__` / `__federation__` internals)
   3. If a remote MUI is unreachable at boot, the Shell still mounts and shows an error boundary component in place of that domain's routes — the rest of the portal remains functional
-**Plans**: TBD
+**Plans**: 4 plans
+
+Plans:
+- [ ] 09-01-PLAN.md — Shell federation host: install @originjs/vite-plugin-federation, vite.config.ts with shared singletons, RemoteErrorBoundary component
+- [ ] 09-02-PLAN.md — Router refactor + domain cleanup: loadMicroUIRoutes(), main.ts ordering, delete domain views/stores/components/services
+- [ ] 09-03-PLAN.md — mui-stub remote: scaffold minimal stub MUI, build remoteEntry.js to prove federation loop
+- [ ] 09-04-PLAN.md — E2E verification: hard refresh, singleton deduplication, error boundary (checkpoint:human-verify)
 
 ### Phase 10: mui-tenants + mui-security
 **Goal**: Tenant management and user management views are extracted as independent federated remote applications that consume Shell-provided singletons; the Products UI (catalog CRUD and tenant subscription) lives in mui-tenants; BFF proxy routes for products and SDK are added.
@@ -119,6 +125,6 @@ Phases execute in numeric order: 7 → 8 → 9 → 10 → 11
 | 6. Stitch UI Implementation | v1.0 | 4/4 | Complete | 2026-06-06 |
 | 7. Products Domain | 4/4 | Complete   | 2026-06-08 | - |
 | 8. Advanced Segments + SDK Backend | 4/4 | Complete   | 2026-06-09 | - |
-| 9. Shell Cutover | v1.1 | 0/TBD | Not started | - |
+| 9. Shell Cutover | v1.1 | 0/4 | Not started | - |
 | 10. mui-tenants + mui-security | v1.1 | 0/TBD | Not started | - |
 | 11. mui-feature-flags + SDK Clients | v1.1 | 0/TBD | Not started | - |

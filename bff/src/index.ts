@@ -5,6 +5,7 @@ import { authRouter } from './routes/auth.js'
 import { tenantsRouter } from './routes/tenants.js'
 import { usersRouter } from './routes/users.js'
 import { flagsRouter } from './routes/flags.js'
+import { sdkRouter } from './routes/sdk.js'
 
 const app = express()
 
@@ -33,6 +34,10 @@ app.use('/users', usersRouter)
 // Feature flags management: proxied to backend, multi-role (PlatformAdmin | TenantAdmin | TenantOwner | ProductManager)
 // NOTE: express.json() is intentionally NOT applied here; the proxy streams the raw body
 app.use('/flags', flagsRouter)
+
+// SDK endpoints: proxied to backend /api/v1/sdk/*, no Keycloak auth (SDK key auth handled by backend)
+// NOTE: express.json() is intentionally NOT applied here; the proxy streams the raw body
+app.use('/sdk', sdkRouter)
 
 app.listen(config.port, () => {
   console.log(`BFF running on http://localhost:${config.port}`)

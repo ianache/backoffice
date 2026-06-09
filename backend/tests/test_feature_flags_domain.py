@@ -301,3 +301,81 @@ def test_rule_schema_validation():
     rule = RuleSchema(attribute="country", operator="equals", value="PE", result=True)
     assert rule.attribute == "country"
     assert rule.result is True
+
+
+# ---------------------------------------------------------------------------
+# Segment schema — Phase 08-01 new tests
+# ---------------------------------------------------------------------------
+
+def test_segment_create_defaults_to_manual_type():
+    """SegmentCreate with no type argument defaults to 'manual'"""
+    from app.domains.feature_flags.schemas import SegmentCreate
+    seg = SegmentCreate(name="beta_users")
+    assert seg.type == 'manual'
+    assert seg.conditions == []
+
+
+def test_segment_create_rule_based_round_trip():
+    """SegmentCreate accepts type='rule_based' with conditions and validates correctly"""
+    from app.domains.feature_flags.schemas import SegmentCreate, RuleSchema
+    conditions = [{"attribute": "country", "operator": "equals", "value": "PE", "result": True}]
+    seg = SegmentCreate(name="peru_users", type='rule_based', conditions=conditions)
+    assert seg.type == 'rule_based'
+    assert len(seg.conditions) == 1
+    assert isinstance(seg.conditions[0], RuleSchema)
+    assert seg.conditions[0].attribute == "country"
+
+
+def test_segment_response_type_defaults_to_manual_when_null():
+    """SegmentResponse.type is 'manual' when the DB value is NULL"""
+    from app.domains.feature_flags.schemas import SegmentResponse
+    response = SegmentResponse(
+        id=1,
+        name="old_segment",
+        tenant_id=None,
+        members=None,
+        type=None,
+        conditions=None,
+        created_at=datetime(2026, 1, 1),
+        updated_at=datetime(2026, 1, 1),
+    )
+    assert response.type == 'manual'
+    assert response.conditions == []
+
+
+def test_segment_response_flag_count_defaults_to_zero():
+    """SegmentResponse.flag_count defaults to 0"""
+    from app.domains.feature_flags.schemas import SegmentResponse
+    response = SegmentResponse(
+        id=2,
+        name="no_flags_segment",
+        created_at=datetime(2026, 1, 1),
+        updated_at=datetime(2026, 1, 1),
+    )
+    assert response.flag_count == 0
+
+
+def test_segment_response_conditions_parsed_from_json_string():
+    """SegmentResponse.conditions is parsed from JSON string (dict path)"""
+    import json
+    from app.domains.feature_flags.schemas import SegmentResponse
+    conditions_json = json.dumps([
+        {"attribute": "plan", "operator": "in", "value": ["pro", "enterprise"], "result": True}
+    ])
+    response = SegmentResponse(
+        id=3,
+        name="pro_users",
+        conditions=conditions_json,
+        created_at=datetime(2026, 1, 1),
+        updated_at=datetime(2026, 1, 1),
+    )
+    assert len(response.conditions) == 1
+    assert response.conditions[0].attribute == "plan"
+
+
+def test_eval_event_model_importable():
+    """EvalEvent model exists and has required fields"""
+    from app.domains.feature_flags.models import EvalEvent
+    ev = EvalEvent()
+    for field in ("id", "flag_key", "user_id", "result", "evaluated_at", "tenant_id", "product_id", "created_at"):
+        assert hasattr(ev, field), f"EvalEvent missing field: {field}"

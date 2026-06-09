@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: MVP2
 status: unknown
-last_updated: "2026-06-09T17:43:10Z"
+last_updated: "2026-06-09T17:47:26.715Z"
 progress:
   total_phases: 11
   completed_phases: 11
-  total_plans: 44
-  completed_plans: 44
+  total_plans: 47
+  completed_plans: 47
 ---
 
 # Project State
@@ -22,10 +22,10 @@ See: .planning/PROJECT.md (updated 2026-06-07)
 
 ## Current Position
 
-Phase: 10 of 11 IN PROGRESS (mui-tenants-security microfrontend)
-Plan: 5 of 6 complete (gap-closure plans underway)
-Status: In progress — BFF /products proxy route created; SDK WebSocket proxy (ws: true) enabled
-Last activity: 2026-06-09 — 10-05 complete; productsRouter registered at /products, sdk.ts upgraded with ws: true for WebSocket tunneling to /ws/flags/:tenant_id
+Phase: 10 of 11 COMPLETE (mui-tenants-security microfrontend)
+Plan: 6 of 6 complete (all gap-closure plans done)
+Status: Complete — TenantForm live products wiring done; MUI-05 satisfied; Phase 10 fully complete
+Last activity: 2026-06-09 — 10-06 complete; products service created in mui-tenants; TenantForm hardcoded products replaced with live BFF fetch via onMounted
 
 Progress: [████████░░] 60% (v1.1) | [███████████████████████░░] ~80% (overall)
 
@@ -59,6 +59,7 @@ Progress: [████████░░] 60% (v1.1) | [███████�
 | Phase 08-advanced-segments-sdk-backend P04 | 8 | 2 tasks | 5 files |
 | Phase 10-mui-tenants-security P03 | 1 | 3 tasks | 14 files |
 | Phase 10-mui-tenants-security P04 | 1 | 2 tasks | 3 files |
+| Phase 10-mui-tenants-security P06 | 111 | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -105,6 +106,9 @@ Recent decisions affecting v1.1:
 - [10-04]: REMOTE_MANIFEST entries activated for mui-security and mui-tenants — loadMicroUIRoutes() now registers both remotes when env vars are set
 - [10-04]: Default redirect changed from /stub to /tenants — authenticated users land on primary domain
 - [10-04]: Preview ports corrected: mui-security=5174, mui-tenants=5176 — aligns with vite.config.ts and Shell .env.example
+- [Phase 10-06]: availableProducts changed from const string[] to ref<Product[]> — reactive so template updates when fetch completes
+- [Phase 10-06]: listProducts() passes status=active filter by default — only subscribable products rendered in form
+- [Phase 10-06]: data.items ?? [] fallback in listProducts() — handles empty catalog or malformed response gracefully
 
 ### Pending Todos
 
@@ -119,5 +123,5 @@ Recent decisions affecting v1.1:
 ## Session Continuity
 
 Last session: 2026-06-09
-Stopped at: Completed 10-05-PLAN.md — BFF /products proxy route created; SDK WebSocket proxy enabled with ws: true.
+Stopped at: Completed 10-06-PLAN.md — TenantForm live products wiring complete; hardcoded products replaced with BFF fetch; MUI-05 satisfied; Phase 10 fully complete (6/6 plans).
 Resume file: None

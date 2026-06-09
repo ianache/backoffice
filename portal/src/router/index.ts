@@ -60,6 +60,17 @@ const routes: RouteRecordRaw[] = [
       title: 'Rule Builder'
     },
   },
+  {
+    path: '/segments',
+    name: 'segments',
+    component: () => import('../views/SegmentsView.vue'),
+    meta: {
+      requiresAuth: true,
+      roles: ['PlatformAdmin', 'TenantAdmin', 'TenantOwner', 'ProductManager'],
+      layout: 'main',
+      title: 'Segments'
+    },
+  },
 ]
 
 const router = createRouter({

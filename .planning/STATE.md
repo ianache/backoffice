@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: MVP2
 status: unknown
-last_updated: "2026-06-08T12:22:53.749Z"
+last_updated: "2026-06-09T03:50:47.390Z"
 progress:
-  total_phases: 8
+  total_phases: 9
   completed_phases: 8
-  total_plans: 33
-  completed_plans: 33
+  total_plans: 37
+  completed_plans: 35
 ---
 
 # Project State
@@ -18,14 +18,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-06-07)
 
 **Core value:** Los feature flags jerárquicos con evaluación determinista deben funcionar — sin esto, los tenants no pueden controlar su funcionalidad y el sistema no tiene razón de existir.
-**Current focus:** Phase 7 — Products Domain (plan 03 complete, 1 remaining)
+**Current focus:** Phase 8 — Advanced Segments + SDK Backend (plan 03 of 4 complete)
 
 ## Current Position
 
-Phase: 7 of 11 (Products Domain)
+Phase: 8 of 11 (Advanced Segments + SDK Backend)
 Plan: 3 of 4 complete
 Status: In progress
-Last activity: 2026-06-08 — 07-03 complete (3-step Alembic migrations: expand/backfill/cleanup for products domain)
+Last activity: 2026-06-09 — 08-03 complete (SDK HTTP backend: bootstrap/evaluate/eval-events endpoints with ConnectionManager)
 
 Progress: [███░░] 15% (v1.1) | [████████████████████░░░░░] ~65% (overall)
 
@@ -53,6 +53,8 @@ Progress: [███░░] 15% (v1.1) | [████████████�
 
 *Updated after each plan completion*
 | Phase 07-products-domain P04 | 6 | 2 tasks | 3 files |
+| Phase 08-advanced-segments-sdk-backend P01 | 12 | 2 tasks | 6 files |
+| Phase 08-advanced-segments-sdk-backend P03 | 3 | 2 tasks | 10 files |
 
 ## Accumulated Context
 
@@ -79,6 +81,13 @@ Recent decisions affecting v1.1:
 - [Phase 07-04]: subscribe_product raises ValueError('inactive_product') — service stays pure, router owns HTTP 422 semantics
 - [Phase 07-04]: Subscription and association endpoints are idempotent — re-subscribing returns 200, concurrent calls safe
 - [Phase 07-04]: TenantOwner OR PlatformAdmin required for subscription operations (TenantAdmin alone insufficient)
+- [Phase 08-01]: No server_default on segments.type — NULL treated as 'manual' at schema layer; avoids MySQL 5.6 table rewrite pitfall
+- [Phase 08-01]: list_segments() returns (Segment, int) tuples — router update to unpack tuples deferred to Plan 02 with TODO comment
+- [Phase 08-01]: EvalEvent ORM model added in Plan 01 for Plan 03 bulk-insert importability without mid-phase model changes
+- [Phase 08-03]: sdk_secret_key default is dev-sdk-secret-change-in-prod — override via SDK_SECRET_KEY env var in prod
+- [Phase 08-03]: bulk_insert_events uses single INSERT statement (insert().values) to avoid N+1 DB writes
+- [Phase 08-03]: resolve_segment_members keys by flag_id (int) to match evaluate_flag context segment_members format
+- [Phase 08-03]: tenant_id hardcoded to unknown in eval-events Phase 8 (per-tenant keys deferred to Phase 11)
 
 ### Pending Todos
 
@@ -93,5 +102,5 @@ Recent decisions affecting v1.1:
 ## Session Continuity
 
 Last session: 2026-06-08
-Stopped at: Completed 07-03-PLAN.md — 3-step Alembic migrations (expand/backfill/cleanup) for products domain
+Stopped at: Completed 08-01-PLAN.md — segments data layer: c001/c002 migrations, Segment ORM extension, EvalEvent model, list_segments() tuple refactor
 Resume file: None

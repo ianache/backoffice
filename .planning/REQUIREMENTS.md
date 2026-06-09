@@ -75,17 +75,17 @@
 
 ### Advanced Segments
 
-- [ ] **SEG-01**: Los segmentos tienen campo `type`: `manual` (lista estÃ¡tica de UUIDs, comportamiento existente) o `rule_based` (condiciones dinÃ¡micas)
-- [ ] **SEG-02**: Segmentos `rule_based` almacenan condiciones en formato JSON idÃ©ntico al de las reglas de feature flags (mismos operadores, mismo motor de evaluaciÃ³n)
+- [x] **SEG-01**: Los segmentos tienen campo `type`: `manual` (lista estÃ¡tica de UUIDs, comportamiento existente) o `rule_based` (condiciones dinÃ¡micas)
+- [x] **SEG-02**: Segmentos `rule_based` almacenan condiciones en formato JSON idÃ©ntico al de las reglas de feature flags (mismos operadores, mismo motor de evaluaciÃ³n)
 - [ ] **SEG-03**: El editor de condiciones de segmentos `rule_based` reutiliza `RuleCard.vue` (no nuevo editor)
-- [ ] **SEG-04**: La lista de segmentos muestra el conteo de feature flags que referencian activamente cada segmento
+- [x] **SEG-04**: La lista de segmentos muestra el conteo de feature flags que referencian activamente cada segmento
 - [ ] **SEG-05**: Segmentos con cero referencias activas a feature flags se marcan visualmente como huÃ©rfanos en la UI
 
 ### Feature Flag SDK
 
-- [ ] **SDK-01**: Backend expone `GET /api/v1/sdk/bootstrap` que retorna snapshot consolidado de flags para `tenant_id + product_id + environment` (composiciÃ³n de `list_flags()` existente, sin cambios al motor de evaluaciÃ³n)
-- [ ] **SDK-02**: Backend expone `POST /api/v1/sdk/evaluate` para evaluaciÃ³n remota de una flag con contexto de usuario (delega a `evaluate_flag()` existente)
-- [ ] **SDK-03**: Backend expone `POST /api/v1/sdk/eval-events` para ingesta de eventos de telemetrÃ­a en batch
+- [x] **SDK-01**: Backend expone `GET /api/v1/sdk/bootstrap` que retorna snapshot consolidado de flags para `tenant_id + product_id + environment` (composiciÃ³n de `list_flags()` existente, sin cambios al motor de evaluaciÃ³n)
+- [x] **SDK-02**: Backend expone `POST /api/v1/sdk/evaluate` para evaluaciÃ³n remota de una flag con contexto de usuario (delega a `evaluate_flag()` existente)
+- [x] **SDK-03**: Backend expone `POST /api/v1/sdk/eval-events` para ingesta de eventos de telemetrÃ­a en batch
 - [ ] **SDK-04**: Backend expone WebSocket endpoint que transmite `{type:"flag_updated", flag_key}` a clientes registrados para `tenant_id + product_id` cuando se guarda una flag; usa first-message auth (no `Depends()` en handshake)
 - [ ] **SDK-05**: SDK cliente JS/TS (`sdk/sdk-js`) hace fetch del bootstrap al inicializar y almacena config de flags en cachÃ© en memoria
 - [ ] **SDK-06**: SDK cliente JS/TS evalÃºa flags localmente desde cachÃ© con latencia <1ms, sin llamadas de red
@@ -196,14 +196,14 @@ QuÃ© fases cubren quÃ© requerimientos. Actualizado durante creaciÃ³n del r
 | PROD-04 | Phase 7 | Complete |
 | PROD-05 | Phase 7 | Complete |
 | PROD-06 | Phase 7 | Complete |
-| SEG-01 | Phase 8 | Pending |
-| SEG-02 | Phase 8 | Pending |
+| SEG-01 | Phase 8 | Complete |
+| SEG-02 | Phase 8 | Complete |
 | SEG-03 | Phase 8 | Pending |
-| SEG-04 | Phase 8 | Pending |
+| SEG-04 | Phase 8 | Complete |
 | SEG-05 | Phase 8 | Pending |
-| SDK-01 | Phase 8 | Pending |
-| SDK-02 | Phase 8 | Pending |
-| SDK-03 | Phase 8 | Pending |
+| SDK-01 | Phase 8 | Complete |
+| SDK-02 | Phase 8 | Complete |
+| SDK-03 | Phase 8 | Complete |
 | SDK-04 | Phase 8 | Pending |
 | MUI-01 | Phase 9 | Pending |
 | MUI-02 | Phase 9 | Pending |

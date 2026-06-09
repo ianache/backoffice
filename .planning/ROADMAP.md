@@ -118,7 +118,7 @@ Phases execute in numeric order: 7 → 8 → 9 → 10 → 11
 | 5. Rule Builder | v1.0 | 3/3 | Complete | 2026-06-08 |
 | 6. Stitch UI Implementation | v1.0 | 4/4 | Complete | 2026-06-06 |
 | 7. Products Domain | 4/4 | Complete   | 2026-06-08 | - |
-| 8. Advanced Segments + SDK Backend | v1.1 | 0/TBD | Not started | - |
+| 8. Advanced Segments + SDK Backend | 2/4 | In Progress|  | - |
 | 9. Shell Cutover | v1.1 | 0/TBD | Not started | - |
 | 10. mui-tenants + mui-security | v1.1 | 0/TBD | Not started | - |
 | 11. mui-feature-flags + SDK Clients | v1.1 | 0/TBD | Not started | - |

@@ -100,6 +100,8 @@ Recent decisions affecting v1.1:
 - [Phase 08-04]: WS BFF proxy (ws: true) deferred to Phase 10 — SDK clients connect directly to backend in Phase 8
 - [Phase 10-mui-tenants-security]: ConfirmDialog.vue stored as UTF-16 LE (auto-fixed to UTF-8) — Vite Vue parser requires UTF-8 encoded SFCs
 - [Phase 10-mui-tenants-security]: All shell/* imports declared in env.d.ts using declare module pattern for TypeScript type safety across federation boundary
+- [10-05]: products BFF route uses requireAuth only — backend enforces PlatformAdmin for CRUD and TenantOwner|PlatformAdmin for subscriptions via X-User-Roles header
+- [10-05]: sdk pathRewrite is a function checking path.startsWith('/ws/') to route WS and HTTP paths separately without needing separate routes
 - [10-04]: REMOTE_MANIFEST entries activated for mui-security and mui-tenants — loadMicroUIRoutes() now registers both remotes when env vars are set
 - [10-04]: Default redirect changed from /stub to /tenants — authenticated users land on primary domain
 - [10-04]: Preview ports corrected: mui-security=5174, mui-tenants=5176 — aligns with vite.config.ts and Shell .env.example
@@ -117,5 +119,5 @@ Recent decisions affecting v1.1:
 ## Session Continuity
 
 Last session: 2026-06-09
-Stopped at: Completed 10-04-PLAN.md — Shell REMOTE_MANIFEST activated for mui-security and mui-tenants; preview ports corrected to 5174 and 5176.
+Stopped at: Completed 10-05-PLAN.md — BFF /products proxy route created; SDK WebSocket proxy enabled with ws: true.
 Resume file: None

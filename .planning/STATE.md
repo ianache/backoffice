@@ -105,5 +105,5 @@ Recent decisions affecting v1.1:
 ## Session Continuity
 
 Last session: 2026-06-09
-Stopped at: Completed 08-03-PLAN.md — SDK HTTP backend (bootstrap, evaluate, eval-events) with ConnectionManager, verify_sdk_secret, pool_size=10/max_overflow=20
+Stopped at: Completed 08-02-PLAN.md (checkpoint approved) — Segments UI: SegmentsView, SegmentTable, SegmentForm, /segments route, sidebar nav item; 08-03 also complete
 Resume file: None

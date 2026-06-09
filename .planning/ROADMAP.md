@@ -47,10 +47,10 @@ Full archive: `.planning/milestones/v1.0-ROADMAP.md`
 **Plans**: 4 plans
 
 Plans:
-- [ ] 07-01-PLAN.md — Products domain foundation: ORM models, Pydantic schemas, Alembic env.py registration
-- [ ] 07-02-PLAN.md — Products CRUD service, router (POST/GET/PATCH), main.py registration
-- [ ] 07-03-PLAN.md — Alembic 3-step migration: expand, backfill, cleanup revisions
-- [ ] 07-04-PLAN.md — Tenant subscription endpoints + flag-product association endpoints
+- [x] 07-01-PLAN.md — Products domain foundation: ORM models, Pydantic schemas, Alembic env.py registration
+- [x] 07-02-PLAN.md — Products CRUD service, router (POST/GET/PATCH), main.py registration
+- [x] 07-03-PLAN.md — Alembic 3-step migration: expand, backfill, cleanup revisions
+- [x] 07-04-PLAN.md — Tenant subscription endpoints + flag-product association endpoints
 
 ### Phase 8: Advanced Segments + SDK Backend
 **Goal**: Segments support rule-based dynamic conditions using the existing evaluation engine; SDK backend endpoints expose a consolidated flag bootstrap, remote evaluation, telemetry ingestion, and real-time WebSocket invalidation — all composing from existing `list_flags()` and `evaluate_flag()` without changes to their signatures.
@@ -65,9 +65,9 @@ Plans:
 **Plans**: 4 plans
 
 Plans:
-- [ ] 08-01-PLAN.md — Alembic migrations (segments + eval_events) + Segment ORM/schema/service extension
-- [ ] 08-02-PLAN.md — Segments router + portal UI (SegmentsView, SegmentForm, SegmentTable, nav)
-- [ ] 08-03-PLAN.md — SDK infrastructure (ConnectionManager, config, pool) + HTTP endpoints (bootstrap/evaluate/eval-events)
+- [x] 08-01-PLAN.md — Alembic migrations (segments + eval_events) + Segment ORM/schema/service extension
+- [x] 08-02-PLAN.md — Segments router + portal UI (SegmentsView, SegmentForm, SegmentTable, nav)
+- [x] 08-03-PLAN.md — SDK infrastructure (ConnectionManager, config, pool) + HTTP endpoints (bootstrap/evaluate/eval-events)
 - [ ] 08-04-PLAN.md — WebSocket endpoint + flag broadcast hooks + BFF proxy
 
 ### Phase 9: Shell Cutover

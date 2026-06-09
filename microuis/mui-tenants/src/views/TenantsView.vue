@@ -100,7 +100,7 @@ const handleConfirm = async () => {
     <!-- Page Header -->
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-md">
       <div>
-        <h1 class="text-headline-lg font-semibold text-on-surface leading-tight tracking-tight">Tenant Management</h1>
+        <h1 class="page-title text-headline-lg font-semibold text-on-surface leading-tight tracking-tight">Tenant Management</h1>
         <p class="text-body-md text-on-surface-variant mt-1">Oversee and manage ecosystem-wide tenant configurations and health.</p>
       </div>
       <div class="flex items-center gap-md">

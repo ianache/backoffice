@@ -93,6 +93,24 @@
     <!-- ─── Left Sidebar ───────────────────────────────────────────────────── -->
     <aside class="fixed left-0 top-16 bottom-0 w-64 bg-surface-container-low border-r border-outline-variant flex flex-col z-40">
       <nav class="flex-1 flex flex-col gap-0.5 overflow-y-auto p-2 pt-3">
+        <!-- Tenants -->
+        <button
+          v-if="authStore.hasRole('PlatformAdmin')"
+          @click="router.push('/tenants')"
+          :class="[
+            'w-full flex items-center gap-4 px-4 py-2 rounded-lg transition-all duration-200 text-left',
+            remoteStatuses['mui-tenants'] === 'error' ? 'opacity-50 cursor-not-allowed' : '',
+            isActive('/tenants')
+              ? 'bg-primary text-on-primary font-semibold'
+              : 'text-on-surface-variant hover:bg-surface-container-high'
+          ]"
+          :disabled="remoteStatuses['mui-tenants'] === 'error'"
+          title="Tenants"
+        >
+          <span class="material-symbols-outlined text-[22px]">corporate_fare</span>
+          <span class="text-sm">Tenants</span>
+        </button>
+
         <!-- Stub Domain — Testing for Phase 9 -->
         <button
           v-if="authStore.hasRole('PlatformAdmin')"
@@ -127,6 +145,15 @@
         >
           <span class="material-symbols-outlined text-[22px]">branding_watermark</span>
           <span class="text-sm">WhiteLabels</span>
+        </button>
+
+        <!-- Feature Flags (placeholder) -->
+        <button
+          class="w-full flex items-center gap-4 px-4 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all duration-200 text-left cursor-not-allowed opacity-70"
+          disabled
+        >
+          <span class="material-symbols-outlined text-[22px]">toggle_on</span>
+          <span class="text-sm">Feature Flags</span>
         </button>
 
         <!-- Audit Log (placeholder) -->
@@ -186,7 +213,7 @@ const breadcrumbLabel = computed(() => {
   const segment = route.path.split('/').filter(Boolean)[0]
   if (!segment || segment === 'dashboard') return 'Dashboard'
   if (segment === 'stub') return 'Stub Domain'
-  if (segment === 'tenants') return 'Tenant Management'
+  if (segment === 'tenants') return 'Tenants'
   if (segment === 'users') return 'Access Management'
   return segment.charAt(0).toUpperCase() + segment.slice(1)
 })

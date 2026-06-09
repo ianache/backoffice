@@ -150,8 +150,8 @@ const getOwner = (tenantName: string) => {
             </td>
             <!-- Status -->
             <td :class="['px-lg', isCompact ? 'py-sm' : 'py-md']">
-              <span :class="['status-chip', tenant.status === 'active' ? 'status-active' : 'status-suspended']">
-                <span class="status-dot" :style="{ backgroundColor: tenant.status === 'active' ? 'var(--status-active-indicator)' : 'var(--status-suspended-indicator)' }"></span>
+              <span :class="['status-chip', tenant.status === 'active' ? 'status-active' : (tenant.status === 'pending' ? 'status-pending' : 'status-suspended')]">
+                <span class="status-dot" :style="{ backgroundColor: tenant.status === 'active' ? 'var(--status-active-indicator)' : (tenant.status === 'pending' ? '#f59e0b' : 'var(--status-suspended-indicator)') }"></span>
                 {{ tenant.status.charAt(0).toUpperCase() + tenant.status.slice(1) }}
               </span>
             </td>
@@ -268,6 +268,11 @@ const getOwner = (tenantName: string) => {
   color: #166534;
 }
 
+.status-pending {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
 .status-suspended {
   background-color: #fee2e2;
   color: #991b1b;
@@ -276,6 +281,11 @@ const getOwner = (tenantName: string) => {
 [data-theme='dark'] .status-active {
   background-color: rgba(52, 168, 83, 0.15);
   color: #86efac;
+}
+
+[data-theme='dark'] .status-pending {
+  background-color: rgba(245, 158, 11, 0.15);
+  color: #fcd34d;
 }
 
 [data-theme='dark'] .status-suspended {

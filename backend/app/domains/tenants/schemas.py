@@ -107,4 +107,5 @@ class TenantResponse(TenantCreate):
     id: int
     created_at: datetime
     updated_at: datetime
+    products: list[str] = []
     model_config = ConfigDict(from_attributes=True)

@@ -6,6 +6,12 @@ test.describe('Login Page Visual Tests', () => {
     await page.goto('/login');
     // Wait for components to be ready
     await page.waitForLoadState('networkidle');
+
+    // If local login form is collapsed, click to expand it so form fields are present in the DOM
+    const localLoginBtn = page.locator('button:has-text("Local Admin Login")');
+    if (await localLoginBtn.isVisible()) {
+      await localLoginBtn.click();
+    }
   });
 
   test('Login page - Light Mode', async ({ page }) => {
@@ -16,9 +22,9 @@ test.describe('Login Page Visual Tests', () => {
     });
     
     // Check elements visibility
-    await expect(page.locator('h2')).toContainText('Welcome back');
+    await expect(page.locator('h2').first()).toContainText('Welcome back');
     await expect(page.locator('md-outlined-text-field').first()).toBeVisible();
-    await expect(page.locator('md-filled-button')).toContainText('Sign In');
+    await expect(page.getByRole('button', { name: 'Sign In', exact: true })).toBeVisible();
 
     // Take screenshot
     await expect(page).toHaveScreenshot('login-light.png', {
@@ -48,7 +54,7 @@ test.describe('Login Page Visual Tests', () => {
     // Trigger error by submitting form
     const emailField = page.locator('md-outlined-text-field').first();
     const passwordField = page.locator('md-outlined-text-field').last();
-    const submitButton = page.locator('md-filled-button');
+    const submitButton = page.getByRole('button', { name: 'Sign In', exact: true });
 
     await emailField.click();
     await page.keyboard.type('admin@backoffice.dev');

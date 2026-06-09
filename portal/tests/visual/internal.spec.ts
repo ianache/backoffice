@@ -51,12 +51,28 @@ const MOCK_TENANTS = [
 
 test.describe('Internal Pages — Stitch Design', () => {
   test.beforeEach(async ({ page }) => {
+    // Print browser console logs and errors directly to E2E test output
+    page.on('console', msg => console.log('BROWSER LOG:', msg.text()));
+    page.on('pageerror', err => console.error('BROWSER ERROR:', err.message));
+
     // Mock BFF tenants endpoint (portal calls http://localhost:3000/tenants/)
     await page.route('**/tenants/**', async route => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
         body: JSON.stringify(MOCK_TENANTS)
+      });
+    });
+
+    // Mock BFF products endpoint (portal calls http://localhost:3000/products/)
+    await page.route('**/products/**', async route => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify([
+          { id: 'Core', name: 'Core', status: 'active' },
+          { id: 'Analytics', name: 'Analytics', status: 'active' }
+        ])
       });
     });
 

@@ -2,7 +2,7 @@ import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 import App from './App.vue'
-import router from './router/index'
+import router, { loadMicroUIRoutes } from './router/index'
 import { useAuthStore } from './stores/auth'
 import './assets/theme.css'
 import './assets/tailwind.css'
@@ -23,6 +23,9 @@ if (import.meta.env.VITE_E2E_SKIP_AUTH !== 'true') {
 } else {
   authStore.$patch({ isLoading: false })
 }
+
+// Load Micro-UI routes after auth is initialized but BEFORE the router is registered with the app
+await loadMicroUIRoutes()
 
 app.use(router)
 app.mount('#app')

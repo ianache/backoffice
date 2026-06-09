@@ -6,6 +6,7 @@ import { tenantsRouter } from './routes/tenants.js'
 import { usersRouter } from './routes/users.js'
 import { flagsRouter } from './routes/flags.js'
 import { sdkRouter } from './routes/sdk.js'
+import { productsRouter } from './routes/products.js'
 
 const app = express()
 
@@ -36,8 +37,13 @@ app.use('/users', usersRouter)
 app.use('/flags', flagsRouter)
 
 // SDK endpoints: proxied to backend /api/v1/sdk/*, no Keycloak auth (SDK key auth handled by backend)
+// WebSocket connections to /sdk/ws/flags/:tenant_id are upgraded and forwarded to backend /ws/flags/:tenant_id
 // NOTE: express.json() is intentionally NOT applied here; the proxy streams the raw body
 app.use('/sdk', sdkRouter)
+
+// Products catalog and tenant subscriptions: proxied to backend /api/v1/products/*
+// NOTE: express.json() is intentionally NOT applied here; the proxy streams the raw body
+app.use('/products', productsRouter)
 
 app.listen(config.port, () => {
   console.log(`BFF running on http://localhost:${config.port}`)

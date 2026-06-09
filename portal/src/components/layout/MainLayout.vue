@@ -191,6 +191,7 @@ const breadcrumbLabel = computed(() => {
   return segment.charAt(0).toUpperCase() + segment.slice(1)
 })
 
+function isActive(path: string): boolean {
   return route.path.startsWith(path) || (path === '/tenants' && route.path === '/') || (path === '/users' && route.path === '/') || (path === '/stub' && route.path === '/')
 }
 </script>

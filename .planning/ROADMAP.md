@@ -68,7 +68,7 @@ Plans:
 - [x] 08-01-PLAN.md — Alembic migrations (segments + eval_events) + Segment ORM/schema/service extension
 - [x] 08-02-PLAN.md — Segments router + portal UI (SegmentsView, SegmentForm, SegmentTable, nav)
 - [x] 08-03-PLAN.md — SDK infrastructure (ConnectionManager, config, pool) + HTTP endpoints (bootstrap/evaluate/eval-events)
-- [ ] 08-04-PLAN.md — WebSocket endpoint + flag broadcast hooks + BFF proxy
+- [x] 08-04-PLAN.md — WebSocket endpoint + flag broadcast hooks + BFF proxy
 
 ### Phase 9: Shell Cutover
 **Goal**: The portal is refactored into a lightweight Shell that owns only Keycloak PKCE init, layout chrome, and async remote route registration; domain views are removed from the Shell; Vue, Pinia, Vue Router and Axios are exposed as shared federation singletons so remote MUIs never instantiate duplicate stores.

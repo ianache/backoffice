@@ -71,7 +71,7 @@ completed: 2026-06-08
 - **Duration:** ~8 min
 - **Started:** 2026-06-08T03:16:34Z
 - **Completed:** 2026-06-08T03:24:00Z
-- **Tasks:** 2 auto tasks complete (checkpoint pending human verification)
+- **Tasks:** 3 (2 auto + 1 checkpoint:human-verify — approved)
 - **Files modified:** 5
 
 ## Accomplishments
@@ -88,7 +88,9 @@ Each task was committed atomically:
 1. **Task 1: WebSocket endpoint + main.py wiring + broadcast hooks in flags router** - `db55359` (feat)
 2. **Task 2: BFF proxy route for SDK HTTP endpoints** - `2913b7b` (feat)
 
-**Plan metadata:** (pending final commit after checkpoint)
+3. **Checkpoint: human-verify approved** — end-to-end WebSocket auth, SDK HTTP, and broadcast verified
+
+**Plan metadata:** (final commit after checkpoint approval)
 
 ## Files Created/Modified
 - `backend/app/domains/sdk/ws_router.py` - WebSocket endpoint with first-message auth, heartbeat loop, register/deregister lifecycle

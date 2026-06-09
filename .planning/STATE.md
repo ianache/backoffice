@@ -3,7 +3,7 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: MVP2
 status: unknown
-last_updated: "2026-06-09T04:22:29.619Z"
+last_updated: "2026-06-09T05:00:00.000Z"
 progress:
   total_phases: 9
   completed_phases: 9
@@ -18,16 +18,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-06-07)
 
 **Core value:** Los feature flags jerárquicos con evaluación determinista deben funcionar — sin esto, los tenants no pueden controlar su funcionalidad y el sistema no tiene razón de existir.
-**Current focus:** Phase 8 — Advanced Segments + SDK Backend (plan 04 of 4 — awaiting checkpoint:human-verify)
+**Current focus:** Phase 9 — Shell Cutover (next phase, not yet started)
 
 ## Current Position
 
-Phase: 8 of 11 (Advanced Segments + SDK Backend)
-Plan: 4 of 4 auto tasks complete (checkpoint:human-verify pending)
-Status: In progress — awaiting human verification
-Last activity: 2026-06-08 — 08-04 auto tasks complete (WS endpoint + broadcast hooks + BFF proxy)
+Phase: 8 of 11 COMPLETE (Advanced Segments + SDK Backend)
+Plan: 4 of 4 complete — Phase 8 done
+Status: Complete — ready for Phase 9
+Last activity: 2026-06-09 — 08-04 checkpoint:human-verify approved; Phase 8 fully complete
 
-Progress: [███░░] 15% (v1.1) | [████████████████████░░░░░] ~65% (overall)
+Progress: [████░░] 20% (v1.1) | [█████████████████████░░░░] ~70% (overall)
 
 ## Performance Metrics
 
@@ -109,6 +109,6 @@ Recent decisions affecting v1.1:
 
 ## Session Continuity
 
-Last session: 2026-06-08
-Stopped at: 08-04 auto tasks complete (db55359, 2913b7b) — awaiting checkpoint:human-verify for WebSocket + SDK end-to-end verification
+Last session: 2026-06-09
+Stopped at: Completed 08-04-PLAN.md — Phase 8 fully complete. Ready to plan Phase 9 (Shell Cutover).
 Resume file: None

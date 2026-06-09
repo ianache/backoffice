@@ -13,6 +13,9 @@ class Settings(BaseSettings):
     keycloak_admin_client_id: str = "backoffice-backend"
     keycloak_admin_client_secret: str = ""
 
+    # SDK shared secret — SDK clients pass as Authorization: Bearer <sdk_key>
+    sdk_secret_key: str = "dev-sdk-secret-change-in-prod"
+
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
 settings = Settings()

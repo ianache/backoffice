@@ -24,7 +24,7 @@ const confirmDialog = ref({
 })
 
 const activeCount = computed(() => tenantsStore.tenants.filter(t => t.status === 'active').length)
-const uniqueProductCount = computed(() => new Set(tenantsStore.tenants.flatMap(t => t.products)).size)
+const uniqueProductCount = computed(() => new Set(tenantsStore.tenants.flatMap(t => t.products || [])).size)
 
 onMounted(() => {
   tenantsStore.fetchTenants()

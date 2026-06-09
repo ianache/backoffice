@@ -112,6 +112,8 @@ Abre [http://localhost:5173](http://localhost:5173) — deberías ser redirigido
 | Contraseña | `Backoffice1!` |
 | Rol | PlatformAdmin |
 
+bo.admin@backoffice.dev / Backoffice1!
+
 ## Flujo de autenticación
 
 ```

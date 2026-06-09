@@ -27,8 +27,8 @@ const formatDate = (dateString: string) => {
   })
 }
 
-const derivePlan = (products: string[]): string => {
-  if (products.length === 0) return '—'
+const derivePlan = (products?: string[]): string => {
+  if (!products || products.length === 0) return '—'
   if (products.length <= 2) return 'Starter'
   if (products.length <= 4) return 'Pro'
   return 'Enterprise'

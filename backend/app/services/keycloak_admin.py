@@ -128,7 +128,8 @@ async def kcAdminDelete(path: str, **kwargs) -> httpx.Response:
     token = await _get_admin_token()
     async def _do_delete():
         async with httpx.AsyncClient() as client:
-            return await client.delete(
+            return await client.request(
+                "DELETE",
                 _kc_base() + path,
                 headers={"Authorization": f"Bearer {token}"},
                 timeout=10.0,

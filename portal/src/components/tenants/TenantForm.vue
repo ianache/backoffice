@@ -9,10 +9,16 @@ const props = defineProps<{
 
 const emit = defineEmits(['update:modelValue'])
 
-const formData = ref({ ...props.modelValue })
+const formData = ref({
+  ...props.modelValue,
+  products: props.modelValue.products || []
+})
 
 watch(() => props.modelValue, (newVal) => {
-  formData.value = { ...newVal }
+  formData.value = {
+    ...newVal,
+    products: newVal?.products || []
+  }
 }, { deep: true })
 
 watch(formData, (newVal) => {

@@ -27,7 +27,7 @@ Full archive: `.planning/milestones/v1.0-ROADMAP.md`
 **Milestone Goal:** Refactorizar el portal en arquitectura Shell + Micro-UIs y entregar Productos, Segmentos Avanzados y Feature Flag SDK como entidades y capacidades de primer nivel.
 
 - [x] **Phase 7: Products Domain** — Backend + DB: products catalog CRUD, tenant subscriptions, safe 3-step Alembic migration (completed 2026-06-08)
-- [ ] **Phase 8: Advanced Segments + SDK Backend** — Backend: rule-based segments, SDK endpoints (bootstrap/evaluate/eval-events/WebSocket)
+- [x] **Phase 8: Advanced Segments + SDK Backend** — Backend: rule-based segments, SDK endpoints (bootstrap/evaluate/eval-events/WebSocket) (completed 2026-06-09)
 - [ ] **Phase 9: Shell Cutover** — Portal refactored to Module Federation host; shared Pinia/Axios singletons; lazy remote route registration
 - [ ] **Phase 10: mui-tenants + mui-security** — Domain MUIs migrated as federated remotes; Products UI in mui-tenants
 - [ ] **Phase 11: mui-feature-flags + SDK Clients** — Feature flags MUI migrated; Segments UI with orphan detection; JS/TS + Python SDK packages
@@ -118,7 +118,7 @@ Phases execute in numeric order: 7 → 8 → 9 → 10 → 11
 | 5. Rule Builder | v1.0 | 3/3 | Complete | 2026-06-08 |
 | 6. Stitch UI Implementation | v1.0 | 4/4 | Complete | 2026-06-06 |
 | 7. Products Domain | 4/4 | Complete   | 2026-06-08 | - |
-| 8. Advanced Segments + SDK Backend | 3/4 | In Progress|  | - |
+| 8. Advanced Segments + SDK Backend | 4/4 | Complete   | 2026-06-09 | - |
 | 9. Shell Cutover | v1.1 | 0/TBD | Not started | - |
 | 10. mui-tenants + mui-security | v1.1 | 0/TBD | Not started | - |
 | 11. mui-feature-flags + SDK Clients | v1.1 | 0/TBD | Not started | - |

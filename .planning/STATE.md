@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: MVP2
 status: unknown
-last_updated: "2026-06-09T03:56:42.242Z"
+last_updated: "2026-06-09T04:22:29.619Z"
 progress:
   total_phases: 9
-  completed_phases: 8
+  completed_phases: 9
   total_plans: 37
-  completed_plans: 36
+  completed_plans: 37
 ---
 
 # Project State
@@ -18,14 +18,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-06-07)
 
 **Core value:** Los feature flags jerárquicos con evaluación determinista deben funcionar — sin esto, los tenants no pueden controlar su funcionalidad y el sistema no tiene razón de existir.
-**Current focus:** Phase 8 — Advanced Segments + SDK Backend (plan 03 of 4 complete)
+**Current focus:** Phase 8 — Advanced Segments + SDK Backend (plan 04 of 4 — awaiting checkpoint:human-verify)
 
 ## Current Position
 
 Phase: 8 of 11 (Advanced Segments + SDK Backend)
-Plan: 3 of 4 complete
-Status: In progress
-Last activity: 2026-06-09 — 08-03 complete (SDK HTTP backend: bootstrap/evaluate/eval-events endpoints with ConnectionManager)
+Plan: 4 of 4 auto tasks complete (checkpoint:human-verify pending)
+Status: In progress — awaiting human verification
+Last activity: 2026-06-08 — 08-04 auto tasks complete (WS endpoint + broadcast hooks + BFF proxy)
 
 Progress: [███░░] 15% (v1.1) | [████████████████████░░░░░] ~65% (overall)
 
@@ -56,6 +56,7 @@ Progress: [███░░] 15% (v1.1) | [████████████�
 | Phase 08-advanced-segments-sdk-backend P01 | 12 | 2 tasks | 6 files |
 | Phase 08-advanced-segments-sdk-backend P03 | 3 | 2 tasks | 10 files |
 | Phase 08-advanced-segments-sdk-backend P02 | 25 | 2 tasks | 7 files |
+| Phase 08-advanced-segments-sdk-backend P04 | 8 | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -91,6 +92,10 @@ Recent decisions affecting v1.1:
 - [Phase 08-03]: tenant_id hardcoded to unknown in eval-events Phase 8 (per-tenant keys deferred to Phase 11)
 - [Phase 08-02]: update_segment() uses SegmentCreate schema (full replacement) not partial — keeps service simple for Phase 8 scope
 - [Phase 08-02]: Segments nav item uses same role check as Feature Flags (PlatformAdmin|TenantAdmin|TenantOwner|ProductManager)
+- [Phase 08-04]: First-message WS auth (not Depends/header) — browser WebSocket API cannot send custom Authorization headers
+- [Phase 08-04]: app.state.ws_manager initialized BEFORE all include_router() calls to ensure handlers can access it at startup
+- [Phase 08-04]: BFF SDK route has no Keycloak middleware — SDK key auth delegated entirely to backend
+- [Phase 08-04]: WS BFF proxy (ws: true) deferred to Phase 10 — SDK clients connect directly to backend in Phase 8
 
 ### Pending Todos
 
@@ -104,6 +109,6 @@ Recent decisions affecting v1.1:
 
 ## Session Continuity
 
-Last session: 2026-06-09
-Stopped at: Completed 08-02-PLAN.md (checkpoint approved) — Segments UI: SegmentsView, SegmentTable, SegmentForm, /segments route, sidebar nav item; 08-03 also complete
+Last session: 2026-06-08
+Stopped at: 08-04 auto tasks complete (db55359, 2913b7b) — awaiting checkpoint:human-verify for WebSocket + SDK end-to-end verification
 Resume file: None

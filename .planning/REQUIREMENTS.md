@@ -86,7 +86,7 @@
 - [x] **SDK-01**: Backend expone `GET /api/v1/sdk/bootstrap` que retorna snapshot consolidado de flags para `tenant_id + product_id + environment` (composiciÃ³n de `list_flags()` existente, sin cambios al motor de evaluaciÃ³n)
 - [x] **SDK-02**: Backend expone `POST /api/v1/sdk/evaluate` para evaluaciÃ³n remota de una flag con contexto de usuario (delega a `evaluate_flag()` existente)
 - [x] **SDK-03**: Backend expone `POST /api/v1/sdk/eval-events` para ingesta de eventos de telemetrÃ­a en batch
-- [ ] **SDK-04**: Backend expone WebSocket endpoint que transmite `{type:"flag_updated", flag_key}` a clientes registrados para `tenant_id + product_id` cuando se guarda una flag; usa first-message auth (no `Depends()` en handshake)
+- [x] **SDK-04**: Backend expone WebSocket endpoint que transmite `{type:"flag_updated", flag_key}` a clientes registrados para `tenant_id + product_id` cuando se guarda una flag; usa first-message auth (no `Depends()` en handshake)
 - [ ] **SDK-05**: SDK cliente JS/TS (`sdk/sdk-js`) hace fetch del bootstrap al inicializar y almacena config de flags en cachÃ© en memoria
 - [ ] **SDK-06**: SDK cliente JS/TS evalÃºa flags localmente desde cachÃ© con latencia <1ms, sin llamadas de red
 - [ ] **SDK-07**: SDK cliente JS/TS tiene fallback a evaluaciÃ³n remota via `POST /api/v1/sdk/evaluate` cuando se requiere contexto confidencial
@@ -204,7 +204,7 @@ QuÃ© fases cubren quÃ© requerimientos. Actualizado durante creaciÃ³n del r
 | SDK-01 | Phase 8 | Complete |
 | SDK-02 | Phase 8 | Complete |
 | SDK-03 | Phase 8 | Complete |
-| SDK-04 | Phase 8 | Pending |
+| SDK-04 | Phase 8 | Complete |
 | MUI-01 | Phase 9 | Pending |
 | MUI-02 | Phase 9 | Pending |
 | MUI-03 | Phase 9 | Pending |

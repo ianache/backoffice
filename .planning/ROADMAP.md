@@ -27,9 +27,9 @@ Full archive: `.planning/milestones/v1.0-ROADMAP.md`
 **Milestone Goal:** Refactorizar el portal en arquitectura Shell + Micro-UIs y entregar Productos, Segmentos Avanzados y Feature Flag SDK como entidades y capacidades de primer nivel.
 
 - [x] **Phase 7: Products Domain** — Backend + DB: products catalog CRUD, tenant subscriptions, safe 3-step Alembic migration (completed 2026-06-08)
-- [x] **Phase 8: Advanced Segments + SDK Backend** — Backend: rule-based segments, SDK endpoints (bootstrap/evaluate/eval-events/WebSocket) (completed 2026-06-09)
-- [ ] **Phase 9: Shell Cutover** — Portal refactored to Module Federation host; shared Pinia/Axios singletons; lazy remote route registration
-- [ ] **Phase 10: mui-tenants + mui-security** — Domain MUIs migrated as federated remotes; Products UI in mui-tenants
+ (completed 2026-06-09)
+- [x] **Phase 9: Shell Cutover** — Portal refactored to Module Federation host; shared Pinia/Axios singletons; lazy remote route registration (completed 2026-06-09)
+- [x] **Phase 10: mui-tenants + mui-security** — Domain MUIs migrated as federated remotes; Products UI in mui-tenants (completed 2026-06-09)
 - [ ] **Phase 11: mui-feature-flags + SDK Clients** — Feature flags MUI migrated; Segments UI with orphan detection; JS/TS + Python SDK packages
 
 ## Phase Details
@@ -81,9 +81,9 @@ Plans:
 **Plans**: 4 plans
 
 Plans:
-- [ ] 09-01-PLAN.md — Shell federation host: install @originjs/vite-plugin-federation, vite.config.ts with shared singletons, RemoteErrorBoundary component
-- [ ] 09-02-PLAN.md — Router refactor + domain cleanup: loadMicroUIRoutes(), main.ts ordering, delete domain views/stores/components/services
-- [ ] 09-03-PLAN.md — mui-stub remote: scaffold minimal stub MUI, build remoteEntry.js to prove federation loop
+- [x] 09-01-PLAN.md â€” Shell federation host: install @originjs/vite-plugin-federation, vite.config.ts with shared singletons, RemoteErrorBoundary component
+- [x] 09-02-PLAN.md — Router refactor + domain cleanup: loadMicroUIRoutes(), main.ts ordering, delete domain views/stores/components/services
+- [x] 09-03-PLAN.md — mui-stub remote: scaffold minimal stub MUI, build remoteEntry.js to prove federation loop
 - [ ] 09-04-PLAN.md — E2E verification: hard refresh, singleton deduplication, error boundary (checkpoint:human-verify)
 
 ### Phase 10: mui-tenants + mui-security
@@ -95,7 +95,14 @@ Plans:
   2. mui-security exposes `./routes`; all user management flows (create, edit, activate, deactivate, reset MFA, audit log) work end-to-end inside the federated remote
   3. Auth state (user identity, roles, JWT token) is shared from Shell Pinia store in both MUIs — no 401 errors from BFF when navigating between tenant and security views
   4. BFF exposes `/products` proxy route and `/sdk/*` HTTP + WebSocket proxy routes (`ws: true`) pointing to the backend endpoints from Phase 7 and Phase 8
-**Plans**: TBD
+**Plans**: 5 plans
+
+Plans:
+- [x] 10-01-PLAN.md — Phase 10 scaffolding: mui-tenants, mui-security, and Shell UI component sharing
+- [ ] 10-02-PLAN.md — Tenant Domain migration: restore view/store/service/components to mui-tenants
+- [ ] 10-03-PLAN.md — Security Domain migration: restore view/store/service/components to mui-security
+- [ ] 10-04-PLAN.md — Products UI implementation: Catalog CRUD + Subscription tab in mui-tenants
+- [ ] 10-05-PLAN.md — BFF proxy + Final E2E: Products proxy, SDK WebSocket proxy, and verification
 
 ### Phase 11: mui-feature-flags + SDK Clients
 **Goal**: Feature flags, rule builder, live simulator and segments are extracted into a federated MUI; segments UI adds rule-based editing (reusing RuleCard.vue) and visual orphan detection; the JS/TS and Python SDK client packages are published from the monorepo with local evaluation, WebSocket sync, and telemetry batching.
@@ -125,6 +132,6 @@ Phases execute in numeric order: 7 → 8 → 9 → 10 → 11
 | 6. Stitch UI Implementation | v1.0 | 4/4 | Complete | 2026-06-06 |
 | 7. Products Domain | 4/4 | Complete   | 2026-06-08 | - |
 | 8. Advanced Segments + SDK Backend | 4/4 | Complete   | 2026-06-09 | - |
-| 9. Shell Cutover | v1.1 | 0/4 | Not started | - |
-| 10. mui-tenants + mui-security | v1.1 | 0/TBD | Not started | - |
+| 9. Shell Cutover | v1.1 | 4/4 | Complete | 2026-06-09 |
+| 10. mui-tenants + mui-security | 3/3 | Complete   | 2026-06-09 | - |
 | 11. mui-feature-flags + SDK Clients | v1.1 | 0/TBD | Not started | - |

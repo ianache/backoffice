@@ -62,7 +62,13 @@ Plans:
   3. `POST /api/v1/sdk/evaluate` accepts a flag key and user context object and returns the evaluated boolean value; delegates to existing `evaluate_flag()` without code duplication
   4. `POST /api/v1/sdk/eval-events` accepts a batch of evaluation events and persists them; bulk INSERT is used to avoid N+1 writes; pool_size and max_overflow are configured to handle concurrent SDK instances
   5. A WebSocket connection to `/ws/flags/{tenant_id}` receives a `{type:"flag_updated", flag_key}` message within 500ms of any flag save for that tenant; first-message auth pattern is used (no JWT in query param or Depends())
-**Plans**: TBD
+**Plans**: 4 plans
+
+Plans:
+- [ ] 08-01-PLAN.md — Alembic migrations (segments + eval_events) + Segment ORM/schema/service extension
+- [ ] 08-02-PLAN.md — Segments router + portal UI (SegmentsView, SegmentForm, SegmentTable, nav)
+- [ ] 08-03-PLAN.md — SDK infrastructure (ConnectionManager, config, pool) + HTTP endpoints (bootstrap/evaluate/eval-events)
+- [ ] 08-04-PLAN.md — WebSocket endpoint + flag broadcast hooks + BFF proxy
 
 ### Phase 9: Shell Cutover
 **Goal**: The portal is refactored into a lightweight Shell that owns only Keycloak PKCE init, layout chrome, and async remote route registration; domain views are removed from the Shell; Vue, Pinia, Vue Router and Axios are exposed as shared federation singletons so remote MUIs never instantiate duplicate stores.

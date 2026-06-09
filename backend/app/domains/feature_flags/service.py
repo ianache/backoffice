@@ -6,6 +6,7 @@ from sqlalchemy import select
 
 from .models import FeatureFlag, Segment, FlagSegment
 from .schemas import FlagCreate, FlagUpdate, SegmentCreate
+from sqlalchemy import func as sqlfunc
 
 
 # ---------------------------------------------------------------------------
@@ -198,23 +199,44 @@ async def set_enabled(db: AsyncSession, flag_id: int, enabled: bool) -> Optional
 async def list_segments(
     db: AsyncSession,
     tenant_id: Optional[str] = None,
-) -> list[Segment]:
-    stmt = select(Segment)
+) -> list[tuple[Segment, int]]:
+    """Returns list of (Segment, flag_count) tuples.
+
+    Uses a LEFT JOIN subquery to avoid N+1 queries per segment.
+    NOTE: The segments router must be updated (Plan 02) to unpack these tuples
+    and build SegmentResponse objects with flag_count set.
+    TODO(08-02): Update router to unpack (segment, flag_count) tuples from list_segments().
+    """
+    count_subq = (
+        select(FlagSegment.segment_id, sqlfunc.count(FlagSegment.flag_id).label('flag_count'))
+        .group_by(FlagSegment.segment_id)
+        .subquery()
+    )
+    stmt = (
+        select(Segment, sqlfunc.coalesce(count_subq.c.flag_count, 0).label('flag_count'))
+        .outerjoin(count_subq, count_subq.c.segment_id == Segment.id)
+    )
     if tenant_id:
         stmt = stmt.where(
             (Segment.tenant_id == tenant_id) | (Segment.tenant_id == None)  # noqa: E711
         )
     result = await db.execute(stmt)
-    return list(result.scalars().all())
+    return [(row.Segment, row.flag_count) for row in result]
 
 
 async def create_segment(
     db: AsyncSession,
     payload: SegmentCreate,
 ) -> Segment:
-    data = payload.model_dump()
-    data['members'] = json.dumps(data.get('members') or [])
-    segment = Segment(**data)
+    conditions_json = json.dumps([c.model_dump() for c in payload.conditions]) if payload.conditions else None
+    segment = Segment(
+        name=payload.name,
+        description=payload.description,
+        tenant_id=payload.tenant_id,
+        members=json.dumps(payload.members) if payload.members else None,
+        type=payload.type,
+        conditions=conditions_json,
+    )
     db.add(segment)
     await db.commit()
     await db.refresh(segment)

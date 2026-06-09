@@ -89,6 +89,8 @@ class SegmentCreate(BaseModel):
     description: Optional[str] = None
     tenant_id: Optional[str] = None
     members: List[str] = []  # list of user UUIDs
+    type: str = 'manual'                    # 'manual' | 'rule_based'
+    conditions: List[RuleSchema] = []       # same shape as flag rules
 
 
 class SegmentResponse(BaseModel):
@@ -97,6 +99,9 @@ class SegmentResponse(BaseModel):
     description: Optional[str] = None
     tenant_id: Optional[str] = None
     members: List[str] = []
+    type: str = 'manual'                    # NULL DB value treated as 'manual'
+    conditions: List[RuleSchema] = []       # NULL DB value treated as []
+    flag_count: int = 0                     # injected at query time via list_segments()
     created_at: datetime
     updated_at: datetime
 
@@ -104,15 +109,22 @@ class SegmentResponse(BaseModel):
 
     @model_validator(mode='before')
     @classmethod
-    def parse_members(cls, values):
+    def parse_json_fields(cls, values):
         if isinstance(values, dict):
-            m = values.get('members')
-            if isinstance(m, str):
-                values['members'] = json.loads(m) if m else []
-            elif m is None:
-                values['members'] = []
+            for field in ('members', 'conditions'):
+                v = values.get(field)
+                if isinstance(v, str):
+                    values[field] = json.loads(v) if v else []
+                elif v is None:
+                    values[field] = []
+            if not values.get('type'):
+                values['type'] = 'manual'
             return values
+        # ORM object path
         obj = values
-        members_raw = getattr(obj, 'members', None)
-        obj.members = json.loads(members_raw) if members_raw else []
+        obj.members = json.loads(obj.members) if getattr(obj, 'members', None) else []
+        raw_conditions = getattr(obj, 'conditions', None)
+        obj.conditions = json.loads(raw_conditions) if raw_conditions else []
+        if not getattr(obj, 'type', None):
+            obj.type = 'manual'
         return obj

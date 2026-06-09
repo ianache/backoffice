@@ -36,6 +36,8 @@ class Segment(Base):
     description: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
     tenant_id: Mapped[Optional[str]] = mapped_column(String(100), nullable=True, index=True)
     members: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # JSON array of user UUIDs as TEXT
+    type: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)        # 'manual' | 'rule_based'; NULL treated as 'manual'
+    conditions: Mapped[Optional[str]] = mapped_column(Text, nullable=True)        # JSON array TEXT (same shape as flag rules)
     created_at: Mapped[datetime] = mapped_column(server_default=func.now(), nullable=False)
     updated_at: Mapped[datetime] = mapped_column(server_default=func.now(), onupdate=func.now(), nullable=False)
 
@@ -45,3 +47,16 @@ class FlagSegment(Base):
 
     flag_id: Mapped[int] = mapped_column(Integer, ForeignKey("feature_flags.id"), primary_key=True)
     segment_id: Mapped[int] = mapped_column(Integer, ForeignKey("segments.id"), primary_key=True)
+
+
+class EvalEvent(Base):
+    __tablename__ = "eval_events"
+
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    flag_key: Mapped[str] = mapped_column(String(100), nullable=False)
+    user_id: Mapped[str] = mapped_column(String(255), nullable=False)
+    result: Mapped[int] = mapped_column(SmallInteger(), nullable=False)
+    evaluated_at: Mapped[datetime] = mapped_column(nullable=False)
+    tenant_id: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    product_id: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(server_default=func.now(), nullable=False)

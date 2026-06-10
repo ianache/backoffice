@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "backoffice-sdk"
+version = "0.1.0"
+description = "BackOffice Feature Flags SDK for Python"
+requires-python = ">=3.11"
+dependencies = [
+    "httpx==0.27.2",
+    "websockets>=12.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest==8.3.3",
+    "pytest-asyncio==0.24.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]

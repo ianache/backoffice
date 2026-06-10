@@ -87,6 +87,9 @@ importers:
       vite:
         specifier: ^5.3.1
         version: 5.4.21(@types/node@20.19.41)
+      vitest:
+        specifier: ^1.6.0
+        version: 1.6.1(@types/node@20.19.41)
       vue-tsc:
         specifier: ^2.0.21
         version: 2.2.12(typescript@5.9.3)

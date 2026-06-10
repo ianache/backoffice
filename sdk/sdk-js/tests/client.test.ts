@@ -20,7 +20,31 @@ const OPTS = {
   sdkKey: 'sdk-secret-key',
 }
 
+/**
+ * Minimal mock of the browser WebSocket API so initialize()'s
+ * `new ReconnectingSocket(...)` call doesn't open a real connection.
+ */
+class MockWebSocket {
+  url: string
+  send = vi.fn()
+  close = vi.fn()
+  onopen: (() => void) | null = null
+  onmessage: ((ev: { data: string }) => void) | null = null
+  onclose: (() => void) | null = null
+  onerror: (() => void) | null = null
+
+  constructor(url: string) {
+    this.url = url
+  }
+}
+
 describe('FeatureFlagClient', () => {
+  beforeEach(() => {
+    vi.stubGlobal('WebSocket', MockWebSocket as unknown as typeof WebSocket)
+    vi.stubGlobal('navigator', { sendBeacon: vi.fn() })
+    vi.stubGlobal('window', { addEventListener: vi.fn() })
+  })
+
   afterEach(() => {
     vi.unstubAllGlobals()
   })

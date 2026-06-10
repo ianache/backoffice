@@ -4,6 +4,9 @@
 export { FeatureFlagClient } from './client'
 export type { InitOptions } from './client'
 export { evaluateRule, evaluateFlag } from './evaluator'
+export { ReconnectingSocket } from './websocket'
+export { TelemetryBatcher } from './telemetry'
+export type { TelemetryBatcherOptions } from './telemetry'
 export type {
   RuleSchema,
   BootstrapSegment,

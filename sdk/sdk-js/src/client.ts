@@ -13,6 +13,8 @@
  * - setEvaluationListener() for telemetry batching (no-op if unset).
  */
 import { evaluateFlag } from './evaluator'
+import { ReconnectingSocket } from './websocket'
+import { TelemetryBatcher } from './telemetry'
 import type { BootstrapResponse, UserContext, EvalEventItem } from './types'
 
 export interface InitOptions {
@@ -26,13 +28,16 @@ export interface InitOptions {
 export class FeatureFlagClient {
   private cache: BootstrapResponse = {}
   private evaluationListener?: (event: EvalEventItem) => void
+  private socket?: ReconnectingSocket
+  private telemetry?: TelemetryBatcher
 
   constructor(private opts: InitOptions) {}
 
   /**
    * Fetches the bootstrap snapshot from {apiBaseUrl}/sdk/bootstrap and
-   * populates the in-memory cache. Must be called before evaluate()/evaluateRemote()
-   * for evaluate() to return non-default results.
+   * populates the in-memory cache. Then establishes WS sync (cache
+   * invalidation on `flag_updated`) and starts telemetry batching
+   * (evaluate() results tracked automatically).
    */
   async initialize(): Promise<void> {
     const url = `${this.opts.apiBaseUrl}/sdk/bootstrap?tenant_id=${encodeURIComponent(this.opts.tenantId)}&product_id=${encodeURIComponent(this.opts.productId)}&environment=${encodeURIComponent(this.opts.environment)}`
@@ -40,6 +45,24 @@ export class FeatureFlagClient {
       headers: { Authorization: `Bearer ${this.opts.sdkKey}` },
     })
     this.cache = await res.json()
+
+    const wsBaseUrl = this.opts.apiBaseUrl.replace(/^http/, 'ws')
+    this.socket = new ReconnectingSocket(
+      `${wsBaseUrl}/sdk/ws/flags/${encodeURIComponent(this.opts.tenantId)}`,
+      this.opts.sdkKey,
+      (msg) => {
+        if (msg?.type === 'flag_updated' && typeof msg.flag_key === 'string') {
+          this.invalidate(msg.flag_key)
+        }
+      },
+    )
+
+    this.telemetry = new TelemetryBatcher({
+      apiBaseUrl: this.opts.apiBaseUrl,
+      sdkKey: this.opts.sdkKey,
+      productId: this.opts.productId,
+    })
+    this.setEvaluationListener((event) => this.telemetry!.track(event))
   }
 
   /**
@@ -101,5 +124,11 @@ export class FeatureFlagClient {
   /** Returns the InitOptions used to construct this client. */
   getOptions(): Readonly<InitOptions> {
     return this.opts
+  }
+
+  /** Tears down the WS connection and telemetry batcher (clean shutdown / SPA unmount). */
+  destroy(): void {
+    this.socket?.close()
+    this.telemetry?.destroy()
   }
 }

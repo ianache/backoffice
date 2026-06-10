@@ -115,7 +115,19 @@ Plans:
   3. `sdk/sdk-js` initializes with a single `initialize({tenantId, productId, environment})` call, evaluates flags synchronously from in-memory cache in under 1ms (measurable in unit tests with `performance.now()`), and recovers from cache-miss via remote evaluate fallback
   4. `sdk/sdk-js` maintains a WebSocket connection with exponential-backoff reconnect (inline, no external library); cache is invalidated on `flag_updated` message; telemetry flushes on dual trigger (100 events OR 60s) with random jitter at startup; `navigator.sendBeacon()` is used for flush on `beforeunload`
   5. `sdk/sdk-python` initializes asynchronously via `async initialize()`, evaluates flags locally from cache, reconnects WebSocket with exponential-backoff + jitter — all async via asyncio compatible with FastAPI/Uvicorn event loop
-**Plans**: TBD
+**Plans**: 10 plans
+
+Plans:
+- [x] 11-01-PLAN.md - Backend: add greaterThan/lessThan operators to feature flag evaluation engine (canonical OPERATORS table)
+- [x] 11-02-PLAN.md - Scaffold mui-feature-flags federated MUI (Vite Module Federation, package.json, tsconfig)
+- [x] 11-03-PLAN.md - Port flags list, FlagDrawer, services/store into mui-feature-flags
+- [x] 11-04-PLAN.md - Port rule builder + live simulator (useRuleSimulator.ts) with greaterThan/lessThan support
+- [x] 11-05-PLAN.md - Port SegmentsView/SegmentTable/SegmentForm/SegmentPicker with orphan detection and rule-based segment editing via RuleCard
+- [ ] 11-06-PLAN.md - Backend bootstrap inlines manual segment members[] + sdk_key query-param auth fallback; scaffold sdk/sdk-js package; port evaluator.ts (7-operator engine)
+- [ ] 11-07-PLAN.md - sdk-js FeatureFlagClient: initialize()/evaluate() (sync, <1ms, cache-only)/evaluateRemote() (async fallback) + public entrypoint
+- [ ] 11-08-PLAN.md - sdk-js WebSocket reconnect (inline exponential backoff) + telemetry batching (dual trigger + jitter + sendBeacon)
+- [ ] 11-09-PLAN.md - sdk-python core: pyproject.toml scaffold, evaluator.py (7-operator engine), async FeatureFlagClient (initialize/evaluate/evaluate_remote)
+- [ ] 11-10-PLAN.md - sdk-python WebSocket reconnect (asyncio + websockets, exponential backoff + jitter, flag_updated cache invalidation)
 
 ## Progress
 
@@ -135,4 +147,4 @@ Phases execute in numeric order: 7 → 8 → 9 → 10 → 11
 | 8. Advanced Segments + SDK Backend | 4/4 | Complete   | 2026-06-09 | - |
 | 9. Shell Cutover | v1.1 | 4/4 | Complete | 2026-06-09 |
 | 10. mui-tenants + mui-security | 6/6 | Complete    | 2026-06-09 | - |
-| 11. mui-feature-flags + SDK Clients | v1.1 | 0/TBD | Not started | - |
+| 11. mui-feature-flags + SDK Clients | v1.1 | 5/10 | In progress | - |

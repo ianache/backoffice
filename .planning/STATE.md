@@ -2,13 +2,17 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: MVP2
-status: unknown
-last_updated: "2026-06-09T17:50:50.818Z"
+current_plan: 3
+status: executing
+stopped_at: Completed 11-02-PLAN.md
+last_updated: "2026-06-10T06:39:58.041Z"
+last_activity: 2026-06-10
 progress:
-  total_phases: 11
+  total_phases: 12
   completed_phases: 11
-  total_plans: 47
-  completed_plans: 47
+  total_plans: 57
+  completed_plans: 49
+  percent: 86
 ---
 
 # Project State
@@ -22,12 +26,14 @@ See: .planning/PROJECT.md (updated 2026-06-07)
 
 ## Current Position
 
-Phase: 10 of 11 COMPLETE (mui-tenants-security microfrontend)
-Plan: 6 of 6 complete (all gap-closure plans done)
-Status: Complete — TenantForm live products wiring done; MUI-05 satisfied; Phase 10 fully complete
-Last activity: 2026-06-09 — 10-06 complete; products service created in mui-tenants; TenantForm hardcoded products replaced with live BFF fetch via onMounted
+Phase: 11 of 11 (mui-feature-flags-sdk-clients)
+**Current Plan:** 3
+**Total Plans in Phase:** 10
+**Status:** Ready to execute
+**Last Activity:** 2026-06-10
+Last activity detail: 2026-06-10 — 11-01 complete; greaterThan/lessThan operators added to canonical evaluation engine (backend/app/domains/feature_flags/service.py), 38/38 tests pass
 
-Progress: [████████░░] 60% (v1.1) | [███████████████████████░░] ~80% (overall)
+**Progress:** [█████████░] 86%
 
 ## Performance Metrics
 
@@ -60,6 +66,8 @@ Progress: [████████░░] 60% (v1.1) | [███████�
 | Phase 10-mui-tenants-security P03 | 1 | 3 tasks | 14 files |
 | Phase 10-mui-tenants-security P04 | 1 | 2 tasks | 3 files |
 | Phase 10-mui-tenants-security P06 | 111 | 2 tasks | 2 files |
+| Phase 11-mui-feature-flags-sdk-clients P01 | 3min | 1 tasks | 2 files |
+| Phase 11-mui-feature-flags-sdk-clients P02 | 12min | 3 tasks | 14 files |
 
 ## Accumulated Context
 
@@ -109,6 +117,9 @@ Recent decisions affecting v1.1:
 - [Phase 10-06]: availableProducts changed from const string[] to ref<Product[]> — reactive so template updates when fetch completes
 - [Phase 10-06]: listProducts() passes status=active filter by default — only subscribable products rendered in form
 - [Phase 10-06]: data.items ?? [] fallback in listProducts() — handles empty catalog or malformed response gracefully
+- [Phase 11-01]: greaterThan/lessThan implemented as float() coercion comparisons relying on existing _evaluate_rule() try/except for fail-closed behavior on non-numeric input
+- [Phase 11-mui-feature-flags-sdk-clients]: [11-02]: mui-tenants has single tsconfig.json (no app/node split) - mirrored exactly for mui-feature-flags
+- [Phase 11-mui-feature-flags-sdk-clients]: [11-02]: vuedraggable@4.1.0 added to mui-feature-flags deps for future rule builder drag/drop; vue-color-input excluded
 
 ### Pending Todos
 
@@ -122,6 +133,6 @@ Recent decisions affecting v1.1:
 
 ## Session Continuity
 
-Last session: 2026-06-09
-Stopped at: Phase 11 context gathered (discuss-phase) — segments orphan UI, live simulator, SDK scope/packaging, rule builder restyle + new operators all decided. Ready for /gsd:plan-phase 11.
-Resume file: .planning/phases/11-mui-feature-flags-sdk-clients/11-CONTEXT.md
+**Last session:** 2026-06-10T06:39:58.035Z
+**Stopped At:** Completed 11-02-PLAN.md
+**Resume File:** None

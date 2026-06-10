@@ -123,5 +123,5 @@ Recent decisions affecting v1.1:
 ## Session Continuity
 
 Last session: 2026-06-09
-Stopped at: Completed 10-06-PLAN.md — TenantForm live products wiring complete; hardcoded products replaced with BFF fetch; MUI-05 satisfied; Phase 10 fully complete (6/6 plans).
-Resume file: None
+Stopped at: Phase 11 context gathered (discuss-phase) — segments orphan UI, live simulator, SDK scope/packaging, rule builder restyle + new operators all decided. Ready for /gsd:plan-phase 11.
+Resume file: .planning/phases/11-mui-feature-flags-sdk-clients/11-CONTEXT.md

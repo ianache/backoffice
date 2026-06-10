@@ -45,6 +45,52 @@ importers:
         specifier: ^1.6.0
         version: 1.6.1(@types/node@20.19.41)
 
+  microuis/mui-feature-flags:
+    dependencies:
+      axios:
+        specifier: ^1.7.2
+        version: 1.17.0
+      pinia:
+        specifier: ^2.2.2
+        version: 2.3.1(typescript@5.9.3)(vue@3.5.35(typescript@5.9.3))
+      vue:
+        specifier: ^3.4.29
+        version: 3.5.35(typescript@5.9.3)
+      vue-router:
+        specifier: ^4.4.0
+        version: 4.6.4(vue@3.5.35(typescript@5.9.3))
+      vuedraggable:
+        specifier: ^4.1.0
+        version: 4.1.0(vue@3.5.35(typescript@5.9.3))
+    devDependencies:
+      '@originjs/vite-plugin-federation':
+        specifier: 1.4.1
+        version: 1.4.1
+      '@vitejs/plugin-vue':
+        specifier: ^5.0.5
+        version: 5.2.4(vite@5.4.21(@types/node@20.19.41))(vue@3.5.35(typescript@5.9.3))
+      '@vue/tsconfig':
+        specifier: ^0.5.1
+        version: 0.5.1
+      autoprefixer:
+        specifier: ^10.5.0
+        version: 10.5.0(postcss@8.5.15)
+      postcss:
+        specifier: ^8.5.15
+        version: 8.5.15
+      tailwindcss:
+        specifier: ^3.4.19
+        version: 3.4.19(tsx@4.22.4)
+      typescript:
+        specifier: ^5.5.3
+        version: 5.9.3
+      vite:
+        specifier: ^5.3.1
+        version: 5.4.21(@types/node@20.19.41)
+      vue-tsc:
+        specifier: ^2.0.21
+        version: 2.2.12(typescript@5.9.3)
+
   microuis/mui-security:
     dependencies:
       axios:

@@ -199,10 +199,54 @@ class TestEvaluateRule:
         rule = {'attribute': 'plan', 'operator': 'in', 'value': ['free', 'basic']}
         assert _evaluate_rule(rule, {}) is False
 
-    def test_all_five_operators_have_true_case(self):
-        """Ensure all 5 operators produce True when conditions match."""
+    def test_greater_than_true(self):
+        rule = {'attribute': 'ltv', 'operator': 'greaterThan', 'value': 500}
+        assert _evaluate_rule(rule, {'ltv': 600}) is True
+
+    def test_greater_than_false(self):
+        rule = {'attribute': 'ltv', 'operator': 'greaterThan', 'value': 500}
+        assert _evaluate_rule(rule, {'ltv': 400}) is False
+
+    def test_greater_than_numeric_strings(self):
+        """Numeric strings are coerced via float() before comparison."""
+        rule = {'attribute': 'ltv', 'operator': 'greaterThan', 'value': '500'}
+        assert _evaluate_rule(rule, {'ltv': '600'}) is True
+
+    def test_greater_than_non_numeric_returns_false(self):
+        """Non-numeric actual value fails closed via float() ValueError caught upstream."""
+        rule = {'attribute': 'plan', 'operator': 'greaterThan', 'value': 500}
+        assert _evaluate_rule(rule, {'plan': 'enterprise'}) is False
+
+    def test_less_than_true(self):
+        rule = {'attribute': 'ltv', 'operator': 'lessThan', 'value': 500}
+        assert _evaluate_rule(rule, {'ltv': 100}) is True
+
+    def test_less_than_false(self):
+        rule = {'attribute': 'ltv', 'operator': 'lessThan', 'value': 500}
+        assert _evaluate_rule(rule, {'ltv': 600}) is False
+
+    def test_less_than_missing_attribute(self):
+        """Missing attribute returns False via existing _evaluate_rule guard."""
+        rule = {'attribute': 'ltv', 'operator': 'lessThan', 'value': 500}
+        assert _evaluate_rule(rule, {}) is False
+
+    def test_all_seven_operators_have_true_case(self):
+        """Ensure all 7 operators produce True when conditions match."""
         from app.domains.feature_flags.service import OPERATORS
-        assert set(OPERATORS.keys()) == {'equals', 'in', 'notIn', 'contains', 'regex'}
+        assert set(OPERATORS.keys()) == {
+            'equals', 'in', 'notIn', 'contains', 'regex', 'greaterThan', 'lessThan',
+        }
+        true_cases = {
+            'equals': ({'attribute': 'country', 'operator': 'equals', 'value': 'PE'}, {'country': 'PE'}),
+            'in': ({'attribute': 'country', 'operator': 'in', 'value': ['PE', 'AR']}, {'country': 'PE'}),
+            'notIn': ({'attribute': 'country', 'operator': 'notIn', 'value': ['US']}, {'country': 'PE'}),
+            'contains': ({'attribute': 'email', 'operator': 'contains', 'value': '@acme'}, {'email': 'john@acme.com'}),
+            'regex': ({'attribute': 'email', 'operator': 'regex', 'value': '^admin'}, {'email': 'admin@co.com'}),
+            'greaterThan': ({'attribute': 'ltv', 'operator': 'greaterThan', 'value': 500}, {'ltv': 600}),
+            'lessThan': ({'attribute': 'ltv', 'operator': 'lessThan', 'value': 500}, {'ltv': 100}),
+        }
+        for op, (rule, user) in true_cases.items():
+            assert _evaluate_rule(rule, user) is True, f"operator {op} should return True"
 
 
 # ---------------------------------------------------------------------------

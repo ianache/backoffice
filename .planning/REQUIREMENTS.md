@@ -90,9 +90,9 @@
 - [x] **SDK-05**: SDK cliente JS/TS (`sdk/sdk-js`) hace fetch del bootstrap al inicializar y almacena config de flags en cachÃ© en memoria
 - [x] **SDK-06**: SDK cliente JS/TS evalÃºa flags localmente desde cachÃ© con latencia <1ms, sin llamadas de red
 - [x] **SDK-07**: SDK cliente JS/TS tiene fallback a evaluaciÃ³n remota via `POST /api/v1/sdk/evaluate` cuando se requiere contexto confidencial
-- [ ] **SDK-08**: SDK cliente JS/TS mantiene conexiÃ³n WebSocket con reconexiÃ³n exponential-backoff nativa (sin dependencias externas) e invalida cachÃ© al recibir `flag_updated`
-- [ ] **SDK-09**: SDK cliente JS/TS envÃ­a telemetrÃ­a en batch con doble trigger: cada 60s o al acumular 100 eventos, con jitter de inicio para evitar thundering herd post-deploy
-- [ ] **SDK-10**: SDK cliente JS/TS usa `navigator.sendBeacon()` para flush de telemetrÃ­a pendiente en evento `beforeunload`
+- [x] **SDK-08**: SDK cliente JS/TS mantiene conexiÃ³n WebSocket con reconexiÃ³n exponential-backoff nativa (sin dependencias externas) e invalida cachÃ© al recibir `flag_updated`
+- [x] **SDK-09**: SDK cliente JS/TS envÃ­a telemetrÃ­a en batch con doble trigger: cada 60s o al acumular 100 eventos, con jitter de inicio para evitar thundering herd post-deploy
+- [x] **SDK-10**: SDK cliente JS/TS usa `navigator.sendBeacon()` para flush de telemetrÃ­a pendiente en evento `beforeunload`
 - [x] **SDK-11**: SDK servidor Python (`sdk/sdk-python`) hace fetch async del bootstrap, evalÃºa flags localmente y soporta evaluaciÃ³n remota async
 - [x] **SDK-12**: SDK servidor Python mantiene conexiÃ³n WebSocket con reconexiÃ³n exponential-backoff + jitter para sincronizaciÃ³n de cachÃ©
 
@@ -214,9 +214,9 @@ QuÃ© fases cubren quÃ© requerimientos. Actualizado durante creaciÃ³n del r
 | SDK-05 | Phase 11 | Complete |
 | SDK-06 | Phase 11 | Complete |
 | SDK-07 | Phase 11 | Complete |
-| SDK-08 | Phase 11 | Pending |
-| SDK-09 | Phase 11 | Pending |
-| SDK-10 | Phase 11 | Pending |
+| SDK-08 | Phase 11 | Complete |
+| SDK-09 | Phase 11 | Complete |
+| SDK-10 | Phase 11 | Complete |
 | SDK-11 | Phase 11 | Complete |
 | SDK-12 | Phase 11 | Complete |
 

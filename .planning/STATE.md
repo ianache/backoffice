@@ -4,8 +4,8 @@ milestone: v1.1
 milestone_name: MVP2
 current_plan: 10
 status: verifying
-stopped_at: Completed 11-10-PLAN.md
-last_updated: "2026-06-10T13:28:05.286Z"
+stopped_at: Completed 11-08-PLAN.md
+last_updated: "2026-06-10T13:28:18.758Z"
 last_activity: 2026-06-10
 progress:
   total_phases: 12
@@ -144,6 +144,9 @@ Recent decisions affecting v1.1:
 - [Phase 11-mui-feature-flags-sdk-clients]: [11-10]: ws_base_url derived via simple string replace (https->wss, http->ws) on api_base_url, overridable via constructor kwarg
 - [Phase 11-mui-feature-flags-sdk-clients]: [11-10]: WS reconnect attempt counter resets to 0 immediately after ws.send(sdk_key) succeeds, matching sdk-js 'attempt resets on successful connect'
 - [Phase 11-mui-feature-flags-sdk-clients]: [11-10]: test_client.py gained autouse fixture mocking ws_reconnect_loop to prevent dangling background WS-connect tasks after initialize() was extended
+- [Phase 11-mui-feature-flags-sdk-clients]: [11-08]: ReconnectingSocket attempt counter resets to 0 on successful onopen - backoff restarts from 1s after a stable connection drops
+- [Phase 11-mui-feature-flags-sdk-clients]: [11-08]: TelemetryBatcher.flush() swallows fetch errors - failed batches dropped rather than retried/requeued (acceptable telemetry tradeoff)
+- [Phase 11-mui-feature-flags-sdk-clients]: [11-08]: client.test.ts/cache.test.ts now stub WebSocket/navigator/window globals since initialize() constructs ReconnectingSocket and TelemetryBatcher as side effects
 
 ### Pending Todos
 
@@ -157,6 +160,6 @@ Recent decisions affecting v1.1:
 
 ## Session Continuity
 
-**Last session:** 2026-06-10T13:27:46.678Z
-**Stopped At:** Completed 11-10-PLAN.md
+**Last session:** 2026-06-10T13:28:18.748Z
+**Stopped At:** Completed 11-08-PLAN.md
 **Resume File:** None

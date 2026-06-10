@@ -1,11 +1,69 @@
-"""Placeholder — implemented in Task 2."""
+"""
+Local (DB-free) flag evaluation engine for backoffice_sdk.
 
-OPERATORS: dict = {}
+Mirrors the canonical backend OPERATORS table and _evaluate_rule()/evaluate_flag()
+logic in backend/app/domains/feature_flags/service.py (Plan 01), and the
+sdk-js evaluator.ts evaluateFlag() bootstrap-cache semantics (Plan 06),
+including manual segment members[] resolution.
+"""
+import re
+
+OPERATORS = {
+    'equals':      lambda actual, expected: actual == expected,
+    'in':          lambda actual, expected: actual in expected,
+    'notIn':       lambda actual, expected: actual not in expected,
+    'contains':    lambda actual, expected: expected in str(actual),
+    'regex':       lambda actual, expected: bool(re.match(expected, str(actual))),
+    'greaterThan': lambda actual, expected: float(actual) > float(expected),
+    'lessThan':    lambda actual, expected: float(actual) < float(expected),
+}
 
 
 def evaluate_rule(rule: dict, user: dict) -> bool:
-    raise NotImplementedError
+    """Evaluate a single rule against user attributes.
+
+    Returns False on unknown operator, missing attribute, or any exception.
+    Mirrors backend/app/domains/feature_flags/service.py::_evaluate_rule exactly.
+    """
+    attr = rule.get('attribute', '')
+    op = rule.get('operator', 'equals')
+    val = rule.get('value')
+    actual = user.get(attr)
+    if actual is None:
+        return False
+    fn = OPERATORS.get(op)
+    if fn is None:
+        return False
+    try:
+        return bool(fn(actual, val))
+    except Exception:
+        return False
 
 
 def evaluate_flag(entry: dict, user: dict) -> bool:
-    raise NotImplementedError
+    """Evaluate a single flag entry from the bootstrap cache.
+
+    entry: {enabled, rules, segments, default_val, scope}
+    segments: [{id, type, conditions, members}]
+
+    DB-free: manual segment membership resolved via inlined `members` list (Plan 06).
+    Mirrors sdk-js evaluator.ts::evaluateFlag any-match semantics.
+    """
+    if not entry.get('enabled'):
+        return False
+
+    for rule in entry.get('rules', []):
+        if evaluate_rule(rule, user):
+            return bool(rule.get('result', entry.get('default_val', False)))
+
+    user_id = user.get('id') or user.get('sub') or user.get('user_id')
+    for seg in entry.get('segments', []):
+        seg_type = seg.get('type', 'manual')
+        if seg_type == 'rule_based':
+            if any(evaluate_rule(c, user) for c in seg.get('conditions', [])):
+                return True
+        elif seg_type == 'manual':
+            if user_id and str(user_id) in seg.get('members', []):
+                return True
+
+    return bool(entry.get('default_val', False))

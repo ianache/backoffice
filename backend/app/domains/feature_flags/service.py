@@ -21,11 +21,13 @@ SCOPE_PRIORITY = {
 }
 
 OPERATORS = {
-    'equals':   lambda actual, expected: actual == expected,
-    'in':       lambda actual, expected: actual in expected,
-    'notIn':    lambda actual, expected: actual not in expected,
-    'contains': lambda actual, expected: expected in str(actual),
-    'regex':    lambda actual, expected: bool(re.match(expected, str(actual))),
+    'equals':      lambda actual, expected: actual == expected,
+    'in':          lambda actual, expected: actual in expected,
+    'notIn':       lambda actual, expected: actual not in expected,
+    'contains':    lambda actual, expected: expected in str(actual),
+    'regex':       lambda actual, expected: bool(re.match(expected, str(actual))),
+    'greaterThan': lambda actual, expected: float(actual) > float(expected),
+    'lessThan':    lambda actual, expected: float(actual) < float(expected),
 }
 
 

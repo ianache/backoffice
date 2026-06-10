@@ -2,17 +2,17 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: MVP2
-current_plan: 8
+current_plan: 9
 status: executing
-stopped_at: Completed 11-07-PLAN.md
-last_updated: "2026-06-10T13:12:03.281Z"
+stopped_at: Completed 11-09-PLAN.md
+last_updated: "2026-06-10T13:18:33.185Z"
 last_activity: 2026-06-10
 progress:
   total_phases: 12
   completed_phases: 11
   total_plans: 57
-  completed_plans: 54
-  percent: 95
+  completed_plans: 55
+  percent: 96
 ---
 
 # Project State
@@ -27,13 +27,13 @@ See: .planning/PROJECT.md (updated 2026-06-07)
 ## Current Position
 
 Phase: 11 of 11 (mui-feature-flags-sdk-clients)
-**Current Plan:** 8
+**Current Plan:** 9
 **Total Plans in Phase:** 10
 **Status:** Ready to execute
 **Last Activity:** 2026-06-10
 Last activity detail: 2026-06-10 — 11-03 (flags core) and 11-04 (rule builder + simulator) complete; RuleCard/RuleSimulator/RuleBuilderView ported with 7-operator evaluator (greaterThan/lessThan), mode='flag'|'segment' prop, Stitch two-column layout
 
-**Progress:** [██████████] 95%
+**Progress:** [██████████] 96%
 
 ## Performance Metrics
 
@@ -73,6 +73,7 @@ Last activity detail: 2026-06-10 — 11-03 (flags core) and 11-04 (rule builder 
 | Phase 11-mui-feature-flags-sdk-clients P05 | 8min | 2 tasks | 4 files |
 | Phase 11-mui-feature-flags-sdk-clients P06 | 12min | 3 tasks | 13 files |
 | Phase 11-mui-feature-flags-sdk-clients P07 | 12min | 2 tasks | 4 files |
+| Phase 11-mui-feature-flags-sdk-clients P09 | 16min | 3 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -136,6 +137,8 @@ Recent decisions affecting v1.1:
 - [Phase 11-mui-feature-flags-sdk-clients]: [11-06]: bootstrap_flags() adds members:[] to ALL segment types for schema consistency - rule_based segments get empty array
 - [Phase 11-mui-feature-flags-sdk-clients]: [11-06]: sdk/sdk-js uses vitest@^2.1.0 (isolated devDependency) per plan spec, not workspace-standard ^1.6.0
 - [Phase 11-mui-feature-flags-sdk-clients]: [11-07]: index.ts switched from export * (types/evaluator) to explicit named exports plus FeatureFlagClient/InitOptions/initialize() factory - OPERATORS no longer re-exported from package root, still importable from ./evaluator directly
+- [Phase 11-mui-feature-flags-sdk-clients]: [11-09]: Created dedicated sdk/sdk-python/.venv (own pyproject.toml, outside pnpm workspace) to avoid downgrading global httpx/pytest/pytest-asyncio used by other tools
+- [Phase 11-mui-feature-flags-sdk-clients]: [11-09]: sdk-python evaluate_flag(entry, user) operates on a single bootstrap FlagEntry dict (Plan 06/sdk-js shape), distinct from backend's evaluate_flag(flags_list, context) - both share identical OPERATORS/_evaluate_rule core
 
 ### Pending Todos
 
@@ -149,6 +152,6 @@ Recent decisions affecting v1.1:
 
 ## Session Continuity
 
-**Last session:** 2026-06-10T13:12:03.270Z
-**Stopped At:** Completed 11-07-PLAN.md
+**Last session:** 2026-06-10T13:18:33.170Z
+**Stopped At:** Completed 11-09-PLAN.md
 **Resume File:** None

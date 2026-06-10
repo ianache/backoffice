@@ -32,10 +32,13 @@ async def bootstrap_flags(
             seg_type = getattr(seg, 'type', None) or 'manual'
             conditions_raw = getattr(seg, 'conditions', None)
             conditions = json.loads(conditions_raw) if conditions_raw else []
+            members_raw = getattr(seg, 'members', None)
+            members = json.loads(members_raw) if members_raw else []
             inlined_segments.append({
                 "id": seg.id,
                 "type": seg_type,
                 "conditions": conditions,
+                "members": members,
             })
         rules_raw = flag.rules
         rules = json.loads(rules_raw) if isinstance(rules_raw, str) and rules_raw else []

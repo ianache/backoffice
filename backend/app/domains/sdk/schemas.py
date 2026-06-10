@@ -7,6 +7,7 @@ class BootstrapSegment(BaseModel):
     id: int
     type: str = 'manual'
     conditions: list[dict] = []
+    members: list[str] = []
 
 
 class BootstrapFlagEntry(BaseModel):

@@ -2,6 +2,7 @@ packages:
   - 'bff'
   - 'portal'
   - 'microuis/*'
+  - 'sdk/sdk-js'
 allowBuilds:
   esbuild: true
   vue-demi: true

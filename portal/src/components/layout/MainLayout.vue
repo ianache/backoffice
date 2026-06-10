@@ -147,13 +147,38 @@
           <span class="text-sm">WhiteLabels</span>
         </button>
 
-        <!-- Feature Flags (placeholder) -->
+        <!-- Feature Flags -->
         <button
-          class="w-full flex items-center gap-4 px-4 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all duration-200 text-left cursor-not-allowed opacity-70"
-          disabled
+          @click="router.push('/flags')"
+          :class="[
+            'w-full flex items-center gap-4 px-4 py-2 rounded-lg transition-all duration-200 text-left',
+            remoteStatuses['mui-feature-flags'] === 'error' ? 'opacity-50 cursor-not-allowed' : '',
+            isActive('/flags')
+              ? 'bg-primary text-on-primary font-semibold'
+              : 'text-on-surface-variant hover:bg-surface-container-high'
+          ]"
+          :disabled="remoteStatuses['mui-feature-flags'] === 'error'"
+          title="Feature Flags"
         >
           <span class="material-symbols-outlined text-[22px]">toggle_on</span>
           <span class="text-sm">Feature Flags</span>
+        </button>
+
+        <!-- Segments -->
+        <button
+          @click="router.push('/segments')"
+          :class="[
+            'w-full flex items-center gap-4 px-4 py-2 rounded-lg transition-all duration-200 text-left',
+            remoteStatuses['mui-feature-flags'] === 'error' ? 'opacity-50 cursor-not-allowed' : '',
+            isActive('/segments')
+              ? 'bg-primary text-on-primary font-semibold'
+              : 'text-on-surface-variant hover:bg-surface-container-high'
+          ]"
+          :disabled="remoteStatuses['mui-feature-flags'] === 'error'"
+          title="Segments"
+        >
+          <span class="material-symbols-outlined text-[22px]">group</span>
+          <span class="text-sm">Segments</span>
         </button>
 
         <!-- Audit Log (placeholder) -->
@@ -215,6 +240,8 @@ const breadcrumbLabel = computed(() => {
   if (segment === 'stub') return 'Stub Domain'
   if (segment === 'tenants') return 'Tenants'
   if (segment === 'users') return 'Access Management'
+  if (segment === 'flags') return 'Feature Flags'
+  if (segment === 'segments') return 'Segments'
   return segment.charAt(0).toUpperCase() + segment.slice(1)
 })
 

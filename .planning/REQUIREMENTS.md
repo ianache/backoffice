@@ -89,7 +89,7 @@
 - [x] **SDK-04**: Backend expone WebSocket endpoint que transmite `{type:"flag_updated", flag_key}` a clientes registrados para `tenant_id + product_id` cuando se guarda una flag; usa first-message auth (no `Depends()` en handshake)
 - [x] **SDK-05**: SDK cliente JS/TS (`sdk/sdk-js`) hace fetch del bootstrap al inicializar y almacena config de flags en cachÃ© en memoria
 - [x] **SDK-06**: SDK cliente JS/TS evalÃºa flags localmente desde cachÃ© con latencia <1ms, sin llamadas de red
-- [ ] **SDK-07**: SDK cliente JS/TS tiene fallback a evaluaciÃ³n remota via `POST /api/v1/sdk/evaluate` cuando se requiere contexto confidencial
+- [x] **SDK-07**: SDK cliente JS/TS tiene fallback a evaluaciÃ³n remota via `POST /api/v1/sdk/evaluate` cuando se requiere contexto confidencial
 - [ ] **SDK-08**: SDK cliente JS/TS mantiene conexiÃ³n WebSocket con reconexiÃ³n exponential-backoff nativa (sin dependencias externas) e invalida cachÃ© al recibir `flag_updated`
 - [ ] **SDK-09**: SDK cliente JS/TS envÃ­a telemetrÃ­a en batch con doble trigger: cada 60s o al acumular 100 eventos, con jitter de inicio para evitar thundering herd post-deploy
 - [ ] **SDK-10**: SDK cliente JS/TS usa `navigator.sendBeacon()` para flush de telemetrÃ­a pendiente en evento `beforeunload`
@@ -213,7 +213,7 @@ QuÃ© fases cubren quÃ© requerimientos. Actualizado durante creaciÃ³n del r
 | MUI-06 | Phase 11 | Complete |
 | SDK-05 | Phase 11 | Complete |
 | SDK-06 | Phase 11 | Complete |
-| SDK-07 | Phase 11 | Pending |
+| SDK-07 | Phase 11 | Complete |
 | SDK-08 | Phase 11 | Pending |
 | SDK-09 | Phase 11 | Pending |
 | SDK-10 | Phase 11 | Pending |

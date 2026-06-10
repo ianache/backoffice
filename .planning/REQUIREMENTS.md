@@ -94,7 +94,7 @@
 - [ ] **SDK-09**: SDK cliente JS/TS envÃ­a telemetrÃ­a en batch con doble trigger: cada 60s o al acumular 100 eventos, con jitter de inicio para evitar thundering herd post-deploy
 - [ ] **SDK-10**: SDK cliente JS/TS usa `navigator.sendBeacon()` para flush de telemetrÃ­a pendiente en evento `beforeunload`
 - [x] **SDK-11**: SDK servidor Python (`sdk/sdk-python`) hace fetch async del bootstrap, evalÃºa flags localmente y soporta evaluaciÃ³n remota async
-- [ ] **SDK-12**: SDK servidor Python mantiene conexiÃ³n WebSocket con reconexiÃ³n exponential-backoff + jitter para sincronizaciÃ³n de cachÃ©
+- [x] **SDK-12**: SDK servidor Python mantiene conexiÃ³n WebSocket con reconexiÃ³n exponential-backoff + jitter para sincronizaciÃ³n de cachÃ©
 
 ---
 
@@ -218,7 +218,7 @@ QuÃ© fases cubren quÃ© requerimientos. Actualizado durante creaciÃ³n del r
 | SDK-09 | Phase 11 | Pending |
 | SDK-10 | Phase 11 | Pending |
 | SDK-11 | Phase 11 | Complete |
-| SDK-12 | Phase 11 | Pending |
+| SDK-12 | Phase 11 | Complete |
 
 **Coverage v1.1:**
 - v1.1 requirements: 29 total

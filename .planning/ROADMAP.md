@@ -30,7 +30,7 @@ Full archive: `.planning/milestones/v1.0-ROADMAP.md`
  (completed 2026-06-09)
 - [x] **Phase 9: Shell Cutover** — Portal refactored to Module Federation host; shared Pinia/Axios singletons; lazy remote route registration (completed 2026-06-09)
 - 🚧 **Phase 10: mui-tenants + mui-security** — Domain MUIs migrated; gap closure plans in progress (3/6 plans complete)
-- [ ] **Phase 11: mui-feature-flags + SDK Clients** — Feature flags MUI migrated; Segments UI with orphan detection; JS/TS + Python SDK packages
+- [x] **Phase 11: mui-feature-flags + SDK Clients** — Feature flags MUI migrated; Segments UI with orphan detection; JS/TS + Python SDK packages (completed 2026-06-10)
 
 ## Phase Details
 
@@ -147,4 +147,4 @@ Phases execute in numeric order: 7 → 8 → 9 → 10 → 11
 | 8. Advanced Segments + SDK Backend | 4/4 | Complete   | 2026-06-09 | - |
 | 9. Shell Cutover | v1.1 | 4/4 | Complete | 2026-06-09 |
 | 10. mui-tenants + mui-security | 6/6 | Complete    | 2026-06-09 | - |
-| 11. mui-feature-flags + SDK Clients | 8/10 | In Progress|  | - |
+| 11. mui-feature-flags + SDK Clients | 10/10 | Complete   | 2026-06-10 | - |

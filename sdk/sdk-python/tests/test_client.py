@@ -4,13 +4,29 @@ Unit tests for backoffice_sdk.client.FeatureFlagClient.
 initialize() is the only async setup call (httpx bootstrap fetch -> cache).
 evaluate() is synchronous, cache-only, DB-free.
 evaluate_remote() is async, calls POST /sdk/evaluate via httpx.
+
+initialize() also spawns a background WS reconnect task (Plan 10) — patch
+backoffice_sdk.client.ws_reconnect_loop in all initialize()-calling tests so
+no real network connection is attempted and no task is left dangling.
 """
+import asyncio
 from unittest.mock import AsyncMock, Mock, patch
 
 import httpx
 import pytest
 
 from backoffice_sdk.client import FeatureFlagClient
+
+
+async def _noop_ws_loop(*args, **kwargs):
+    """Stand-in for ws_reconnect_loop that returns immediately."""
+    return None
+
+
+@pytest.fixture(autouse=True)
+def _mock_ws_reconnect_loop():
+    with patch("backoffice_sdk.client.ws_reconnect_loop", side_effect=_noop_ws_loop) as mock:
+        yield mock
 
 
 BOOTSTRAP_FIXTURE = {

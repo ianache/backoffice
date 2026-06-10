@@ -8,11 +8,13 @@ cleanly cancellable.
 """
 import asyncio
 import json
-from unittest.mock import AsyncMock, patch
+from unittest.mock import AsyncMock, Mock, patch
 
+import httpx
 import pytest
 from websockets.exceptions import ConnectionClosed
 
+from backoffice_sdk.client import FeatureFlagClient
 from backoffice_sdk.websocket import compute_backoff_delay, ws_reconnect_loop
 
 
@@ -196,3 +198,162 @@ class TestWsReconnectLoopCancellation:
                     await task
 
         assert task.cancelled()
+
+
+def make_client(**overrides):
+    kwargs = dict(
+        tenant_id="t1",
+        product_id="p1",
+        environment="qa",
+        api_base_url="https://api.example.com",
+        sdk_key="sdk_key_123",
+    )
+    kwargs.update(overrides)
+    return FeatureFlagClient(**kwargs)
+
+
+BOOTSTRAP_FIXTURE = {
+    "my_flag": {
+        "enabled": True,
+        "rules": [],
+        "segments": [],
+        "default_val": False,
+        "scope": "global",
+    },
+}
+
+
+async def _mock_initialize_http(client):
+    """Patch httpx.AsyncClient.get to return BOOTSTRAP_FIXTURE for initialize()."""
+    mock_response = Mock()
+    mock_response.json.return_value = BOOTSTRAP_FIXTURE
+    mock_response.raise_for_status = Mock()
+    return mock_response
+
+
+class TestWsBaseUrlDerivation:
+
+    def test_derives_ws_from_http(self):
+        client = make_client(api_base_url="http://localhost:4000")
+        assert client.ws_base_url == "ws://localhost:4000"
+
+    def test_derives_wss_from_https(self):
+        client = make_client(api_base_url="https://api.example.com")
+        assert client.ws_base_url == "wss://api.example.com"
+
+    def test_explicit_ws_base_url_overrides_default(self):
+        client = make_client(api_base_url="https://api.example.com", ws_base_url="wss://override.example.com")
+        assert client.ws_base_url == "wss://override.example.com"
+
+
+class TestInitializeSpawnsWsTask:
+
+    @pytest.mark.asyncio
+    async def test_initialize_spawns_ws_reconnect_task(self):
+        client = make_client(api_base_url="http://localhost:4000")
+
+        mock_response = Mock()
+        mock_response.json.return_value = BOOTSTRAP_FIXTURE
+        mock_response.raise_for_status = Mock()
+
+        async def fake_ws_loop(*args, **kwargs):
+            return None
+
+        with patch.object(httpx.AsyncClient, "get", new_callable=AsyncMock) as mock_get:
+            mock_get.return_value = mock_response
+            with patch("backoffice_sdk.client.ws_reconnect_loop", side_effect=fake_ws_loop) as mock_loop:
+                await client.initialize()
+
+        assert client._ws_task is not None
+        await client.close()
+
+        # Verify the URL/sdk_key/on_message args passed to ws_reconnect_loop
+        call_args = mock_loop.call_args
+        assert call_args.args[0] == "ws://localhost:4000/sdk/ws/flags/t1"
+        assert call_args.args[1] == "sdk_key_123"
+        assert call_args.kwargs["on_message"] == client._handle_ws_message
+
+
+class TestHandleWsMessage:
+
+    def test_flag_updated_invalidates_cache(self):
+        client = make_client()
+        client.cache = {"my_flag": {"enabled": True}}
+
+        client._handle_ws_message({"type": "flag_updated", "flag_key": "my_flag"})
+
+        assert "my_flag" not in client.cache
+
+    def test_ping_is_noop(self):
+        client = make_client()
+        client.cache = {"my_flag": {"enabled": True}}
+
+        client._handle_ws_message({"type": "ping"})
+
+        assert client.cache == {"my_flag": {"enabled": True}}
+
+
+class TestClose:
+
+    @pytest.mark.asyncio
+    async def test_close_cancels_ws_task(self):
+        client = make_client(api_base_url="http://localhost:4000")
+
+        mock_response = Mock()
+        mock_response.json.return_value = BOOTSTRAP_FIXTURE
+        mock_response.raise_for_status = Mock()
+
+        async def slow_ws_loop(*args, **kwargs):
+            await asyncio.sleep(100)
+
+        with patch.object(httpx.AsyncClient, "get", new_callable=AsyncMock) as mock_get:
+            mock_get.return_value = mock_response
+            with patch("backoffice_sdk.client.ws_reconnect_loop", side_effect=slow_ws_loop):
+                await client.initialize()
+
+        await client.close()
+        assert client._ws_task is None
+
+    @pytest.mark.asyncio
+    async def test_close_is_idempotent(self):
+        client = make_client(api_base_url="http://localhost:4000")
+
+        mock_response = Mock()
+        mock_response.json.return_value = BOOTSTRAP_FIXTURE
+        mock_response.raise_for_status = Mock()
+
+        async def slow_ws_loop(*args, **kwargs):
+            await asyncio.sleep(100)
+
+        with patch.object(httpx.AsyncClient, "get", new_callable=AsyncMock) as mock_get:
+            mock_get.return_value = mock_response
+            with patch("backoffice_sdk.client.ws_reconnect_loop", side_effect=slow_ws_loop):
+                await client.initialize()
+
+        await client.close()
+        await client.close()  # second call must not raise
+
+
+class TestAsyncContextManager:
+
+    @pytest.mark.asyncio
+    async def test_async_with_calls_initialize_and_close(self):
+        client = make_client(api_base_url="http://localhost:4000")
+
+        mock_response = Mock()
+        mock_response.json.return_value = BOOTSTRAP_FIXTURE
+        mock_response.raise_for_status = Mock()
+
+        async def slow_ws_loop(*args, **kwargs):
+            await asyncio.sleep(100)
+
+        with patch.object(httpx.AsyncClient, "get", new_callable=AsyncMock) as mock_get:
+            mock_get.return_value = mock_response
+            with patch("backoffice_sdk.client.ws_reconnect_loop", side_effect=slow_ws_loop):
+                async with client as c:
+                    assert c is client
+                    assert client.cache == BOOTSTRAP_FIXTURE
+                    assert client._ws_task is not None
+
+        # __aexit__ should have closed the task
+        assert client._ws_task is None

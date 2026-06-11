@@ -129,10 +129,18 @@
           <span class="text-sm">Stub Domain</span>
         </button>
 
-        <!-- Products (placeholder) -->
+        <!-- Products (served by mui-tenants remote) -->
         <button
-          class="w-full flex items-center gap-4 px-4 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all duration-200 text-left cursor-not-allowed opacity-70"
-          disabled
+          @click="router.push('/products')"
+          :class="[
+            'w-full flex items-center gap-4 px-4 py-2 rounded-lg transition-all duration-200 text-left',
+            remoteStatuses['mui-tenants'] === 'error' ? 'opacity-50 cursor-not-allowed' : '',
+            isActive('/products')
+              ? 'bg-primary text-on-primary font-semibold'
+              : 'text-on-surface-variant hover:bg-surface-container-high'
+          ]"
+          :disabled="remoteStatuses['mui-tenants'] === 'error'"
+          title="Products"
         >
           <span class="material-symbols-outlined text-[22px]">inventory_2</span>
           <span class="text-sm">Products</span>

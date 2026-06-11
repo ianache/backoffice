@@ -12,6 +12,17 @@ const routes: RouteRecordRaw[] = [
       roles: ['PlatformAdmin'],
     },
   },
+  {
+    path: '/products',
+    name: 'products',
+    component: () => import('./views/ProductsView.vue'),
+    meta: {
+      requiresAuth: true,
+      layout: 'main',
+      title: 'Product Management',
+      roles: ['PlatformAdmin'],
+    },
+  },
 ]
 
 export default routes

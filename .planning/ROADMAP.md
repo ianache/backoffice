@@ -22,7 +22,7 @@ Full archive: `.planning/milestones/v1.0-ROADMAP.md`
 
 </details>
 
-### 🚧 v1.1 MVP2 (Phases 7-11)
+### 🚧 v1.1 MVP2 (Phases 7-12)
 
 **Milestone Goal:** Refactorizar el portal en arquitectura Shell + Micro-UIs y entregar Productos, Segmentos Avanzados y Feature Flag SDK como entidades y capacidades de primer nivel.
 
@@ -31,6 +31,7 @@ Full archive: `.planning/milestones/v1.0-ROADMAP.md`
 - [x] **Phase 9: Shell Cutover** — Portal refactored to Module Federation host; shared Pinia/Axios singletons; lazy remote route registration (completed 2026-06-09)
 - 🚧 **Phase 10: mui-tenants + mui-security** — Domain MUIs migrated; gap closure plans in progress (3/6 plans complete)
 - [x] **Phase 11: mui-feature-flags + SDK Clients** — Feature flags MUI migrated; Segments UI with orphan detection; JS/TS + Python SDK packages (completed 2026-06-10)
+- [ ] **Phase 12: Dogfooding Feature Flags** — Portal gated by its own flags (product `backoffice`): bo.feature, bo.feature.create, bo.feature.update
 
 ## Phase Details
 
@@ -148,3 +149,13 @@ Phases execute in numeric order: 7 → 8 → 9 → 10 → 11
 | 9. Shell Cutover | v1.1 | 4/4 | Complete | 2026-06-09 |
 | 10. mui-tenants + mui-security | 6/6 | Complete    | 2026-06-09 | - |
 | 11. mui-feature-flags + SDK Clients | 10/10 | Complete    | 2026-06-10 | - |
+
+### Phase 12: Dogfooding Feature Flags
+
+**Goal**: La plataforma consume sus propios feature flags (producto id `backoffice`) para controlar su UI: `bo.feature` muestra/oculta la opción de menú "Feature Flags" en el Shell; `bo.feature.create` muestra/oculta el botón "Create Flag" de la página /flags y la acción "Clone" en la tabla de flags; `bo.feature.update` muestra/oculta el ícono de edición (lápiz) en la tabla de flags. La evaluación usa el SDK propio (`@backoffice/sdk-js` de la Fase 11) o el endpoint de bootstrap del BFF, con fail-safe: si el flag no existe o la evaluación falla, la UI se comporta según un default seguro documentado.
+**Requirements**: TBD (derive at plan time: DOGF-01 menu gating, DOGF-02 create/clone gating, DOGF-03 edit gating)
+**Depends on:** Phase 11
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd:plan-phase 12 to break down)

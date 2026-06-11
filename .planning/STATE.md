@@ -79,6 +79,10 @@ Last activity detail: 2026-06-10 — 11-03 (flags core) and 11-04 (rule builder 
 
 ## Accumulated Context
 
+### Roadmap Evolution
+
+- Phase 12 added (2026-06-11): Dogfooding Feature Flags — portal gated by its own flags (product `backoffice`): bo.feature (menu), bo.feature.create (Create Flag + Clone), bo.feature.update (Edit pencil)
+
 ### Decisions
 
 Decisions are logged in PROJECT.md Key Decisions table.

@@ -16,12 +16,17 @@ const formData = ref({
   products: props.modelValue.products || []
 })
 
+// Re-sync only when the parent provides a different object (drawer open / tenant switch).
+// Without the reference guard this echoes our own emit back as a new object and the two
+// deep watches feed each other forever — in prod builds Vue doesn't break the cycle and
+// the main thread freezes on the first keystroke (fields appear "blocked").
 watch(() => props.modelValue, (newVal) => {
+  if (newVal === formData.value) return
   formData.value = {
     ...newVal,
     products: newVal?.products || []
   }
-}, { deep: true })
+})
 
 watch(formData, (newVal) => {
   emit('update:modelValue', newVal)

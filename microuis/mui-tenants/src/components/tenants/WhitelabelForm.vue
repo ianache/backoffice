@@ -27,9 +27,12 @@ const accentColor = computed({
   set: (val: string) => formData.value.accent_color = val
 })
 
+// Reference guard prevents the emit echo from re-creating formData and looping
+// with the deep watch below (freezes prod builds; see TenantForm.vue)
 watch(() => props.modelValue, (newVal) => {
+  if (newVal === formData.value) return
   formData.value = { ...newVal }
-}, { deep: true })
+})
 
 watch(formData, (newVal) => {
   emit('update:modelValue', newVal)

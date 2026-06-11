@@ -3,6 +3,11 @@ export default {
   content: [
     "./index.html",
     "./src/**/*.{vue,js,ts,jsx,tsx}",
+    // Federated remotes don't ship their own Tailwind sheet at runtime (only in
+    // standalone dev via main.ts) — the shell's single sheet must cover their classes,
+    // otherwise base utilities from one remote's sheet override responsive variants
+    // from another's (media queries don't add specificity).
+    "../microuis/*/src/**/*.{vue,js,ts,jsx,tsx}",
   ],
   theme: {
     extend: {

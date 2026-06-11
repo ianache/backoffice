@@ -1,4 +1,3 @@
-import './assets/tailwind.css'
 import type { RouteRecordRaw } from 'vue-router'
 
 const routes: RouteRecordRaw[] = [

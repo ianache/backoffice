@@ -29,12 +29,26 @@
 
     <!-- Context JSON textarea -->
     <div class="p-4 flex-shrink-0">
-      <label class="text-xs font-medium text-on-surface-variant mb-1 block">Test Context</label>
+      <div class="flex items-center justify-between mb-1">
+        <label class="text-xs font-medium text-on-surface-variant">Test Context</label>
+        <label
+          class="flex items-center gap-1.5 text-xs text-on-surface-variant cursor-pointer select-none"
+        >
+          <input
+            type="checkbox"
+            :checked="useRealContext"
+            @change="toggleRealContext"
+            class="accent-primary"
+          />
+          Use my real context
+        </label>
+      </div>
       <textarea
         v-model="contextJson"
         rows="6"
+        :readonly="useRealContext"
         class="w-full px-3 py-2 rounded-lg border border-outline-variant bg-surface-container text-sm font-mono text-on-surface outline-none focus:border-primary resize-none transition-colors"
-        :class="{ 'border-error': contextError }"
+        :class="{ 'border-error': contextError, 'bg-surface-container-high': useRealContext }"
         placeholder='{"country": "PE"}'
         spellcheck="false"
       />
@@ -76,6 +90,7 @@ import { ref, computed } from 'vue'
 import type { Ref } from 'vue'
 import { useRuleSimulator } from '../../composables/useRuleSimulator'
 import type { RuleSchema } from '../../services/flags'
+import { useUserContext } from 'shell/useUserContext'
 
 // ---------------------------------------------------------------------------
 // Props
@@ -102,6 +117,41 @@ const emit = defineEmits<{
 const PLACEHOLDER_CONTEXT = '{\n  "country": "PE",\n  "plan": "pro"\n}'
 
 const contextJson = ref(props.testContext || PLACEHOLDER_CONTEXT)
+
+// ---------------------------------------------------------------------------
+// Real-context toggle (SIM-03) — defaults OFF on every mount, never persisted
+// ---------------------------------------------------------------------------
+
+const useRealContext = ref(false)
+let previousContextJson = ''
+
+const realContextJson = computed(() => {
+  const ctx = useUserContext()
+  return JSON.stringify(
+    {
+      sub: ctx.sub,
+      email: ctx.email,
+      roles: ctx.roles,
+      tenant_id: ctx.tenant_id,
+      product_id: ctx.product_id,
+    },
+    null,
+    2,
+  )
+})
+
+function toggleRealContext(): void {
+  if (!useRealContext.value) {
+    // Turning ON — save current value, switch to real context
+    previousContextJson = contextJson.value
+    contextJson.value = realContextJson.value
+    useRealContext.value = true
+  } else {
+    // Turning OFF — restore previous value
+    contextJson.value = previousContextJson
+    useRealContext.value = false
+  }
+}
 
 // Compute rules without _id for simulator (strip local _id field)
 const strippedRules = computed<RuleSchema[]>(() =>

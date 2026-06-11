@@ -23,9 +23,11 @@ La plataforma BackOffice debe consumir sus propios feature flags para controlar 
   - `microuis/mui-feature-flags/src/views/FlagsView.vue` — botón "Create Flag".
   - `microuis/mui-feature-flags/src/components/flags/FlagTable.vue` — acciones "Clone" y "Edit" (lápiz).
 
-## Open questions for planning
+## Resolved Decisions (2026-06-11)
 
-1. ¿Cómo obtiene el portal su `sdk_key`? Hoy las SDK keys son per-tenant. ¿Key dedicada del tenant "plataforma" en env (`VITE_BO_SDK_KEY`), o evaluación vía BFF con la sesión del usuario (sin sdk_key)?
-2. Fail-safe default: si el flag no existe / bootstrap falla → recomendado fail-open (mostrar UI) para no bloquear administración, pero decidir explícitamente.
-3. ¿El gating es por tenant del usuario logueado o global de plataforma? (user context para evaluate(): sub/roles del usuario actual).
-4. ¿Reactividad en vivo (WS flag_updated re-renderiza el menú) o snapshot por sesión?
+| Question | Decision | Rationale |
+|----------|----------|-----------|
+| Q1: SDK key provisioning | `VITE_BO_SDK_KEY` env var | Simple, consistent with SDK contract |
+| Q2: Fail-safe default | Fail-open (`true`) | Admin UI must never be blocked by SDK failure |
+| Q3: Evaluation context | Real user context (`sub`, `roles`) | Enables per-role flag rules |
+| Q4: Reactivity model | Live WS (`flag_updated` → re-eval) | Demonstrates full SDK capability |

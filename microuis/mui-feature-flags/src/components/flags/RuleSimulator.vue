@@ -39,6 +39,14 @@
         spellcheck="false"
       />
       <p v-if="contextError" class="mt-1 text-xs text-[color:var(--error)]">{{ contextError }}</p>
+      <button
+        type="button"
+        :disabled="!!contextError"
+        @click="emit('save-test-context', contextJson)"
+        class="mt-2 px-3 py-1.5 rounded-lg text-xs font-medium bg-primary text-on-primary hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed"
+      >
+        Save Test Context
+      </button>
     </div>
 
     <!-- Matched rule highlight -->
@@ -75,13 +83,25 @@ import type { RuleSchema } from '../../services/flags'
 
 const props = defineProps<{
   rules: (RuleSchema & { _id: string })[]
+  mode?: 'flag' | 'segment'
+  testContext?: string | null
+}>()
+
+// ---------------------------------------------------------------------------
+// Emits
+// ---------------------------------------------------------------------------
+
+const emit = defineEmits<{
+  'save-test-context': [json: string]
 }>()
 
 // ---------------------------------------------------------------------------
 // Internal state
 // ---------------------------------------------------------------------------
 
-const contextJson = ref('{\n  "country": "PE",\n  "plan": "pro"\n}')
+const PLACEHOLDER_CONTEXT = '{\n  "country": "PE",\n  "plan": "pro"\n}'
+
+const contextJson = ref(props.testContext || PLACEHOLDER_CONTEXT)
 
 // Compute rules without _id for simulator (strip local _id field)
 const strippedRules = computed<RuleSchema[]>(() =>

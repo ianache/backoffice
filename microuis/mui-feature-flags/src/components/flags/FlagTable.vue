@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import type { FeatureFlag } from '../../services/flags'
+import { useBoFlags } from 'shell/boFlags'
+
+const { boFeatureCreate, boFeatureUpdate } = useBoFlags()
 
 defineProps<{
   flags: FeatureFlag[]
@@ -156,6 +159,7 @@ function formatTtl(ttl: number | null): string {
         <td class="table-td">
           <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
             <button
+              v-if="boFeatureUpdate"
               class="p-1.5 rounded-lg hover:bg-surface-container-high transition-colors text-on-surface-variant"
               title="Edit"
               @click="emit('edit', flag)"
@@ -163,6 +167,7 @@ function formatTtl(ttl: number | null): string {
               <span class="material-symbols-outlined text-[18px]">edit</span>
             </button>
             <button
+              v-if="boFeatureCreate"
               class="p-1.5 rounded-lg hover:bg-surface-container-high transition-colors text-on-surface-variant"
               title="Clone"
               @click="emit('clone', flag)"

@@ -17,3 +17,14 @@ declare module 'shell/api' {
   const api: AxiosInstance
   export default api
 }
+declare module 'shell/boFlags' {
+  import { Ref } from 'vue'
+  export function useBoFlags(): {
+    boFeature: Readonly<Ref<boolean>>
+    boFeatureCreate: Readonly<Ref<boolean>>
+    boFeatureUpdate: Readonly<Ref<boolean>>
+    initialized: Readonly<Ref<boolean>>
+    init: (userContext: Record<string, unknown>) => Promise<void>
+    destroy: () => void
+  }
+}

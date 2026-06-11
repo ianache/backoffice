@@ -24,11 +24,38 @@ def _get_scope_filter(roles: list[str]) -> Optional[list[str]]:
     """Return allowed scopes based on caller's roles. None means all scopes (PlatformAdmin)."""
     if 'PlatformAdmin' in roles:
         return None  # sees everything
+    if 'TenantAdmin' in roles or 'TenantOwner' in roles:
+        return ['global', 'tenant', 'product', 'company']
     if 'ProductManager' in roles:
         return ['global', 'tenant', 'product']
-    if 'TenantAdmin' in roles or 'TenantOwner' in roles:
-        return ['global', 'tenant']
     return ['global']
+
+
+def _check_scope_permission(scope: str, roles: list[str], detail_action: str) -> None:
+    is_platform_admin = 'PlatformAdmin' in roles
+    is_tenant_admin = bool({'TenantAdmin', 'TenantOwner'}.intersection(roles))
+    is_product_manager = 'ProductManager' in roles
+
+    if scope == 'global' and not is_platform_admin:
+        raise HTTPException(
+            status_code=403,
+            detail=f"Only PlatformAdmin can {detail_action} global flags"
+        )
+    elif scope == 'tenant' and not (is_platform_admin or is_tenant_admin):
+        raise HTTPException(
+            status_code=403,
+            detail=f"Only PlatformAdmin or TenantAdmin/TenantOwner can {detail_action} tenant flags"
+        )
+    elif scope == 'product' and not (is_platform_admin or is_tenant_admin or is_product_manager):
+        raise HTTPException(
+            status_code=403,
+            detail=f"Only PlatformAdmin, TenantAdmin/TenantOwner, or ProductManager can {detail_action} product flags"
+        )
+    elif scope == 'company' and not (is_platform_admin or is_tenant_admin):
+        raise HTTPException(
+            status_code=403,
+            detail=f"Only PlatformAdmin or TenantAdmin/TenantOwner can {detail_action} company flags"
+        )
 
 
 @router.get("/", response_model=list[FlagResponse])
@@ -62,14 +89,7 @@ async def create_flag(
     db: AsyncSession = Depends(get_db),
 ):
     roles = [r.strip() for r in x_user_roles.split(',') if r.strip()]
-    if payload.scope == 'global' and 'PlatformAdmin' not in roles:
-        raise HTTPException(status_code=403, detail="Only PlatformAdmin can create global flags")
-    if payload.scope == 'tenant' and not {'TenantAdmin', 'TenantOwner'}.intersection(roles):
-        raise HTTPException(status_code=403, detail="Only TenantAdmin/TenantOwner can create tenant flags")
-    if payload.scope == 'product' and 'ProductManager' not in roles:
-        raise HTTPException(status_code=403, detail="Only ProductManager can create product flags")
-    if payload.scope == 'company' and 'PlatformAdmin' not in roles:
-        raise HTTPException(status_code=403, detail="Only PlatformAdmin can create company-scope flags")
+    _check_scope_permission(payload.scope, roles, "create")
     flag = await service.create_flag(
         db, payload, actor_sub=x_user_sub, tenant_id=x_user_tenant_id or None
     )
@@ -84,17 +104,22 @@ async def update_flag(
     x_user_roles: str = Header(...),
     db: AsyncSession = Depends(get_db),
 ):
-    flag = await service.update_flag(db, flag_id, payload)
+    flag = await service.get_flag(db, flag_id)
     if not flag:
         raise HTTPException(status_code=404, detail="Flag not found")
+
+    roles = [r.strip() for r in x_user_roles.split(',') if r.strip()]
+    _check_scope_permission(flag.scope, roles, "update")
+
+    updated_flag = await service.update_flag(db, flag_id, payload)
     # Broadcast flag change to SDK WebSocket clients for this tenant
     manager = request.app.state.ws_manager
-    if flag.tenant_id:
-        await manager.broadcast(flag.tenant_id, {
+    if updated_flag.tenant_id:
+        await manager.broadcast(updated_flag.tenant_id, {
             "type": "flag_updated",
-            "flag_key": flag.name,
+            "flag_key": updated_flag.name,
         })
-    return FlagResponse.model_validate(flag)
+    return FlagResponse.model_validate(updated_flag)
 
 
 @router.delete("/{flag_id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -103,9 +128,13 @@ async def delete_flag(
     x_user_roles: str = Header(...),
     db: AsyncSession = Depends(get_db),
 ):
+    flag = await service.get_flag(db, flag_id)
+    if not flag:
+        raise HTTPException(status_code=404, detail="Flag not found")
+
     roles = [r.strip() for r in x_user_roles.split(',') if r.strip()]
-    if 'PlatformAdmin' not in roles:
-        raise HTTPException(status_code=403, detail="Only PlatformAdmin can delete flags")
+    _check_scope_permission(flag.scope, roles, "delete")
+
     deleted = await service.delete_flag(db, flag_id)
     if not deleted:
         raise HTTPException(status_code=404, detail="Flag not found")
@@ -118,9 +147,14 @@ async def enable_flag(
     x_user_roles: str = Header(...),
     db: AsyncSession = Depends(get_db),
 ):
-    flag = await service.set_enabled(db, flag_id, True)
+    flag = await service.get_flag(db, flag_id)
     if not flag:
         raise HTTPException(status_code=404, detail="Flag not found")
+
+    roles = [r.strip() for r in x_user_roles.split(',') if r.strip()]
+    _check_scope_permission(flag.scope, roles, "enable")
+
+    flag = await service.set_enabled(db, flag_id, True)
     # Broadcast flag change to SDK WebSocket clients for this tenant
     manager = request.app.state.ws_manager
     if flag.tenant_id:
@@ -138,9 +172,14 @@ async def disable_flag(
     x_user_roles: str = Header(...),
     db: AsyncSession = Depends(get_db),
 ):
-    flag = await service.set_enabled(db, flag_id, False)
+    flag = await service.get_flag(db, flag_id)
     if not flag:
         raise HTTPException(status_code=404, detail="Flag not found")
+
+    roles = [r.strip() for r in x_user_roles.split(',') if r.strip()]
+    _check_scope_permission(flag.scope, roles, "disable")
+
+    flag = await service.set_enabled(db, flag_id, False)
     # Broadcast flag change to SDK WebSocket clients for this tenant
     manager = request.app.state.ws_manager
     if flag.tenant_id:

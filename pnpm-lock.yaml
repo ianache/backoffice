@@ -219,6 +219,9 @@ importers:
 
   portal:
     dependencies:
+      '@backoffice/sdk-js':
+        specifier: workspace:*
+        version: link:../sdk/sdk-js
       '@material/web':
         specifier: ^2.4.1
         version: 2.4.1

@@ -7,9 +7,11 @@ import FlagTable from '../components/flags/FlagTable.vue'
 import FlagDrawer from '../components/flags/FlagDrawer.vue'
 import ConfirmDialog from '../components/flags/ConfirmDialog.vue'
 import StitchButton from 'shell/StitchButton'
+import { useBoFlags } from 'shell/boFlags'
 
 const flagsStore = useFeatureFlagsStore()
 const toast = useToastStore()
+const { boFeatureCreate } = useBoFlags()
 
 const showDrawer = ref(false)
 const selectedFlag = ref<FeatureFlag | null>(null)
@@ -95,7 +97,7 @@ const handlePromote = (flag: FeatureFlag) => {
         <h1 class="page-title">Feature Flags</h1>
         <p class="page-subtitle">Configure and manage feature flags across all hierarchy levels</p>
       </div>
-      <StitchButton icon="toggle_on" @click="openCreateDrawer">
+      <StitchButton v-if="boFeatureCreate" icon="toggle_on" @click="openCreateDrawer">
         Create Flag
       </StitchButton>
     </div>

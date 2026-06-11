@@ -155,8 +155,9 @@
           <span class="text-sm">WhiteLabels</span>
         </button>
 
-        <!-- Feature Flags -->
+        <!-- Feature Flags (gated by bo.feature dogfooding flag) -->
         <button
+          v-if="boFeature"
           @click="router.push('/flags')"
           :class="[
             'w-full flex items-center gap-4 px-4 py-2 rounded-lg transition-all duration-200 text-left',
@@ -172,8 +173,9 @@
           <span class="text-sm">Feature Flags</span>
         </button>
 
-        <!-- Segments -->
+        <!-- Segments (gated by bo.feature — part of Feature Flags domain) -->
         <button
+          v-if="boFeature"
           @click="router.push('/segments')"
           :class="[
             'w-full flex items-center gap-4 px-4 py-2 rounded-lg transition-all duration-200 text-left',
@@ -236,11 +238,13 @@ import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '../../stores/auth'
 import { useUIStore } from '../../stores/ui'
 import { remoteStatuses } from '../../router/index'
+import { useBoFlags } from '../../composables/useBoFlags'
 
 const route = useRoute()
 const router = useRouter()
 const authStore = useAuthStore()
 const uiStore = useUIStore()
+const { boFeature } = useBoFlags()
 
 const breadcrumbLabel = computed(() => {
   const segment = route.path.split('/').filter(Boolean)[0]

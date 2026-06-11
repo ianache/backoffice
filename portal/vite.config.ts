@@ -43,6 +43,7 @@ export default defineConfig(({ mode }) => {
           './StitchTextField': './src/components/ui/StitchTextField.vue',
           './toastStore': './src/stores/toast.ts',
           './api': './src/services/api.ts',
+          './boFlags': './src/composables/useBoFlags.ts',
         },
         shared: {
           vue: {

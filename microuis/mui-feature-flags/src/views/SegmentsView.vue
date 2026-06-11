@@ -79,6 +79,18 @@ async function handleSave(payload: SegmentPayload): Promise<void> {
   }
 }
 
+async function handleSaveTestContext(payload: SegmentPayload): Promise<void> {
+  if (!editingSegment.value) return
+  try {
+    const updated = await updateSegment(editingSegment.value.id, payload)
+    editingSegment.value = updated
+    toast.success('Test context saved')
+    await loadSegments()
+  } catch (err) {
+    toast.error(extractErrorMessage(err))
+  }
+}
+
 function handleCancel(): void {
   showForm.value = false
   editingSegment.value = null
@@ -131,6 +143,7 @@ function openCreateForm(): void {
       ref="formRef"
       :segment="editingSegment ?? undefined"
       @save="handleSave"
+      @save-test-context="handleSaveTestContext"
       @cancel="handleCancel"
     />
 

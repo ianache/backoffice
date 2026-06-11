@@ -2,6 +2,7 @@
 import { ref, watch } from 'vue'
 import type { Segment, SegmentPayload, RuleSchema } from '../../services/flags'
 import RuleCard from './RuleCard.vue'
+import RuleSimulator from './RuleSimulator.vue'
 
 // ---------------------------------------------------------------------------
 // Props & Emits
@@ -14,6 +15,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   save: [payload: SegmentPayload]
   cancel: []
+  'save-test-context': [payload: SegmentPayload]
 }>()
 
 // ---------------------------------------------------------------------------
@@ -86,7 +88,7 @@ function removeCondition(index: number): void {
 // Submit
 // ---------------------------------------------------------------------------
 
-function handleSubmit(): void {
+function buildPayload(): SegmentPayload {
   const payload: SegmentPayload = {
     name: form.value.name.trim(),
     description: form.value.description.trim() || undefined,
@@ -110,7 +112,17 @@ function handleSubmit(): void {
     payload.members = []
   }
 
-  emit('save', payload)
+  return payload
+}
+
+function handleSubmit(): void {
+  emit('save', buildPayload())
+}
+
+function handleSaveTestContext(json: string): void {
+  const payload = buildPayload()
+  payload.test_context = json
+  emit('save-test-context', payload)
 }
 
 // ---------------------------------------------------------------------------
@@ -216,6 +228,13 @@ defineExpose({ reset })
           No conditions added. Add at least one condition for a rule-based segment.
         </p>
       </div>
+
+      <RuleSimulator
+        :rules="form.conditions"
+        mode="segment"
+        :test-context="props.segment?.test_context"
+        @save-test-context="handleSaveTestContext"
+      />
     </template>
 
     <!-- Actions -->

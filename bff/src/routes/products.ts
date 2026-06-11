@@ -10,8 +10,9 @@ productsRouter.use(
   createProxyMiddleware({
     target: config.backendUrl,
     changeOrigin: true,
-    // Express strips '/products' prefix; rewrite to /api/v1/products so backend sees correct path
-    pathRewrite: (path) => `/api/v1/products${path}`,
+    // Express strips '/products' prefix; rewrite to /products so backend sees correct path
+    // (backend mounts products_router at /products, same convention as /tenants)
+    pathRewrite: (path) => `/products${path}`,
     on: {
       proxyReq: (proxyReq, req) => {
         proxyReq.setHeader('X-Internal-Secret', config.internalSecret)

@@ -2,17 +2,17 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: MVP2
-current_plan: Completed 12-03-PLAN.md
-status: completed
-stopped_at: Phase 13 planned (4 plans, verification passed)
-last_updated: "2026-06-11T18:10:55.040Z"
+current_plan: 3
+status: executing
+stopped_at: Completed 13-01-PLAN.md
+last_updated: "2026-06-11T18:42:21.731Z"
 last_activity: 2026-06-11
 progress:
   total_phases: 14
   completed_phases: 13
   total_plans: 64
-  completed_plans: 60
-  percent: 100
+  completed_plans: 62
+  percent: 97
 ---
 
 # Project State
@@ -26,14 +26,14 @@ See: .planning/PROJECT.md (updated 2026-06-07)
 
 ## Current Position
 
-Phase: 12 of 12 (Dogfooding Feature Flags)
-**Current Plan:** Completed 12-03-PLAN.md
-**Total Plans in Phase:** 3
-**Status:** Milestone complete
+Phase: 13 of 14 (Simulator Test Contexts)
+**Current Plan:** 3
+**Total Plans in Phase:** 4
+**Status:** Ready to execute
 **Last Activity:** 2026-06-11
-Last activity detail: 2026-06-11 — Completed Phase 12 (Dogfooding Feature Flags). Created useBoFlags composable, gated the navigation menu items, Create Flag button, and Edit/Clone actions in FlagTable, and verified behavior with Vitest tests.
+Last activity detail: 2026-06-11 — Completed 13-02-PLAN.md (useUserContext composable + Module Federation wiring for SIM-03). Auth store gained real JWT `sub` claim; new useUserContext() exposed via shell/useUserContext for mui-feature-flags consumption in Plan 13-03.
 
-**Progress:** [██████████] 100%
+**Progress:** [██████████] 97%
 
 ## Performance Metrics
 
@@ -76,6 +76,8 @@ Last activity detail: 2026-06-11 — Completed Phase 12 (Dogfooding Feature Flag
 | Phase 11-mui-feature-flags-sdk-clients P09 | 16min | 3 tasks | 7 files |
 | Phase 11-mui-feature-flags-sdk-clients P10 | 8min | 2 tasks | 5 files |
 | Phase 11-mui-feature-flags-sdk-clients P08 | 10min | 3 tasks | 8 files |
+| Phase 13-simulator-test-contexts P02 | 12min | 3 tasks | 6 files |
+| Phase 13-simulator-test-contexts P01 | 12min | 3 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -152,6 +154,12 @@ Recent decisions affecting v1.1:
 - [Phase 11-mui-feature-flags-sdk-clients]: [11-08]: ReconnectingSocket attempt counter resets to 0 on successful onopen - backoff restarts from 1s after a stable connection drops
 - [Phase 11-mui-feature-flags-sdk-clients]: [11-08]: TelemetryBatcher.flush() swallows fetch errors - failed batches dropped rather than retried/requeued (acceptable telemetry tradeoff)
 - [Phase 11-mui-feature-flags-sdk-clients]: [11-08]: client.test.ts/cache.test.ts now stub WebSocket/navigator/window globals since initialize() constructs ReconnectingSocket and TelemetryBatcher as side effects
+- [Phase 13-02]: useUserContext exposes both real JWT sub and email as separate keys (not collapsing sub into email like existing main.ts useBoFlags init pattern)
+- [Phase 13-02]: product_id hardcoded to 'backoffice' per CONTEXT.md dogfooding decision
+- [Phase 13-02]: useUserContext reuses the existing shared pinia singleton - no new shared dependency entry needed in vite.config.ts
+- [Phase 13-simulator-test-contexts]: [13-01]: test_context stored as sa.Text() (not sa.JSON()) - MySQL 5.6 has no native JSON type, matches rules/tags/conditions/members precedent
+- [Phase 13-simulator-test-contexts]: [13-01]: Single additive migration (no 3-step expand/backfill/cleanup) - purely additive nullable column, no data backfill needed
+- [Phase 13-simulator-test-contexts]: [13-01]: test_context excluded from parse_text_fields()/parse_json_fields() model_validators - JSON object string passed through verbatim, not a JSON array needing deserialization
 
 ### Pending Todos
 
@@ -165,6 +173,6 @@ Recent decisions affecting v1.1:
 
 ## Session Continuity
 
-**Last session:** 2026-06-11T18:10:55.031Z
-**Stopped At:** Phase 13 planned (4 plans, verification passed)
-**Resume File:** .planning/phases/13-simulator-test-contexts/13-01-PLAN.md
+**Last session:** 2026-06-11T18:42:21.721Z
+**Stopped At:** Completed 13-01-PLAN.md
+**Resume File:** None

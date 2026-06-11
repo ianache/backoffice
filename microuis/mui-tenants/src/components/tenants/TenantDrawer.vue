@@ -18,6 +18,7 @@ const defaultPayload: TenantPayload = {
   name: '',
   country: 'ES',
   status: 'active',
+  owner: '',
   default_language: 'es',
   default_currency: 'EUR',
   default_units: 'metric',

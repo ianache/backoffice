@@ -14,7 +14,7 @@ def test_tenant_create_schema_defaults():
     }
     schema = TenantCreate(**payload)
     assert schema.status == "active"
-    assert schema.products == []
+    assert schema.owner is None
     assert schema.country == "PE"
     assert schema.default_currency == "PEN"
 
@@ -23,7 +23,7 @@ def test_tenant_model_fields():
     assert hasattr(tenant, "id")
     assert hasattr(tenant, "name")
     assert hasattr(tenant, "status")
-    assert hasattr(tenant, "products")
+    assert hasattr(tenant, "owner")
 
 def test_tenant_validation_success_normalization():
     # Test lowercase values are normalized to standard formats (uppercase for country and currency)

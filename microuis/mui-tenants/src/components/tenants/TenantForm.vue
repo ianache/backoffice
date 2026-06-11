@@ -80,6 +80,12 @@ const toggleProduct = (product: string) => {
         required
       />
 
+      <StitchTextField
+        v-model="formData.owner"
+        label="Owner"
+        placeholder="e.g. John Doe"
+      />
+
       <div class="form-row">
         <md-outlined-select
           label="Country"

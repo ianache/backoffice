@@ -41,6 +41,7 @@ class TenantCreate(BaseModel):
     default_currency: str
     default_units: str
     status: str = "active"
+    owner: Optional[str] = None
     # Whitelabel fields — all optional
     logo_url: Optional[str] = None
     primary_color: Optional[str] = None
@@ -73,6 +74,7 @@ class TenantUpdate(BaseModel):
     default_currency: Optional[str] = None
     default_units: Optional[str] = None
     status: Optional[str] = None
+    owner: Optional[str] = None
     logo_url: Optional[str] = None
     primary_color: Optional[str] = None
     secondary_color: Optional[str] = None

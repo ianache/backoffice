@@ -13,7 +13,8 @@ class Tenant(Base):
     default_currency: Mapped[str] = mapped_column(String(3), nullable=False)
     default_units: Mapped[str] = mapped_column(String(10), nullable=False)
     status: Mapped[str] = mapped_column(String(20), default="active", server_default="active", nullable=False)
-    
+    owner: Mapped[str | None] = mapped_column(String(255), nullable=True)
+
     # Whitelabel fields
     logo_url: Mapped[str | None] = mapped_column(String(500), nullable=True)
     primary_color: Mapped[str | None] = mapped_column(String(20), nullable=True)

@@ -51,15 +51,13 @@ const toggleMenu = (id: number) => {
   activeMenu.value = activeMenu.value === id ? null : id
 }
 
-const mockOwners: Record<string, { name: string; initials: string; bg: string; text: string; border: string }> = {
-  "Acme Global": { name: "John Doe", initials: "JD", bg: "bg-primary-fixed", text: "text-on-primary-fixed", border: "border-primary-container" },
-  "Stellar Ventures": { name: "Sarah Miller", initials: "SM", bg: "bg-tertiary-fixed", text: "text-on-tertiary-fixed", border: "border-tertiary-container" },
-  "TechX Systems": { name: "Alex Kim", initials: "AK", bg: "bg-surface-dim", text: "text-on-surface-variant", border: "border-outline" },
-  "Hyperion Data": { name: "Lisa Wang", initials: "LW", bg: "bg-primary-fixed", text: "text-on-primary-fixed", border: "border-primary-container" }
-}
-
-const getOwner = (tenantName: string) => {
-  return mockOwners[tenantName] || { name: "John Doe", initials: "JD", bg: "bg-primary-fixed", text: "text-on-primary-fixed", border: "border-primary-container" }
+const ownerInitials = (owner: string) => {
+  return owner
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map(w => w[0].toUpperCase())
+    .join('')
 }
 </script>
 
@@ -165,12 +163,13 @@ const getOwner = (tenantName: string) => {
             </td>
             <!-- Owner -->
             <td :class="['px-lg', isCompact ? 'py-sm' : 'py-md']">
-              <div class="flex items-center gap-xs">
-                <div :class="['w-6 h-6 rounded-full border flex items-center justify-center text-[10px] font-bold shrink-0', getOwner(tenant.name).bg, getOwner(tenant.name).text, getOwner(tenant.name).border]">
-                  {{ getOwner(tenant.name).initials }}
+              <div v-if="tenant.owner" class="flex items-center gap-xs">
+                <div class="w-6 h-6 rounded-full border border-primary-container bg-primary-fixed text-on-primary-fixed flex items-center justify-center text-[10px] font-bold shrink-0">
+                  {{ ownerInitials(tenant.owner) }}
                 </div>
-                <span class="text-body-md">{{ getOwner(tenant.name).name }}</span>
+                <span class="text-body-md">{{ tenant.owner }}</span>
               </div>
+              <span v-else class="text-body-md text-on-surface-variant">—</span>
             </td>
             <!-- Actions -->
             <td :class="['px-lg text-right', isCompact ? 'py-sm' : 'py-md']">

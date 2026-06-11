@@ -5,6 +5,7 @@ export interface Tenant {
   name: string
   country: string
   status: 'active' | 'suspended'
+  owner?: string
   default_language: string
   default_currency: string
   default_units: string

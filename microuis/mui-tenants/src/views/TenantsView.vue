@@ -26,6 +26,17 @@ const confirmDialog = ref({
 const activeCount = computed(() => tenantsStore.tenants.filter(t => t.status === 'active').length)
 const uniqueProductCount = computed(() => new Set(tenantsStore.tenants.flatMap(t => t.products || [])).size)
 
+const newLast30Days = computed(() => {
+  const cutoff = Date.now() - 30 * 24 * 60 * 60 * 1000
+  return tenantsStore.tenants.filter(t => new Date(t.created_at).getTime() >= cutoff).length
+})
+
+const activeRate = computed(() => {
+  const total = tenantsStore.tenants.length
+  if (total === 0) return 0
+  return Math.round((activeCount.value / total) * 1000) / 10
+})
+
 onMounted(() => {
   tenantsStore.fetchTenants()
 })
@@ -131,9 +142,9 @@ const handleConfirm = async () => {
         <div class="flex items-center gap-sm">
           <span class="text-body-md font-bold text-green-600 flex items-center gap-0.5">
             <span class="material-symbols-outlined icon-sm leading-none">trending_up</span>
-            +12%
+            +{{ newLast30Days }}
           </span>
-          <p class="text-label-md text-on-surface-variant">vs last month</p>
+          <p class="text-label-md text-on-surface-variant">new in last 30 days</p>
         </div>
       </div>
 
@@ -160,15 +171,15 @@ const handleConfirm = async () => {
         <div class="accent-bar bg-primary"></div>
         <div class="flex justify-between items-start mb-md">
           <div>
-            <p class="text-label-sm font-bold uppercase tracking-wider text-on-surface-variant mb-xs">System Health</p>
-            <h3 class="text-headline-lg font-semibold text-on-surface">99.98%</h3>
+            <p class="text-label-sm font-bold uppercase tracking-wider text-on-surface-variant mb-xs">Active Rate</p>
+            <h3 class="text-headline-lg font-semibold text-on-surface">{{ activeRate }}%</h3>
           </div>
           <div class="p-sm bg-surface-container-high rounded-lg">
             <span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1">check_circle</span>
           </div>
         </div>
         <div class="w-full bg-surface-container-high h-1.5 rounded-full overflow-hidden">
-          <div class="bg-primary h-full" style="width: 99.98%"></div>
+          <div class="bg-primary h-full" :style="{ width: activeRate + '%' }"></div>
         </div>
       </div>
     </div>

@@ -120,7 +120,8 @@ function cancel(): void {
         </div>
 
         <!-- Rule Blocks Canvas -->
-        <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg space-y-gutter relative overflow-hidden">
+        <!-- space-y-lg = 24px = Stitch's "gutter" token (not defined in our Tailwind configs) -->
+        <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg space-y-lg relative overflow-hidden">
           <!-- Dotted grid background (decorative) -->
           <div class="absolute inset-0 opacity-[0.03] pointer-events-none"
             style="background-image: radial-gradient(#005bbf 0.5px, transparent 0.5px); background-size: 20px 20px;">
@@ -141,12 +142,14 @@ function cancel(): void {
             handle=".drag-handle"
             :animation="200"
             ghost-class="rule-card--ghost"
-            class="relative z-10 space-y-gutter"
+            class="relative z-10 space-y-lg"
           >
             <template #item="{ element, index }">
               <div>
                 <!-- AND connector between cards (not before first) -->
-                <div v-if="index > 0" class="flex justify-center relative -my-2 z-20 pointer-events-none">
+                <!-- -mt-4 +mb-sm replicate Stitch metrics: connector line clears 8px from the
+                     card above (24px space-y minus 16px pull-up) and 8px from the card below -->
+                <div v-if="index > 0" class="flex justify-center relative -mt-4 mb-sm z-20 pointer-events-none">
                   <div class="w-px h-12 bg-outline-variant"></div>
                   <div class="absolute top-1/2 -translate-y-1/2 bg-white px-md py-xs rounded-full border border-outline-variant shadow-sm font-label-lg text-label-lg text-primary font-bold select-none">
                     AND

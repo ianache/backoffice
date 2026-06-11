@@ -23,6 +23,7 @@ export interface FeatureFlag {
   rollout: number         // 0-100 display only in Phase 4 (FLAG-07 deferred)
   rules: RuleSchema[]
   tags: string[]
+  test_context: string | null
   created_by: string | null
   created_at: string
   updated_at: string
@@ -43,6 +44,7 @@ export interface FlagPayload {
   rollout?: number
   rules?: RuleSchema[]
   tags?: string[]
+  test_context?: string
 }
 
 export interface FlagFilters {
@@ -58,6 +60,7 @@ export interface Segment {
   members: string[]       // array of user UUIDs
   type: 'manual' | 'rule_based'
   conditions: RuleSchema[]
+  test_context: string | null
   flag_count: number
   created_at: string
   updated_at: string
@@ -70,6 +73,7 @@ export interface SegmentPayload {
   members?: string[]
   type?: 'manual' | 'rule_based'
   conditions?: RuleSchema[]
+  test_context?: string
 }
 
 // Flags

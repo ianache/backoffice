@@ -264,6 +264,7 @@ async def update_segment(
     segment.members = json.dumps(payload.members) if payload.members else None
     segment.type = payload.type
     segment.conditions = json.dumps([c.model_dump() for c in payload.conditions]) if payload.conditions else None
+    segment.test_context = payload.test_context
     await db.commit()
     await db.refresh(segment)
     return segment

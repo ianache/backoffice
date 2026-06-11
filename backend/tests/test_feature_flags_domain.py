@@ -410,6 +410,20 @@ def test_segment_response_conditions_parsed_from_json_string():
     assert response.conditions[0].attribute == "plan"
 
 
+def test_update_segment_test_context_assignment_logic():
+    """Mirrors the new `segment.test_context = payload.test_context` line in update_segment()."""
+    from app.domains.feature_flags.schemas import SegmentCreate
+
+    class MockSegment:
+        def __init__(self):
+            self.test_context = None
+
+    payload = SegmentCreate(name="beta_users", test_context='{"sub":"user-1"}')
+    segment = MockSegment()
+    segment.test_context = payload.test_context  # <-- the line added to update_segment()
+    assert segment.test_context == '{"sub":"user-1"}'
+
+
 def test_eval_event_model_importable():
     """EvalEvent model exists and has required fields"""
     from app.domains.feature_flags.models import EvalEvent

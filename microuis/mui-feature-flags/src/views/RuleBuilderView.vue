@@ -7,6 +7,7 @@ import type { RuleSchema } from '../services/flags'
 import RuleCard from '../components/flags/RuleCard.vue'
 import RuleSimulator from '../components/flags/RuleSimulator.vue'
 import StitchButton from 'shell/StitchButton'
+import { useToastStore, extractErrorMessage } from 'shell/toastStore'
 
 interface RuleLocal extends RuleSchema {
   _id: string
@@ -15,6 +16,7 @@ interface RuleLocal extends RuleSchema {
 const route = useRoute()
 const router = useRouter()
 const store = useFeatureFlagsStore()
+const toast = useToastStore()
 
 const flagId = computed(() => Number(route.params.id))
 const flag = computed(() => store.flags.find(f => f.id === flagId.value) ?? null)
@@ -65,6 +67,15 @@ async function saveChanges(): Promise<void> {
     router.push({ name: 'flags' })
   } finally {
     isSaving.value = false
+  }
+}
+
+async function handleSaveTestContext(json: string): Promise<void> {
+  try {
+    await store.updateFlag(flagId.value, { test_context: json })
+    toast.success('Test context saved')
+  } catch (err) {
+    toast.error(extractErrorMessage(err))
   }
 }
 
@@ -182,7 +193,12 @@ function cancel(): void {
 
       <!-- Right Column: Simulator sidebar (4 cols) -->
       <div class="col-span-12 lg:col-span-4 space-y-lg">
-        <RuleSimulator :rules="localRules" />
+        <RuleSimulator
+          :rules="localRules"
+          mode="flag"
+          :test-context="flag?.test_context"
+          @save-test-context="handleSaveTestContext"
+        />
       </div>
     </div>
   </div>

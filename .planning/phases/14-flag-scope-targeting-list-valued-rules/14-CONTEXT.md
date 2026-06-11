@@ -1,18 +1,62 @@
 # Phase 14: Flag Scope Targeting + List-Valued Rules — Context
 
 **Gathered:** 2026-06-11
-**Status:** Spec captured at phase creation (no discuss session yet)
+**Status:** Ready for planning
 
 <domain>
 ## Phase Boundary
 
 Dos capacidades sobre feature flags:
 
-1. **Scope targeting**: al crear/editar un feature flag, cuando el `scope` seleccionado sea `product`, `tenant` o `company`, el formulario muestra un **combobox** para seleccionar el producto/tenant/company específico al que aplica el flag. La selección se **almacena en backend**. El **SDK** (bootstrap + evaluación local y remota) activa o desactiva el flag según el scope+target definidos.
+1. **Scope targeting**: al crear/editar un feature flag, cuando el `scope` seleccionado sea `product`, `tenant` o `company`, el formulario muestra un **combobox** para seleccionar la entidad específica a la que aplica el flag. La selección se **almacena en backend** (las columnas `tenant_id`/`product_id`/`company_id` ya existen). El **SDK** (bootstrap + evaluación local y remota) activa o desactiva el flag según el scope+target definidos. Incluye un **catálogo Companies con CRUD mínimo** (la entidad no existe hoy).
 
-2. **List-valued rule values**: en el editor de Rules del Rule Builder, cuando el `attribute` del contexto referencia una propiedad que es una **lista** (ej. `roles`), el `value` de la Rule puede indicarse como **lista de valores separados por coma** (ej. `PlatformAdmin, TenantOwner`), haciendo match si **cualquiera** de los valores aplica — evita crear una regla por cada valor específico de la lista.
+2. **List-valued rule values**: nuevo operador **`anyOf`** en el Rule Builder — el `value` de la Rule se escribe como lista separada por coma (ej. `PlatformAdmin, TenantOwner`) y hace match si **cualquiera** de los valores aplica contra la propiedad del contexto (lista o escalar). Paridad en los 4 evaluadores: backend OPERATORS, sdk-js, sdk-python, useRuleSimulator.ts.
 
 </domain>
+
+<decisions>
+## Implementation Decisions
+
+### Catálogo Companies (nueva entidad)
+- **Nuevo catálogo Companies con CRUD mínimo** — no texto libre ni derivación de tenants.
+- Modelo: **id slug** (alfanumérico definido por usuario, es lo que se guarda en `flags.company_id`) + **name** + **status** (active/inactive) + **tenant_id** — mismo patrón que Products (Fase 7).
+- **Una company pertenece a un tenant**: TenantAdmin/TenantOwner ven y administran solo las companies de su tenant; PlatformAdmin ve todas.
+- Permisos: **PlatformAdmin + TenantAdmin/TenantOwner** pueden administrar companies (con el aislamiento por tenant anterior).
+- UI de administración: **en mui-tenants, ruta `/companies`** — replica el patrón Products (vista + tabla + drawer), nav en el Shell.
+
+### Comboboxes de target en FlagForm
+- Fuentes: **tenants y products desde los endpoints existentes** (`GET /tenants/`, `GET /products/` vía BFF) — mui-feature-flags crea sus propios services HTTP, sin compartir stores entre remotes. Companies desde el nuevo endpoint del catálogo.
+- Etiquetas de opción: **nombre + id visible** (ej. "Acme Corp (acme)", "Tenant Alfa (#12)") — el id es lo que se persiste y compara el SDK.
+- Products: **solo activos** (status=active), consistente con TenantForm de Fase 10. Companies: solo activas.
+- **Target obligatorio** cuando el scope es product/tenant/company — el formulario valida y no permite guardar sin selección.
+- **Al cambiar el scope se limpia el target anterior** — `product_id`/`tenant_id`/`company_id` mutuamente excluyentes en el payload (los otros dos viajan null).
+
+### Enforcement en SDK y retrocompatibilidad
+- **Doble capa**: `GET /sdk/bootstrap` filtra por target coincidente (tenant/product del cliente SDK) **y** los 4 evaluadores comparan también (en particular `company_id`, que es por-contexto/usuario, no por-cliente SDK — solo puede verificarse en evaluación).
+- **Flags legacy** (scope no-global sin target): **comportamiento actual sin cambio** — no breaking change, no fail-closed; al editarlos en el form, se exigirá seleccionar target.
+
+### Operador anyOf (match de listas)
+- **Nuevo operador `anyOf`** — no se modifica la semántica de `in` ni `contains` existentes (cero regresión).
+- Semántica: contexto **lista** → match si la intersección con el value no es vacía; contexto **escalar** → match si pertenece a la lista del value. Cubre ambos casos.
+- Normalización: **trim de espacios** alrededor de cada valor al parsear; comparación **case-sensitive** (roles Keycloak son case-sensitive).
+- Persistencia: el value se guarda como **array JSON real** (`["PlatformAdmin","TenantOwner"]`) — el UI parsea las comas al guardar; los evaluadores reciben lista tipada sin re-parsear.
+- **Aditivo**: las reglas existentes con `in` quedan intactas; no hay migración de datos de reglas.
+- Paridad obligatoria en 4 evaluadores: `backend/app/domains/feature_flags/service.py` (OPERATORS), `sdk/sdk-js/src/evaluator.ts`, `sdk/sdk-python` evaluator.py, `microuis/mui-feature-flags/src/composables/useRuleSimulator.ts`.
+
+### UX del value como lista
+- Edición: **input de texto con comas** ("PlatformAdmin, TenantOwner") en el mismo input actual de RuleCard; se parsea a array al guardar. Sin chips de entrada.
+- Visualización: en la regla guardada (RuleCard) y en "Matched Rule" del simulador, el array se muestra como **mini-chips de solo lectura** (un chip por valor).
+- `anyOf` **siempre disponible** en el dropdown de operadores — sin detección de tipo del attribute.
+
+### Claude's Discretion
+- Nombre/copy exacto del operador en el dropdown (ej. "any of (comma-separated)").
+- Diseño visual exacto de los mini-chips (puede inspirarse en ChipTagInput/chips existentes).
+- Estructura exacta del router/service/schemas del catálogo Companies (seguir patrón Products).
+- Migración Alembic para la tabla `companies` (head actual: `d002`; la nueva sería `d003`).
+- Si el value con un solo elemento se guarda como array de 1 (recomendado: sí, shape uniforme).
+- Manejo de errores y estados vacíos de los comboboxes (catálogo vacío → mensaje y link a /companies o /products).
+
+</decisions>
 
 <specifics>
 ## User specification (verbatim intent)
@@ -24,37 +68,37 @@ Dos capacidades sobre feature flags:
 </specifics>
 
 <code_context>
-## Existing Code Insights (known at phase creation, verify at research time)
+## Existing Code Insights (verificado en scouting 2026-06-11)
 
-### Scope targeting
-- `feature_flags` ya tiene columnas `scope`, `tenant_id`, `product_id` — el modelo soporta parcialmente targets; falta `company` y la UI de selección. Verificar en research qué existe para `company` (¿columna nueva?).
-- Fuentes para los comboboxes: productos vía `GET /products/` (catálogo Fase 7, store en mui-tenants — mui-feature-flags necesitaría su propio service o uno compartido); tenants vía `GET /tenants/`; **company**: verificar si existe entidad/endpoint — puede requerir definición (¿claim del token? ¿catálogo nuevo?).
-- Enforcement actual del SDK: `bootstrap_flags()` en `backend/app/domains/sdk/service.py` ya post-filtra por scope/tenant/product — extender para el target persistido y para `company`. `evaluate_flag()` backend + evaluadores sdk-js/sdk-python evalúan desde el snapshot.
-- `FlagForm.vue` (mui-feature-flags) es donde se selecciona el scope hoy.
+### Reusable Assets
+- `backend/app/domains/feature_flags/models.py:14-17` — `scope` ya admite `global|tenant|product|company` y las columnas `tenant_id`, `product_id`, `company_id` (String(100) nullable) **ya existen**; no se necesita migración para el target de flags. Solo falta UI + enforcement consistente.
+- `backend/app/domains/feature_flags/service.py:58-70` — `evaluate_flag()` ya prioriza company(4)>product(3)>tenant(2)>global(1) y compara `flag.company_id == context.get('company_id')` — base del enforcement en evaluación.
+- `backend/app/domains/sdk/service.py` `bootstrap_flags()` — post-filtra por scope/tenant/product; extender para respetar target estricto (y decidir el paso de company al snapshot).
+- Patrón Products (Fase 7): models/schemas/service/router + ProductTable/ProductDrawer/ProductsView en mui-tenants — molde directo para Companies.
+- `microuis/mui-feature-flags/src/components/flags/FlagForm.vue:19-131` — select de scope existente; aquí se insertan los comboboxes condicionales.
+- OPERATORS canónico en `service.py:23-27`: `in` = `actual in expected` (escalar∈lista), `contains` = substring — confirma que ninguno hace lista-vs-lista; `anyOf` es nuevo.
+- `ChipTagInput.vue` (mui-feature-flags, Fase 11) — referencia visual para los mini-chips de solo lectura.
+- Head Alembic actual: `d002` (test_context) → la tabla `companies` sería `d003`.
 
-### List-valued rule values
-- OPERATORS canónico en `backend/app/domains/feature_flags/service.py` (equals, notEquals, contains, in, greaterThan, lessThan, etc. — verificar set exacto y semántica actual de `in`/`contains` con listas en ambos lados).
-- Paridad requerida en 4 evaluadores: backend OPERATORS, `sdk/sdk-js/src/evaluator.ts`, `sdk/sdk-python` evaluator.py, `microuis/mui-feature-flags/src/composables/useRuleSimulator.ts`.
-- UI: `RuleCard.vue` edita attribute/operator/value — el value como string separado por coma con parsing/chips es decisión de UX a discutir.
-- Caso de uso concreto: attribute `roles` (lista en el contexto, ver `useUserContext` Fase 13) + value `PlatformAdmin, TenantOwner` → match si intersección no vacía (match-any).
+### Established Patterns
+- Slug inmutable definido por usuario como PK (Product.id, VARCHAR 50) — replicar en Company.id.
+- IntegrityError capturado en router (409), service puro — patrón Fase 7 para el CRUD Companies.
+- BFF proxy por dominio (`bff/src/routes/products.ts` con pathRewrite `/products${path}`) — nuevo route análogo para `/companies`.
+- Paridad de operadores entre 4 evaluadores ya ejercitada en Fase 11 (greaterThan/lessThan) — mismo checklist para `anyOf`.
+
+### Integration Points
+- `FlagForm.vue` + `FlagDrawer.vue` — comboboxes condicionales por scope, validación target obligatorio, limpieza al cambiar scope.
+- `backend/app/domains/feature_flags/schemas.py` — validación server-side: scope no-global requiere su id correspondiente (en create/update nuevos; legacy intocado).
+- `bootstrap_flags()` + evaluadores sdk-js/sdk-python + `useRuleSimulator.ts` — enforcement doble capa y operador anyOf.
+- Shell `MainLayout.vue` + `mui-tenants/src/routes.ts` — nav y ruta `/companies`.
 
 </code_context>
-
-<decisions>
-## Open questions for discuss/planning
-
-1. **Company**: ¿existe la entidad company hoy (BD/endpoint/claim)? Si no, ¿de dónde sale el catálogo del combobox y qué se persiste?
-2. **Modelo de target**: ¿reutilizar `tenant_id`/`product_id` existentes + nueva columna `company_id`, o una columna genérica `scope_target`? ¿Migración d003?
-3. **Semántica del match de listas**: ¿nuevo operador (ej. `intersects`/`anyOf`) o extender `in`/`contains` para lista-vs-lista? Impacta paridad en 4 evaluadores.
-4. **UX del value como lista**: ¿input texto con comas tal cual, o chips (patrón ChipTagInput existente)? ¿Trim de espacios, case-sensitivity?
-5. **Retrocompatibilidad**: flags existentes con scope no-global sin target — ¿qué hace el SDK (fail-open/closed)?
-
-</decisions>
 
 <deferred>
 ## Deferred Ideas
 
-- Ninguna por ahora.
+- Companies con campos extendidos (description, labels) y paridad completa con Products — si el CRUD mínimo queda corto.
+- Migración/deprecación del operador `in` hacia `anyOf` — decidido aditivo en esta fase; unificación queda para futuro.
 
 </deferred>
 

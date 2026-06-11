@@ -2,17 +2,17 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: MVP2
-current_plan: 3
+current_plan: 4
 status: executing
-stopped_at: Completed 13-01-PLAN.md
-last_updated: "2026-06-11T18:42:21.731Z"
+stopped_at: Completed 13-03-PLAN.md
+last_updated: "2026-06-11T18:48:50.684Z"
 last_activity: 2026-06-11
 progress:
   total_phases: 14
   completed_phases: 13
   total_plans: 64
-  completed_plans: 62
-  percent: 97
+  completed_plans: 63
+  percent: 98
 ---
 
 # Project State
@@ -27,13 +27,13 @@ See: .planning/PROJECT.md (updated 2026-06-07)
 ## Current Position
 
 Phase: 13 of 14 (Simulator Test Contexts)
-**Current Plan:** 3
+**Current Plan:** 4
 **Total Plans in Phase:** 4
 **Status:** Ready to execute
 **Last Activity:** 2026-06-11
 Last activity detail: 2026-06-11 — Completed 13-02-PLAN.md (useUserContext composable + Module Federation wiring for SIM-03). Auth store gained real JWT `sub` claim; new useUserContext() exposed via shell/useUserContext for mui-feature-flags consumption in Plan 13-03.
 
-**Progress:** [██████████] 97%
+**Progress:** [██████████] 98%
 
 ## Performance Metrics
 
@@ -78,6 +78,7 @@ Last activity detail: 2026-06-11 — Completed 13-02-PLAN.md (useUserContext com
 | Phase 11-mui-feature-flags-sdk-clients P08 | 10min | 3 tasks | 8 files |
 | Phase 13-simulator-test-contexts P02 | 12min | 3 tasks | 6 files |
 | Phase 13-simulator-test-contexts P01 | 12min | 3 tasks | 5 files |
+| Phase 13-simulator-test-contexts P03 | 8min | 3 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -160,6 +161,8 @@ Recent decisions affecting v1.1:
 - [Phase 13-simulator-test-contexts]: [13-01]: test_context stored as sa.Text() (not sa.JSON()) - MySQL 5.6 has no native JSON type, matches rules/tags/conditions/members precedent
 - [Phase 13-simulator-test-contexts]: [13-01]: Single additive migration (no 3-step expand/backfill/cleanup) - purely additive nullable column, no data backfill needed
 - [Phase 13-simulator-test-contexts]: [13-01]: test_context excluded from parse_text_fields()/parse_json_fields() model_validators - JSON object string passed through verbatim, not a JSON array needing deserialization
+- [Phase 13-simulator-test-contexts]: [13-03]: Real-context mapping uses useUserContext()'s exact key names (sub, email, roles, tenant_id, product_id) with no renaming - matches Phase 12 dogfooding rule attribute names
+- [Phase 13-simulator-test-contexts]: [13-03]: contextJson initialization uses props.testContext || PLACEHOLDER_CONTEXT (truthy check) so empty-string saved contexts also fall back to placeholder
 
 ### Pending Todos
 
@@ -173,6 +176,6 @@ Recent decisions affecting v1.1:
 
 ## Session Continuity
 
-**Last session:** 2026-06-11T18:42:21.721Z
-**Stopped At:** Completed 13-01-PLAN.md
+**Last session:** 2026-06-11T18:48:50.674Z
+**Stopped At:** Completed 13-03-PLAN.md
 **Resume File:** None

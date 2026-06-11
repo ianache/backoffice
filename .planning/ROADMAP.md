@@ -169,7 +169,7 @@ Plans:
 **Goal**: El "Test Context" del Live Simulator en el Rule Builder deja de ser efímero: (1) al editarlo se puede **guardar en base de datos asociado al flag/regla** como ejemplo de prueba persistente, recuperado automáticamente al reabrir el editor (sirve para futuros ajustes de la regla); (2) un **Toggle "usar mi contexto real"** reemplaza el ejemplo por los valores reales de las propiedades del usuario logeado (sub, roles, tenant_id, etc.) para validar la regla contra el caso real, no solo contra ejemplos sintéticos. Aplica tanto al Rule Builder de flags como a la edición de segmentos rule-based (RuleSimulator es compartido).
 **Requirements**: SIM-01, SIM-02, SIM-03, SIM-04
 **Depends on:** Phase 12
-**Plans:** 2/4 plans executed
+**Plans:** 3/4 plans executed
 
 Plans:
 - [ ] 13-01-PLAN.md — Backend: Alembic migration d002 (test_context column on feature_flags + segments) + schema/service changes

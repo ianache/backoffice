@@ -44,6 +44,7 @@ export default defineConfig(({ mode }) => {
           './toastStore': './src/stores/toast.ts',
           './api': './src/services/api.ts',
           './boFlags': './src/composables/useBoFlags.ts',
+          './useUserContext': './src/composables/useUserContext.ts',
         },
         shared: {
           vue: {

@@ -28,3 +28,13 @@ declare module 'shell/boFlags' {
     destroy: () => void
   }
 }
+declare module 'shell/useUserContext' {
+  export interface UserContext {
+    sub: string
+    email: string
+    roles: string[]
+    tenant_id: string
+    product_id: string
+  }
+  export function useUserContext(): UserContext
+}

@@ -39,6 +39,7 @@ class FlagUpdate(BaseModel):
     rollout: Optional[int] = None
     rules: Optional[List[RuleSchema]] = None
     tags: Optional[List[str]] = None
+    test_context: Optional[str] = None
 
 
 class FlagResponse(BaseModel):
@@ -57,6 +58,7 @@ class FlagResponse(BaseModel):
     rollout: int
     rules: List[RuleSchema]
     tags: List[str]
+    test_context: Optional[str] = None
     created_by: Optional[str]
     created_at: datetime
     updated_at: datetime
@@ -91,6 +93,7 @@ class SegmentCreate(BaseModel):
     members: List[str] = []  # list of user UUIDs
     type: str = 'manual'                    # 'manual' | 'rule_based'
     conditions: List[RuleSchema] = []       # same shape as flag rules
+    test_context: Optional[str] = None
 
 
 class SegmentResponse(BaseModel):
@@ -101,6 +104,7 @@ class SegmentResponse(BaseModel):
     members: List[str] = []
     type: str = 'manual'                    # NULL DB value treated as 'manual'
     conditions: List[RuleSchema] = []       # NULL DB value treated as []
+    test_context: Optional[str] = None
     flag_count: int = 0                     # injected at query time via list_segments()
     created_at: datetime
     updated_at: datetime

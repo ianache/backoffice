@@ -289,11 +289,48 @@ def test_flag_response_empty_rules_tags():
     assert response.tags == []
 
 
+def test_flag_response_schema_includes_test_context():
+    """FlagResponse passes test_context through verbatim (raw JSON object string)"""
+    from app.domains.feature_flags.schemas import FlagResponse
+    data = {
+        "id": 1, "name": "f", "description": None, "scope": "global",
+        "tenant_id": None, "product_id": None, "company_id": None,
+        "enabled": True, "default_val": False, "complex": False, "ttl": None,
+        "environment": "production", "rollout": 100,
+        "rules": [], "tags": [], "test_context": '{"tenant_id":"x"}',
+        "created_by": None, "created_at": datetime(2026, 1, 1), "updated_at": datetime(2026, 1, 1),
+    }
+    resp = FlagResponse(**data)
+    assert resp.test_context == '{"tenant_id":"x"}'
+
+
+def test_flag_response_test_context_defaults_to_none():
+    """FlagResponse without test_context key defaults to None"""
+    from app.domains.feature_flags.schemas import FlagResponse
+    data = {
+        "id": 1, "name": "f", "description": None, "scope": "global",
+        "tenant_id": None, "product_id": None, "company_id": None,
+        "enabled": True, "default_val": False, "complex": False, "ttl": None,
+        "environment": "production", "rollout": 100,
+        "rules": [], "tags": [],
+        "created_by": None, "created_at": datetime(2026, 1, 1), "updated_at": datetime(2026, 1, 1),
+    }
+    resp = FlagResponse(**data)
+    assert resp.test_context is None
+
+
 def test_segment_create_schema_defaults():
     from app.domains.feature_flags.schemas import SegmentCreate
     seg = SegmentCreate(name="beta_users")
     assert seg.tenant_id is None
     assert seg.members == []
+
+
+def test_segment_create_schema_accepts_test_context():
+    """SegmentCreate accepts and preserves a raw JSON object string for test_context"""
+    from app.domains.feature_flags.schemas import SegmentCreate
+    seg = SegmentCreate(name="beta_users", test_context='{"roles":["beta"]}')
+    assert seg.test_context == '{"roles":["beta"]}'
 
 
 def test_rule_schema_validation():

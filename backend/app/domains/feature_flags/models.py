@@ -23,6 +23,7 @@ class FeatureFlag(Base):
     rollout: Mapped[int] = mapped_column(Integer, server_default='100', nullable=False)
     rules: Mapped[Optional[str]] = mapped_column(Text, nullable=True)   # JSON array as TEXT — MySQL 5.6 safe
     tags: Mapped[Optional[str]] = mapped_column(Text, nullable=True)    # JSON array as TEXT — MySQL 5.6 safe
+    test_context: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # JSON object as TEXT — Live Simulator saved example (Phase 13)
     created_by: Mapped[Optional[str]] = mapped_column(String(36), nullable=True)
     created_at: Mapped[datetime] = mapped_column(server_default=func.now(), nullable=False)
     updated_at: Mapped[datetime] = mapped_column(server_default=func.now(), onupdate=func.now(), nullable=False)
@@ -38,6 +39,7 @@ class Segment(Base):
     members: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # JSON array of user UUIDs as TEXT
     type: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)        # 'manual' | 'rule_based'; NULL treated as 'manual'
     conditions: Mapped[Optional[str]] = mapped_column(Text, nullable=True)        # JSON array TEXT (same shape as flag rules)
+    test_context: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # JSON object as TEXT — Live Simulator saved example (Phase 13)
     created_at: Mapped[datetime] = mapped_column(server_default=func.now(), nullable=False)
     updated_at: Mapped[datetime] = mapped_column(server_default=func.now(), onupdate=func.now(), nullable=False)
 

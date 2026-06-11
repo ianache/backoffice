@@ -13,7 +13,7 @@ const emit = defineEmits(['update:modelValue'])
 
 const formData = ref({
   ...props.modelValue,
-  products: props.modelValue.products || []
+  products: [...(props.modelValue.products || [])]
 })
 
 // Re-sync only when the parent provides a different object (drawer open / tenant switch).
@@ -24,7 +24,7 @@ watch(() => props.modelValue, (newVal) => {
   if (newVal === formData.value) return
   formData.value = {
     ...newVal,
-    products: newVal?.products || []
+    products: [...(newVal?.products || [])]
   }
 })
 

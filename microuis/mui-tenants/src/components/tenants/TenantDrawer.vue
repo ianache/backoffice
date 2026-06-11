@@ -22,7 +22,7 @@ const defaultPayload: TenantPayload = {
   default_language: 'es',
   default_currency: 'EUR',
   default_units: 'metric',
-  products: ['Core'],
+  products: [],
   logo_url: '',
   primary_color: '#2563eb',
   secondary_color: '#64748b',
@@ -38,9 +38,11 @@ watch(() => props.show, (isShowing) => {
   if (isShowing) {
     if (props.tenant) {
       const { id, created_at, ...payload } = props.tenant
-      formData.value = { ...payload }
+      // Copy the products array — sharing the store tenant's reference would let
+      // checkbox toggles mutate the store baseline and break the save diff
+      formData.value = { ...payload, products: [...(payload.products || [])] }
     } else {
-      formData.value = { ...defaultPayload }
+      formData.value = { ...defaultPayload, products: [] }
     }
     activeTab.value = 0
   }

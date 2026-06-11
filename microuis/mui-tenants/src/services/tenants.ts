@@ -46,3 +46,14 @@ export async function update(id: number, payload: Partial<TenantPayload>): Promi
 export async function remove(id: number): Promise<void> {
   await api.delete(`/tenants/${id}`)
 }
+
+// Product subscriptions live in tenant_subscriptions (since b003) and are managed
+// via dedicated endpoints — the products array in create/update payloads is ignored
+// by the backend schemas.
+export async function subscribeProduct(tenantId: number, productId: string): Promise<void> {
+  await api.post(`/tenants/${tenantId}/products/${productId}`)
+}
+
+export async function unsubscribeProduct(tenantId: number, productId: string): Promise<void> {
+  await api.delete(`/tenants/${tenantId}/products/${productId}`)
+}

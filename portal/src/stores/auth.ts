@@ -5,7 +5,7 @@ import keycloak from '../plugins/keycloak'
 export const useAuthStore = defineStore('auth', () => {
   const isAuthenticated = ref(false)
   const token = ref<string | null>(null)
-  const user = ref<{ name: string; email: string } | null>(null)
+  const user = ref<{ name: string; email: string; sub: string } | null>(null)
   const roles = ref<string[]>([])
   const isLoading = ref(true)
 
@@ -49,6 +49,7 @@ export const useAuthStore = defineStore('auth', () => {
     user.value = {
       name: keycloak.tokenParsed?.preferred_username ?? '',
       email: keycloak.tokenParsed?.email ?? '',
+      sub: keycloak.tokenParsed?.sub ?? '',
     }
   }
 

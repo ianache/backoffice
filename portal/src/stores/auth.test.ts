@@ -25,7 +25,7 @@ vi.mock('../plugins/keycloak', () => {
       updateToken: vi.fn(),
       token: 'mock-token',
       realmAccess: { roles: ['User'] },
-      tokenParsed: { preferred_username: 'test-user', email: 'test@example.com' },
+      tokenParsed: { preferred_username: 'test-user', email: 'test@example.com', sub: 'mock-sub-123' },
     },
   }
 })
@@ -44,7 +44,7 @@ describe('auth store', () => {
     
     expect(store.isAuthenticated).toBe(true)
     expect(store.token).toBe('mock-token')
-    expect(store.user).toEqual({ name: 'test-user', email: 'test@example.com' })
+    expect(store.user).toEqual({ name: 'test-user', email: 'test@example.com', sub: 'mock-sub-123' })
     expect(store.roles).toEqual(['User'])
     expect(store.isLoading).toBe(false)
   })
@@ -56,7 +56,7 @@ describe('auth store', () => {
     // Simulate persisted state being true initially
     store.isAuthenticated = true
     store.token = 'old-token'
-    store.user = { name: 'old-user', email: 'old@example.com' }
+    store.user = { name: 'old-user', email: 'old@example.com', sub: 'old-sub' }
     store.roles = ['OldRole']
     
     await store.init()
@@ -75,7 +75,7 @@ describe('auth store', () => {
     // Simulate persisted state being true initially
     store.isAuthenticated = true
     store.token = 'old-token'
-    store.user = { name: 'old-user', email: 'old@example.com' }
+    store.user = { name: 'old-user', email: 'old@example.com', sub: 'old-sub' }
     store.roles = ['OldRole']
     
     await store.init()

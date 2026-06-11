@@ -82,6 +82,7 @@ Last activity detail: 2026-06-11 — Completed Phase 12 (Dogfooding Feature Flag
 ### Roadmap Evolution
 
 - Phase 12 added (2026-06-11): Dogfooding Feature Flags — portal gated by its own flags (product `backoffice`): bo.feature (menu), bo.feature.create (Create Flag + Clone), bo.feature.update (Edit pencil)
+- Phase 13 added (2026-06-11): Simulator Test Contexts — persistent per-flag test contexts in the Live Simulator + toggle to use the logged-in user's real property values as Test Context
 
 ### Decisions
 

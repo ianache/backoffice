@@ -22,7 +22,7 @@ Full archive: `.planning/milestones/v1.0-ROADMAP.md`
 
 </details>
 
-### 🚧 v1.1 MVP2 (Phases 7-12)
+### 🚧 v1.1 MVP2 (Phases 7-13)
 
 **Milestone Goal:** Refactorizar el portal en arquitectura Shell + Micro-UIs y entregar Productos, Segmentos Avanzados y Feature Flag SDK como entidades y capacidades de primer nivel.
 
@@ -32,6 +32,7 @@ Full archive: `.planning/milestones/v1.0-ROADMAP.md`
 - 🚧 **Phase 10: mui-tenants + mui-security** — Domain MUIs migrated; gap closure plans in progress (3/6 plans complete)
 - [x] **Phase 11: mui-feature-flags + SDK Clients** — Feature flags MUI migrated; Segments UI with orphan detection; JS/TS + Python SDK packages (completed 2026-06-10)
 - [x] **Phase 12: Dogfooding Feature Flags** — Portal gated by its own flags (product `backoffice`): bo.feature, bo.feature.create, bo.feature.update (completed 2026-06-11)
+- [ ] **Phase 13: Simulator Test Contexts** — Persistent per-flag test contexts in Live Simulator + toggle to use the logged-in user's real context
 
 ## Phase Details
 
@@ -162,3 +163,13 @@ Plans:
 - [x] 12-01-PLAN.md — useBoFlags composable + SDK workspace dep + Module Federation expose + env vars + Shell init
 - [x] 12-02-PLAN.md — UI gating: MainLayout nav + FlagsView Create + FlagTable Edit/Clone with v-if bindings
 - [x] 12-03-PLAN.md — Unit tests for fail-open behavior + planning docs update
+
+### Phase 13: Simulator Test Contexts
+
+**Goal**: El "Test Context" del Live Simulator en el Rule Builder deja de ser efímero: (1) al editarlo se puede **guardar en base de datos asociado al flag/regla** como ejemplo de prueba persistente, recuperado automáticamente al reabrir el editor (sirve para futuros ajustes de la regla); (2) un **Toggle "usar mi contexto real"** reemplaza el ejemplo por los valores reales de las propiedades del usuario logeado (sub, roles, tenant_id, etc.) para validar la regla contra el caso real, no solo contra ejemplos sintéticos. Aplica tanto al Rule Builder de flags como a la edición de segmentos rule-based (RuleSimulator es compartido).
+**Requirements**: TBD (derive at plan time: SIM-01 persistencia de test context por flag, SIM-02 recuperación al abrir, SIM-03 toggle contexto real del usuario logeado)
+**Depends on:** Phase 12
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd:plan-phase 13 to break down)

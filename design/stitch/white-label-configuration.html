@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html class="light" lang="en" style="">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;family=JetBrains+Mono&amp;display=swap"
+        rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet">
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            line-height: 1;
+            text-transform: none;
+            letter-spacing: normal;
+            word-wrap: normal;
+            white-space: nowrap;
+            direction: ltr;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #dfe3e8;
+            border-radius: 10px;
+        }
+
+        .glass-preview {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+    </style>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "error-container": "#ffdad6",
+                        "on-primary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "on-surface": "#181c20",
+                        "surface-container-highest": "#dfe3e8",
+                        "surface": "#f6faff",
+                        "secondary-fixed": "#dfe3e8",
+                        "on-tertiary-fixed": "#341100",
+                        "primary-container": "#1a73e8",
+                        "secondary-container": "#dde0e6",
+                        "surface-container-high": "#e5e8ee",
+                        "secondary": "#5b5f64",
+                        "on-tertiary-container": "#0e0200",
+                        "tertiary": "#9e4300",
+                        "background": "#f6faff",
+                        "secondary-fixed-dim": "#c3c7cc",
+                        "primary-fixed-dim": "#adc7ff",
+                        "surface-variant": "#dfe3e8",
+                        "primary-fixed": "#d8e2ff",
+                        "on-surface-variant": "#414754",
+                        "surface-container": "#eaeef3",
+                        "inverse-surface": "#2c3135",
+                        "tertiary-container": "#c55500",
+                        "on-tertiary-fixed-variant": "#783100",
+                        "on-secondary-fixed": "#181c20",
+                        "inverse-primary": "#adc7ff",
+                        "primary": "#005bbf",
+                        "surface-bright": "#f6faff",
+                        "on-primary-container": "#ffffff",
+                        "on-background": "#181c20",
+                        "on-secondary-container": "#5f6368",
+                        "surface-dim": "#d6dadf",
+                        "on-tertiary": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "inverse-on-surface": "#edf1f6",
+                        "tertiary-fixed": "#ffdbcb",
+                        "outline-variant": "#c1c6d6",
+                        "tertiary-fixed-dim": "#ffb691",
+                        "surface-container-low": "#f0f4f9",
+                        "on-primary-fixed-variant": "#004493",
+                        "surface-tint": "#005bc0",
+                        "outline": "#727785",
+                        "on-secondary-fixed-variant": "#43474c",
+                        "on-primary-fixed": "#001a41",
+                        "on-error-container": "#93000a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "sm": "8px",
+                        "md": "16px",
+                        "gutter": "24px",
+                        "base": "4px",
+                        "max-width": "1440px",
+                        "xl": "32px",
+                        "xs": "4px",
+                        "margin": "32px",
+                        "lg": "24px"
+                    },
+                    "fontFamily": {
+                        "label-lg": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "label-md": ["Inter"],
+                        "title-md": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "code": ["JetBrains Mono"],
+                        "body-md": ["Inter"],
+                        "title-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-lg": ["12px", { "lineHeight": "16px", "letterSpacing": "0.5px", "fontWeight": "600" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "headline-md": ["22px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "label-md": ["11px", { "lineHeight": "16px", "fontWeight": "500" }],
+                        "title-md": ["16px", { "lineHeight": "24px", "fontWeight": "500" }],
+                        "headline-lg": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "code": ["13px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "title-lg": ["18px", { "lineHeight": "24px", "fontWeight": "500" }]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+
+<body
+    class="bg-background text-on-background font-body-md text-body-md selection:bg-primary-container selection:text-on-primary-container overflow-hidden h-screen flex">
+    <!-- Side Navigation Bar -->
+    <aside
+        class="w-64 h-screen fixed left-0 top-0 bg-surface-container-low border-r border-outline-variant flex flex-col p-md z-30">
+        <div class="mb-xl px-sm">
+            <h1 class="font-headline-sm text-headline-sm font-black text-primary">
+                <p data-pm-slice="0 0 []" class="">BackOffice CC</p>
+            </h1>
+            <p class="font-label-lg text-label-lg text-on-surface-variant opacity-70">Admin Console</p>
+        </div>
+        <nav class="flex-1 space-y-1">
+            <div class="px-sm pb-sm">
+                <button
+                    class="w-full flex items-center px-md py-sm text-on-surface-variant hover:bg-surface-container-high transition-all duration-150 rounded-lg group">
+                    <span class="material-symbols-outlined mr-md">corporate_fare</span>
+                    <span class="font-label-lg text-label-lg">Tenants</span>
+                </button>
+            </div>
+            <div class="px-sm pb-sm">
+                <button
+                    class="w-full flex items-center px-md py-sm text-on-surface-variant hover:bg-surface-container-high transition-all duration-150 rounded-lg group">
+                    <span class="material-symbols-outlined mr-md">inventory_2</span>
+                    <span class="font-label-lg text-label-lg">Products</span>
+                </button>
+            </div>
+            <div class="px-sm pb-sm">
+                <button
+                    class="w-full flex items-center px-md py-sm bg-secondary-container text-on-secondary-container font-bold rounded-lg group">
+                    <span class="material-symbols-outlined mr-md"
+                        style="font-variation-settings: &quot;FILL&quot; 1;">branding_watermark</span>
+                    <span class="font-label-lg text-label-lg">WhiteLabels</span>
+                </button>
+            </div>
+            <div class="px-sm pb-sm">
+                <button
+                    class="w-full flex items-center px-md py-sm text-on-surface-variant hover:bg-surface-container-high transition-all duration-150 rounded-lg group">
+                    <span class="material-symbols-outlined mr-md">toggle_on</span>
+                    <span class="font-label-lg text-label-lg">Feature Flags</span>
+                </button>
+            </div>
+            <div class="px-sm pb-sm">
+                <button
+                    class="w-full flex items-center px-md py-sm text-on-surface-variant hover:bg-surface-container-high transition-all duration-150 rounded-lg group">
+                    <span class="material-symbols-outlined mr-md">history</span>
+                    <span class="font-label-lg text-label-lg">Audit Log</span>
+                </button>
+            </div>
+            <div class="px-sm pb-sm">
+                <button
+                    class="w-full flex items-center px-md py-sm text-on-surface-variant hover:bg-surface-container-high transition-all duration-150 rounded-lg group">
+                    <span class="material-symbols-outlined mr-md">settings_applications</span>
+                    <span class="font-label-lg text-label-lg">Platform Settings</span>
+                </button>
+            </div>
+        </nav>
+        <div class="mt-auto border-t border-outline-variant pt-md space-y-1">
+            <button
+                class="w-full flex items-center px-md py-sm text-on-surface-variant hover:bg-surface-container-high rounded-lg group">
+                <span class="material-symbols-outlined mr-md">menu_book</span>
+                <span class="font-label-lg text-label-lg">Documentation</span>
+            </button>
+            <button
+                class="w-full flex items-center px-md py-sm text-on-surface-variant hover:bg-surface-container-high rounded-lg group">
+                <span class="material-symbols-outlined mr-md">support_agent</span>
+                <span class="font-label-lg text-label-lg">Support</span>
+            </button>
+        </div>
+    </aside>
+    <!-- Main Content Area -->
+    <main class="flex-1 ml-64 h-screen flex flex-col overflow-hidden bg-background">
+        <!-- Top Nav Bar -->
+        <header
+            class="w-full h-16 border-b border-outline-variant flex justify-between items-center px-lg bg-surface z-20">
+            <div class="flex items-center gap-md">
+                <nav class="flex items-center text-on-surface-variant font-label-lg text-label-lg">
+                    <span class="hover:text-primary cursor-pointer transition-colors">Tenants</span>
+                    <span class="material-symbols-outlined text-[14px] mx-xs">chevron_right</span>
+                    <span class="hover:text-primary cursor-pointer transition-colors">Acme Global</span>
+                    <span class="material-symbols-outlined text-[14px] mx-xs">chevron_right</span>
+                    <span class="text-on-surface font-bold">WhiteLabel</span>
+                </nav>
+            </div>
+            <div class="flex items-center gap-gutter">
+                <div class="relative w-64">
+                    <span
+                        class="material-symbols-outlined absolute left-md top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+                    <input
+                        class="w-full h-9 pl-10 pr-md bg-surface-container-high border-none rounded-full font-body-md text-body-md focus:ring-2 focus:ring-primary"
+                        placeholder="Search config..." type="text">
+                </div>
+                <div class="flex items-center gap-md">
+                    <button class="p-base hover:bg-surface-container-high rounded-full transition-colors"
+                        title="Toggle Theme">
+                        <span class="material-symbols-outlined">dark_mode</span>
+                    </button><button class="p-base hover:bg-surface-container-high rounded-full transition-colors"><span
+                            class="material-symbols-outlined">notifications</span></button>
+                    <button class="p-base hover:bg-surface-container-high rounded-full transition-colors"><span
+                            class="material-symbols-outlined">settings</span></button>
+                    <div
+                        class="h-8 w-8 rounded-full bg-primary-fixed text-on-primary-fixed flex items-center justify-center font-bold">
+                        JD</div>
+                </div>
+            </div>
+        </header>
+        <!-- Page Body -->
+        <div
+            class="flex-1 overflow-y-auto custom-scrollbar p-gutter lg:p-xl space-y-gutter max-w-max-width mx-auto w-full">
+            <!-- Context Header -->
+            <section class="flex flex-col md:flex-row md:items-end justify-between gap-md mb-md">
+                <div class="max-w-2xl">
+                    <h2 class="font-headline-lg text-headline-lg text-on-surface">WhiteLabel Configuration</h2>
+                    <p class="font-body-lg text-body-lg text-on-surface-variant mt-sm">Define the global visual identity
+                        and delivery settings for this specific tenant ecosystem. These settings will override default
+                        platform branding across all user-facing touchpoints.</p>
+                </div>
+                <div class="flex items-center gap-md">
+                    <button
+                        class="px-lg py-sm border border-outline text-primary font-title-md text-title-md rounded-lg hover:bg-surface-container-high transition-all">Discard</button>
+                    <button
+                        class="px-lg py-sm bg-primary text-on-primary font-title-md text-title-md rounded-lg shadow-md hover:shadow-lg transition-all flex items-center gap-sm">
+                        <span class="material-symbols-outlined">save</span>
+                        Save Changes
+                    </button>
+                </div>
+            </section>
+            <div class="grid grid-cols-1 xl:grid-cols-12 gap-gutter">
+                <!-- Left Column: Editors -->
+                <div class="xl:col-span-8 space-y-gutter">
+                    <!-- Branding Identity -->
+                    <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg">
+                        <div class="flex items-center gap-sm mb-lg border-b border-outline-variant pb-md">
+                            <span class="material-symbols-outlined text-primary">id_card</span>
+                            <h3 class="font-title-lg text-title-lg text-on-surface">Branding Identity</h3>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-xl">
+                            <!-- Text Config -->
+                            <div class="space-y-lg">
+                                <div class="space-y-xs">
+                                    <label
+                                        class="font-label-lg text-label-lg text-on-surface-variant uppercase tracking-wider">Organization
+                                        Name</label>
+                                    <input
+                                        class="w-full bg-surface-container border border-outline-variant rounded-lg p-md font-body-md focus:ring-primary focus:border-primary"
+                                        type="text" value="Acme Global Industries">
+                                </div>
+                                <div class="space-y-xs">
+                                    <label
+                                        class="font-label-lg text-label-lg text-on-surface-variant uppercase tracking-wider">Brand
+                                        Tagline</label>
+                                    <input
+                                        class="w-full bg-surface-container border border-outline-variant rounded-lg p-md font-body-md focus:ring-primary focus:border-primary"
+                                        type="text" value="Engineering the Future of Managed Infrastructure">
+                                </div>
+                            </div>
+                            <!-- Assets -->
+                            <div class="grid grid-cols-2 gap-md">
+                                <div class="space-y-xs">
+                                    <label
+                                        class="font-label-lg text-label-lg text-on-surface-variant uppercase tracking-wider">Light
+                                        Logo</label>
+                                    <div
+                                        class="h-32 border-2 border-dashed border-outline-variant rounded-lg flex flex-col items-center justify-center hover:bg-surface-container-low cursor-pointer transition-colors group">
+                                        <span
+                                            class="material-symbols-outlined text-outline-variant group-hover:text-primary mb-xs">upload</span>
+                                        <span class="text-[10px] text-on-surface-variant">PNG, SVG (max 2MB)</span>
+                                    </div>
+                                </div>
+                                <div class="space-y-xs">
+                                    <label
+                                        class="font-label-lg text-label-lg text-on-surface-variant uppercase tracking-wider">Dark
+                                        Logo</label>
+                                    <div
+                                        class="h-32 border-2 border-dashed border-outline-variant rounded-lg flex flex-col items-center justify-center hover:bg-surface-container-low cursor-pointer transition-colors group">
+                                        <span
+                                            class="material-symbols-outlined text-outline-variant group-hover:text-primary mb-xs">upload</span>
+                                        <span class="text-[10px] text-on-surface-variant">PNG, SVG (max 2MB)</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Visual Theme Editor -->
+                    <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg">
+                        <div class="flex items-center justify-between mb-lg border-b border-outline-variant pb-md">
+                            <div class="flex items-center gap-sm">
+                                <span class="material-symbols-outlined text-primary">palette</span>
+                                <h3 class="font-title-lg text-title-lg text-on-surface">Visual Theme</h3>
+                            </div>
+                            <div class="flex gap-xs p-xs bg-surface-container rounded-lg">
+                                <button
+                                    class="px-md py-xs bg-surface-container-lowest text-primary shadow-sm rounded-md font-label-lg">Standard</button>
+                                <button
+                                    class="px-md py-xs text-on-surface-variant hover:text-on-surface font-label-lg">Compact</button>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-xl">
+                            <!-- Colors -->
+                            <div class="space-y-lg">
+                                <div class="flex items-center justify-between">
+                                    <label class="font-label-lg text-label-lg text-on-surface-variant">Primary Brand
+                                        Color</label>
+                                    <div class="flex items-center gap-sm">
+                                        <div class="h-8 w-8 rounded-full border border-outline-variant"
+                                            style="background-color: #005bbf;"></div>
+                                        <input
+                                            class="w-24 text-center font-code text-code bg-surface-container border border-outline-variant rounded p-xs"
+                                            type="text" value="#005BBF">
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <label class="font-label-lg text-label-lg text-on-surface-variant">Secondary
+                                        Accent</label>
+                                    <div class="flex items-center gap-sm">
+                                        <div class="h-8 w-8 rounded-full border border-outline-variant"
+                                            style="background-color: #5B5F64;"></div>
+                                        <input
+                                            class="w-24 text-center font-code text-code bg-surface-container border border-outline-variant rounded p-xs"
+                                            type="text" value="#5B5F64">
+                                    </div>
+                                </div>
+                                <div class="pt-md space-y-md">
+                                    <div class="flex justify-between items-center">
+                                        <label class="font-label-lg text-label-lg text-on-surface-variant">Border
+                                            Radius</label>
+                                        <span
+                                            class="font-code text-code bg-primary-container/10 px-sm py-xs rounded text-primary">8px</span>
+                                    </div>
+                                    <input
+                                        class="w-full h-2 bg-surface-container rounded-lg appearance-none cursor-pointer accent-primary"
+                                        max="24" min="0" type="range" value="8">
+                                </div>
+                            </div>
+                            <!-- Typography -->
+                            <div class="space-y-lg border-l border-outline-variant pl-xl">
+                                <div class="space-y-xs">
+                                    <label
+                                        class="font-label-lg text-label-lg text-on-surface-variant uppercase tracking-wider">Font
+                                        Family</label>
+                                    <select
+                                        class="w-full bg-surface-container border border-outline-variant rounded-lg p-md font-body-md appearance-none">
+                                        <option>Inter (Default)</option>
+                                        <option>Roboto</option>
+                                        <option>Source Sans Pro</option>
+                                        <option>JetBrains Mono</option>
+                                    </select>
+                                </div>
+                                <div class="space-y-xs">
+                                    <label
+                                        class="font-label-lg text-label-lg text-on-surface-variant uppercase tracking-wider">Base
+                                        Font Size</label>
+                                    <div class="flex items-center gap-md">
+                                        <button
+                                            class="h-10 w-10 border border-outline-variant rounded-lg flex items-center justify-center hover:bg-surface-container-high transition-colors">-</button>
+                                        <div class="flex-1 text-center font-bold text-title-md">14px</div>
+                                        <button
+                                            class="h-10 w-10 border border-outline-variant rounded-lg flex items-center justify-center hover:bg-surface-container-high transition-colors">+</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Custom Domain & SSL -->
+                    <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg">
+                        <div class="flex items-center gap-sm mb-lg border-b border-outline-variant pb-md">
+                            <span class="material-symbols-outlined text-primary">public</span>
+                            <h3 class="font-title-lg text-title-lg text-on-surface">Domain &amp; Delivery</h3>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-xl">
+                            <div class="md:col-span-2 space-y-lg">
+                                <div class="space-y-xs">
+                                    <label
+                                        class="font-label-lg text-label-lg text-on-surface-variant uppercase tracking-wider">Custom
+                                        Domain</label>
+                                    <div
+                                        class="flex shadow-sm rounded-lg overflow-hidden border border-outline-variant">
+                                        <span
+                                            class="bg-surface-container-high px-md flex items-center text-on-surface-variant border-r border-outline-variant">https://</span>
+                                        <input class="flex-1 p-md font-body-md focus:ring-0 border-none outline-none"
+                                            type="text" value="console.acmeglobal.com">
+                                    </div>
+                                </div>
+                                <div
+                                    class="flex items-center p-md bg-secondary-container/20 rounded-lg border border-secondary-container/40">
+                                    <span
+                                        class="material-symbols-outlined text-on-secondary-container mr-md">lock</span>
+                                    <div class="flex-1">
+                                        <p class="font-title-md text-title-md text-on-surface">SSL Certificate</p>
+                                        <p class="font-body-md text-body-md text-on-surface-variant">Managed by Stitch
+                                            Cloud (Wildcard)</p>
+                                    </div>
+                                    <div
+                                        class="px-sm py-xs bg-green-100 text-green-800 rounded-full flex items-center gap-xs font-label-lg uppercase">
+                                        <span class="material-symbols-outlined text-[14px]">check_circle</span>
+                                        Active
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Instructions -->
+                            <div
+                                class="bg-surface-container p-md rounded-xl space-y-md border border-outline-variant/30">
+                                <p
+                                    class="font-label-lg text-label-lg text-on-surface-variant uppercase border-b border-outline-variant pb-sm">
+                                    DNS Settings</p>
+                                <div class="space-y-sm">
+                                    <div class="space-y-xs">
+                                        <p class="font-label-md text-label-md text-on-surface-variant">Type: <span
+                                                class="font-code text-on-surface">CNAME</span></p>
+                                        <p class="font-label-md text-label-md text-on-surface-variant">Host: <span
+                                                class="font-code text-on-surface">console</span></p>
+                                        <p class="font-label-md text-label-md text-on-surface-variant">Target: <span
+                                                class="font-code text-on-surface">lb.stitch.io</span></p>
+                                    </div>
+                                    <button
+                                        class="w-full py-xs border border-outline text-on-surface-variant rounded-md font-label-lg hover:bg-surface-container-high">Copy
+                                        Values</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Right Column: Preview Mode -->
+                <div class="xl:col-span-4 sticky top-gutter self-start">
+                    <div class="bg-inverse-surface text-inverse-on-surface rounded-xl overflow-hidden shadow-2xl">
+                        <div
+                            class="p-md border-b border-outline/30 flex justify-between items-center bg-inverse-surface">
+                            <div class="flex items-center gap-sm">
+                                <span class="material-symbols-outlined text-primary-fixed">visibility</span>
+                                <span class="font-title-md text-title-md">Live Preview</span>
+                            </div>
+                            <div class="flex gap-xs">
+                                <div class="h-3 w-3 rounded-full bg-red-400"></div>
+                                <div class="h-3 w-3 rounded-full bg-amber-400"></div>
+                                <div class="h-3 w-3 rounded-full bg-green-400"></div>
+                            </div>
+                        </div>
+                        <!-- Preview Canvas -->
+                        <div class="relative min-h-[500px] bg-[#f8f9fa] flex flex-col p-lg">
+                            <!-- Mock Header -->
+                            <div
+                                class="h-12 bg-white shadow-sm rounded-lg mb-xl flex items-center justify-between px-md">
+                                <div class="flex items-center gap-sm">
+                                    <div
+                                        class="h-6 w-6 bg-primary rounded-sm flex items-center justify-center text-white text-[10px] font-black">
+                                        A</div>
+                                    <span class="text-on-surface font-bold text-sm">Acme Global</span>
+                                </div>
+                                <div class="flex items-center gap-sm">
+                                    <div class="h-6 w-6 rounded-full bg-surface-container-highest"></div>
+                                    <div class="h-2 w-12 bg-surface-container-highest rounded-full"></div>
+                                </div>
+                            </div>
+                            <!-- Mock Login Screen -->
+                            <div class="max-w-xs mx-auto mt-xl w-full bg-white p-lg rounded-[8px] shadow-sm border border-outline-variant space-y-lg"
+                                id="preview-card" style="border-radius: 8px;">
+                                <div class="flex flex-col items-center gap-sm text-center">
+                                    <div
+                                        class="h-12 w-12 bg-primary/10 rounded-full flex items-center justify-center text-primary mb-sm">
+                                        <span class="material-symbols-outlined text-3xl">fingerprint</span>
+                                    </div>
+                                    <h4 class="text-on-surface font-headline-md text-headline-md leading-tight">Welcome
+                                        to Acme Global</h4>
+                                    <p class="text-on-surface-variant text-xs">Login to access your enterprise
+                                        dashboard.</p>
+                                </div>
+                                <div class="space-y-md pt-sm">
+                                    <div
+                                        class="h-10 bg-surface-container rounded-md border border-outline-variant px-md flex items-center text-xs text-on-surface-variant">
+                                        Username</div>
+                                    <div
+                                        class="h-10 bg-surface-container rounded-md border border-outline-variant px-md flex items-center text-xs text-on-surface-variant">
+                                        Password</div>
+                                    <button
+                                        class="w-full h-10 bg-primary text-on-primary rounded-md font-bold text-sm hover:brightness-110 transition-all">Sign
+                                        In</button>
+                                </div>
+                                <div class="pt-sm border-t border-outline-variant">
+                                    <div class="flex justify-between items-center text-[10px] text-on-surface-variant">
+                                        <span class="">© 2024 Acme Global Industries</span>
+                                        <span class="text-primary cursor-pointer">Help Center</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Decoration -->
+                            <div
+                                class="absolute bottom-md right-md text-[10px] text-on-surface-variant opacity-40 font-code">
+                                RENDER_ENGINE: v4.2.1-stable
+                            </div>
+                        </div>
+                        <!-- Preview Toggle -->
+                        <div class="p-md bg-inverse-surface flex items-center justify-center gap-gutter">
+                            <button class="flex flex-col items-center gap-xs opacity-100 group">
+                                <span
+                                    class="material-symbols-outlined text-primary-fixed group-hover:scale-110 transition-transform">desktop_windows</span>
+                                <span class="text-[10px] uppercase font-bold text-primary-fixed">Desktop</span>
+                            </button>
+                            <button
+                                class="flex flex-col items-center gap-xs opacity-50 hover:opacity-100 transition-opacity group">
+                                <span
+                                    class="material-symbols-outlined text-white group-hover:scale-110 transition-transform">phone_iphone</span>
+                                <span class="text-[10px] uppercase font-bold text-white">Mobile</span>
+                            </button>
+                            <button
+                                class="flex flex-col items-center gap-xs opacity-50 hover:opacity-100 transition-opacity group">
+                                <span
+                                    class="material-symbols-outlined text-white group-hover:scale-110 transition-transform">dark_mode</span>
+                                <span class="text-[10px] uppercase font-bold text-white">Dark Mode</span>
+                            </button>
+                        </div>
+                    </div>
+                    <!-- Quick Tip -->
+                    <div class="mt-lg p-md bg-primary-container/10 border-l-4 border-primary rounded-r-lg">
+                        <div class="flex items-start gap-sm">
+                            <span class="material-symbols-outlined text-primary">lightbulb</span>
+                            <div>
+                                <p class="font-title-md text-title-md text-on-primary-container">Design Hint</p>
+                                <p class="text-on-primary-container text-xs opacity-80 leading-relaxed mt-xs">Use SVG
+                                    logos for best clarity. We recommend a minimum aspect ratio of 4:1 for top
+                                    navigation bar logos to ensure legibility.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script>
+        // Micro-interactions for the preview
+        const radiusSlider = document.querySelector('input[type="range"]');
+        const previewCard = document.getElementById('preview-card');
+        const previewButtons = document.querySelectorAll('.preview-btn');
+
+        radiusSlider.addEventListener('input', (e) => {
+            const radiusValue = e.target.value;
+            previewCard.style.borderRadius = `${radiusValue}px`;
+            // Find buttons inside preview and update them too
+            const btns = previewCard.querySelectorAll('button, div[class*="rounded-md"]');
+            btns.forEach(btn => btn.style.borderRadius = `${radiusValue}px`);
+        });
+
+        // Mock interactive hover effects for inputs
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('focus', () => {
+                input.parentElement.classList.add('ring-2', 'ring-primary/20');
+            });
+            input.addEventListener('blur', () => {
+                input.parentElement.classList.remove('ring-2', 'ring-primary/20');
+            });
+        });
+    </script>
+
+
+
+
+</body>
+
+</html>

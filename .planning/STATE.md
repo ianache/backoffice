@@ -2,17 +2,17 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: MVP2
-current_plan: 3
+current_plan: 4
 status: executing
-stopped_at: Completed 14-03-PLAN.md
-last_updated: "2026-06-12T00:10:16.379Z"
+stopped_at: Completed 14-02-PLAN.md
+last_updated: "2026-06-12T00:12:07.797Z"
 last_activity: 2026-06-12
 progress:
   total_phases: 15
   completed_phases: 14
   total_plans: 70
-  completed_plans: 67
-  percent: 96
+  completed_plans: 68
+  percent: 97
 ---
 
 # Project State
@@ -27,13 +27,13 @@ See: .planning/PROJECT.md (updated 2026-06-07)
 ## Current Position
 
 Phase: 14 of 15 (Flag Scope Targeting + List-Valued Rules)
-**Current Plan:** 3
+**Current Plan:** 4
 **Total Plans in Phase:** 6
 **Status:** Ready to execute
 **Last Activity:** 2026-06-12
-Last activity detail: 2026-06-12 — Completed 14-01-PLAN.md (Companies catalog backend: companies domain CRUD API, Alembic d003 migration, BFF /companies proxy route). Foundation for flag.company_id scope targeting (Plans 14-05/14-06).
+Last activity detail: 2026-06-12 — Completed 14-04-PLAN.md (anyOf evaluator parity in useRuleSimulator.ts; RuleCard.vue comma-text editing with parse-on-blur + mini-chips; RuleSimulator Matched Rule panel mini-chips). LST-01/LST-02 Rule Builder UI complete.
 
-**Progress:** [██████████] 96%
+**Progress:** [██████████] 97%
 
 ## Performance Metrics
 
@@ -83,6 +83,7 @@ Last activity detail: 2026-06-12 — Completed 14-01-PLAN.md (Companies catalog 
 | Phase 14-flag-scope-targeting-list-valued-rules P01 | 12min | 3 tasks | 11 files |
 | Phase 14-flag-scope-targeting-list-valued-rules P04 | 12min | 3 tasks | 4 files |
 | Phase 14 P03 | 9min | 3 tasks | 7 files |
+| Phase 14-flag-scope-targeting-list-valued-rules P02 | 18min | 3 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -178,6 +179,9 @@ Recent decisions affecting v1.1:
 - [Phase 14]: [14-03]: anyOf operator lambda identical across backend/sdk-js/sdk-python - set intersection for list actual, membership for scalar actual, case-sensitive
 - [Phase 14]: [14-03]: Company-scope target guard in SDK evaluators uses null-check (!= null / is not None) so missing/null company_id skips guard - preserves legacy cached payload behavior
 - [Phase 14]: [14-03]: No tenant/product guards added to SDK local evaluators - bootstrap already filters by SDK client identity per CONTEXT.md
+- [Phase 14-flag-scope-targeting-list-valued-rules]: [14-02]: FlagUpdate has NO model_validator - merged-state scope/target validation happens in router._validate_update_target() only when scope/tenant_id/product_id/company_id are present in the PATCH payload, preserving legacy partial-update behavior
+- [Phase 14-flag-scope-targeting-list-valued-rules]: [14-02]: bootstrap_flags company-scope inclusion treats company_id as per-user-context (checked by evaluate_flag), not per-SDK-client - company-scoped flags are included in bootstrap unless flag.tenant_id also mismatches the requesting tenant
+- [Phase 14-flag-scope-targeting-list-valued-rules]: [14-02]: /sdk/evaluate now calls list_flags(db) unfiltered - the previous tenant_id pre-filter starved product/company-scoped flags (tenant_id NULL) before evaluate_flag's existing per-scope candidate matching could resolve them
 
 ### Pending Todos
 
@@ -191,6 +195,6 @@ Recent decisions affecting v1.1:
 
 ## Session Continuity
 
-**Last session:** 2026-06-12T00:10:16.364Z
-**Stopped At:** Completed 14-03-PLAN.md
+**Last session:** 2026-06-12T00:12:07.788Z
+**Stopped At:** Completed 14-02-PLAN.md
 **Resume File:** None

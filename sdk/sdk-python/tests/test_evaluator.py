@@ -16,9 +16,9 @@ from backoffice_sdk.evaluator import evaluate_rule, evaluate_flag, OPERATORS
 # ---------------------------------------------------------------------------
 
 class TestOperatorsTable:
-    def test_seven_operators_present(self):
+    def test_eight_operators_present(self):
         assert set(OPERATORS.keys()) == {
-            'equals', 'in', 'notIn', 'contains', 'regex', 'greaterThan', 'lessThan',
+            'equals', 'in', 'notIn', 'contains', 'regex', 'greaterThan', 'lessThan', 'anyOf',
         }
 
 
@@ -110,7 +110,7 @@ class TestEvaluateRule:
         rule = {'attribute': 'ltv', 'operator': 'lessThan', 'value': 500}
         assert evaluate_rule(rule, {}) is False
 
-    def test_all_seven_operators_have_true_case(self):
+    def test_all_eight_operators_have_true_case(self):
         true_cases = {
             'equals': ({'attribute': 'country', 'operator': 'equals', 'value': 'PE'}, {'country': 'PE'}),
             'in': ({'attribute': 'country', 'operator': 'in', 'value': ['PE', 'AR']}, {'country': 'PE'}),
@@ -119,9 +119,45 @@ class TestEvaluateRule:
             'regex': ({'attribute': 'email', 'operator': 'regex', 'value': '^admin'}, {'email': 'admin@co.com'}),
             'greaterThan': ({'attribute': 'ltv', 'operator': 'greaterThan', 'value': 500}, {'ltv': 600}),
             'lessThan': ({'attribute': 'ltv', 'operator': 'lessThan', 'value': 500}, {'ltv': 100}),
+            'anyOf': ({'attribute': 'roles', 'operator': 'anyOf', 'value': ['PlatformAdmin', 'TenantOwner']}, {'roles': ['TenantOwner', 'viewer']}),
         }
         for op, (rule, user) in true_cases.items():
             assert evaluate_rule(rule, user) is True, f"operator {op} should return True"
+
+
+# ---------------------------------------------------------------------------
+# LST-02: anyOf operator (list/scalar match-any semantics)
+# ---------------------------------------------------------------------------
+
+class TestAnyOfOperator:
+
+    def test_list_context_intersecting_returns_true(self):
+        rule = {'attribute': 'roles', 'operator': 'anyOf', 'value': ['PlatformAdmin', 'TenantOwner']}
+        assert evaluate_rule(rule, {'roles': ['TenantOwner', 'viewer']}) is True
+
+    def test_list_context_disjoint_returns_false(self):
+        rule = {'attribute': 'roles', 'operator': 'anyOf', 'value': ['PlatformAdmin', 'TenantOwner']}
+        assert evaluate_rule(rule, {'roles': ['viewer']}) is False
+
+    def test_scalar_context_member_returns_true(self):
+        rule = {'attribute': 'roles', 'operator': 'anyOf', 'value': ['PlatformAdmin', 'TenantOwner']}
+        assert evaluate_rule(rule, {'roles': 'PlatformAdmin'}) is True
+
+    def test_scalar_context_non_member_returns_false(self):
+        rule = {'attribute': 'roles', 'operator': 'anyOf', 'value': ['PlatformAdmin', 'TenantOwner']}
+        assert evaluate_rule(rule, {'roles': 'guest'}) is False
+
+    def test_empty_value_array_returns_false(self):
+        rule = {'attribute': 'roles', 'operator': 'anyOf', 'value': []}
+        assert evaluate_rule(rule, {'roles': ['x']}) is False
+
+    def test_case_sensitive_returns_false(self):
+        rule = {'attribute': 'roles', 'operator': 'anyOf', 'value': ['PlatformAdmin']}
+        assert evaluate_rule(rule, {'roles': ['platformadmin']}) is False
+
+    def test_missing_attribute_returns_false(self):
+        rule = {'attribute': 'roles', 'operator': 'anyOf', 'value': ['PlatformAdmin']}
+        assert evaluate_rule(rule, {}) is False
 
 
 # ---------------------------------------------------------------------------
@@ -264,3 +300,77 @@ class TestEvaluateFlag:
         }
         # Rule matches with result=True even though user is also in segment
         assert evaluate_flag(entry, {'id': 'uuid-1', 'country': 'PE'}) is True
+
+
+# ---------------------------------------------------------------------------
+# TGT-03: company-scope target guard
+# ---------------------------------------------------------------------------
+
+class TestCompanyScopeGuard:
+
+    def test_matching_company_id_falls_through_to_default_val(self):
+        entry = {
+            'enabled': True,
+            'scope': 'company',
+            'company_id': 'acme',
+            'rules': [],
+            'segments': [],
+            'default_val': True,
+        }
+        assert evaluate_flag(entry, {'company_id': 'acme'}) is True
+
+    def test_non_matching_company_id_returns_false(self):
+        entry = {
+            'enabled': True,
+            'scope': 'company',
+            'company_id': 'acme',
+            'rules': [],
+            'segments': [],
+            'default_val': True,
+        }
+        assert evaluate_flag(entry, {'company_id': 'other'}) is False
+
+    def test_user_missing_company_id_returns_false(self):
+        entry = {
+            'enabled': True,
+            'scope': 'company',
+            'company_id': 'acme',
+            'rules': [],
+            'segments': [],
+            'default_val': True,
+        }
+        assert evaluate_flag(entry, {}) is False
+
+    def test_legacy_entry_without_company_id_key_skips_guard(self):
+        entry = {
+            'enabled': True,
+            'scope': 'company',
+            'rules': [],
+            'segments': [],
+            'default_val': True,
+        }
+        assert evaluate_flag(entry, {'company_id': 'anything'}) is True
+        assert evaluate_flag(entry, {}) is True
+
+    def test_legacy_entry_with_none_company_id_skips_guard(self):
+        entry = {
+            'enabled': True,
+            'scope': 'company',
+            'company_id': None,
+            'rules': [],
+            'segments': [],
+            'default_val': True,
+        }
+        assert evaluate_flag(entry, {'company_id': 'anything'}) is True
+        assert evaluate_flag(entry, {}) is True
+
+    def test_non_company_scope_unaffected(self):
+        entry = {
+            'enabled': True,
+            'scope': 'product',
+            'product_id': 'p1',
+            'rules': [],
+            'segments': [],
+            'default_val': True,
+        }
+        assert evaluate_flag(entry, {}) is True

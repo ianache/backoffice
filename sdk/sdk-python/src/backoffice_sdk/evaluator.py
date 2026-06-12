@@ -16,6 +16,10 @@ OPERATORS = {
     'regex':       lambda actual, expected: bool(re.match(expected, str(actual))),
     'greaterThan': lambda actual, expected: float(actual) > float(expected),
     'lessThan':    lambda actual, expected: float(actual) < float(expected),
+    'anyOf':       lambda actual, expected: (
+        bool(set(actual) & set(expected)) if isinstance(actual, (list, tuple, set))
+        else actual in expected
+    ),
 }
 
 
@@ -48,9 +52,20 @@ def evaluate_flag(entry: dict, user: dict) -> bool:
 
     DB-free: manual segment membership resolved via inlined `members` list (Plan 06).
     Mirrors sdk-js evaluator.ts::evaluateFlag any-match semantics.
+
+    Company-scope target guard (TGT-03): when entry['scope'] == 'company' and
+    entry.get('company_id') is not None, the entry only applies if
+    user.get('company_id') == entry['company_id'] — otherwise returns False
+    (fail-closed). Legacy entries without a 'company_id' key (or with it set
+    to None) skip this check entirely. Tenant/product targeting is enforced
+    upstream by bootstrap filtering (by SDK client identity), not here.
     """
     if not entry.get('enabled'):
         return False
+
+    if entry.get('scope') == 'company' and entry.get('company_id') is not None:
+        if user.get('company_id') != entry.get('company_id'):
+            return False
 
     for rule in entry.get('rules', []):
         if evaluate_rule(rule, user):

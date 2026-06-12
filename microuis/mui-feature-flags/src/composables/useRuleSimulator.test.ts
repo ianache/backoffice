@@ -40,6 +40,53 @@ describe('evaluateRule - greaterThan / lessThan', () => {
 })
 
 // ---------------------------------------------------------------------------
+// anyOf operator behavior — mirrors Plan 14-03's sdk-js evaluator.ts anyOf
+// (list intersection / scalar membership, case-sensitive, fail-closed)
+// ---------------------------------------------------------------------------
+
+describe('evaluateRule — anyOf', () => {
+  it('list actual intersecting list expected -> true', () => {
+    const rule: RuleSchema = { attribute: 'roles', operator: 'anyOf', value: ['PlatformAdmin', 'TenantOwner'], result: true }
+    expect(evaluateRule(rule, { roles: ['TenantOwner', 'viewer'] })).toBe(true)
+  })
+
+  it('list actual with no intersection -> false', () => {
+    const rule: RuleSchema = { attribute: 'roles', operator: 'anyOf', value: ['PlatformAdmin', 'TenantOwner'], result: true }
+    expect(evaluateRule(rule, { roles: ['viewer'] })).toBe(false)
+  })
+
+  it('scalar actual present in expected list -> true', () => {
+    const rule: RuleSchema = { attribute: 'roles', operator: 'anyOf', value: ['PlatformAdmin'], result: true }
+    expect(evaluateRule(rule, { roles: 'PlatformAdmin' })).toBe(true)
+  })
+
+  it('scalar actual not present in expected list -> false', () => {
+    const rule: RuleSchema = { attribute: 'roles', operator: 'anyOf', value: ['PlatformAdmin'], result: true }
+    expect(evaluateRule(rule, { roles: 'guest' })).toBe(false)
+  })
+
+  it('empty expected value -> false', () => {
+    const rule: RuleSchema = { attribute: 'roles', operator: 'anyOf', value: [], result: true }
+    expect(evaluateRule(rule, { roles: ['PlatformAdmin'] })).toBe(false)
+  })
+
+  it('case-sensitive: differently-cased actual does not match -> false', () => {
+    const rule: RuleSchema = { attribute: 'roles', operator: 'anyOf', value: ['PlatformAdmin'], result: true }
+    expect(evaluateRule(rule, { roles: ['platformadmin'] })).toBe(false)
+  })
+
+  it('non-array expected value fails closed -> false', () => {
+    const rule: RuleSchema = { attribute: 'roles', operator: 'anyOf', value: 'PlatformAdmin', result: true }
+    expect(evaluateRule(rule, { roles: ['PlatformAdmin'] })).toBe(false)
+  })
+
+  it('missing attribute -> false', () => {
+    const rule: RuleSchema = { attribute: 'roles', operator: 'anyOf', value: ['PlatformAdmin'], result: true }
+    expect(evaluateRule(rule, {})).toBe(false)
+  })
+})
+
+// ---------------------------------------------------------------------------
 // Real user context shape (Phase 13) — confirms evaluateRule() handles the
 // shape returned by shell/useUserContext() with no changes needed
 // ---------------------------------------------------------------------------

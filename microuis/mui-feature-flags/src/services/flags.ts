@@ -33,9 +33,9 @@ export interface FlagPayload {
   name: string
   description?: string
   scope: string
-  tenant_id?: string
-  product_id?: string
-  company_id?: string
+  tenant_id?: string | null
+  product_id?: string | null
+  company_id?: string | null
   enabled?: boolean
   default_val?: boolean
   complex?: boolean

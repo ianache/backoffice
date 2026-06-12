@@ -17,3 +17,13 @@ declare module 'shell/api' {
   const api: AxiosInstance
   export default api
 }
+declare module 'shell/useUserContext' {
+  export interface UserContext {
+    sub: string
+    email: string
+    roles: string[]
+    tenant_id: string
+    product_id: string
+  }
+  export function useUserContext(): UserContext
+}

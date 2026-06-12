@@ -196,10 +196,13 @@ Plans:
 
 ### Phase 15: AND Rule Combination Semantics + Flags Page Filters
 
-**Goal:** (1) Multi-rule evaluation combines with AND — a flag/segment with multiple rules evaluates true only when ALL individual rules match, false otherwise, with parity across the 4 evaluators (backend, sdk-js, sdk-python, useRuleSimulator). OR operator and rule groups (complex compositions) deferred to a future release. (2) The `/flags` page gains filters: by Status, Tags, Complexity, Environment, and by scope target — Products, Tenants, or Global.
-**Requirements**: TBD
+**Goal:** (1) Multi-rule evaluation combines with AND — a flag whose rules combine with AND evaluates true only when ALL individual rules match, false otherwise, with parity across the 4 evaluators (backend, sdk-js, sdk-python, useRuleSimulator) — implemented as opt-in flag-level `rule_combination_mode` ('first_match' legacy default | 'and'); segment conditions keep OR semantics; OR operator and rule groups deferred to a future release. (2) The `/flags` page gains client-side filters: Status, Tags, Complexity (stored `complex` boolean), Environment, and scope target (Products / Tenants / Companies / Global).
+**Requirements**: AND-01, AND-02, FLT-01, FLT-02, FLT-03, FLT-04, FLT-05 (assigned at plan time — registration gap vs REQUIREMENTS.md noted in phase deferred-items.md, same as Phase 14)
 **Depends on:** Phase 14
-**Plans:** 0 plans
+**Plans:** 4 plans
 
 Plans:
-- [ ] TBD (run /gsd:plan-phase 15 to break down)
+- [ ] 15-01-PLAN.md — Backend AND mode: d004 migration + rule_combination_mode column/schemas + evaluate_flag AND branch + bootstrap field
+- [ ] 15-02-PLAN.md — sdk-js + sdk-python AND-mode parity in local evaluators (TDD)
+- [ ] 15-03-PLAN.md — useRuleSimulator AND mode + RuleSimulator per-rule pass/fail UI + RuleBuilderView mode selector/persistence
+- [ ] 15-04-PLAN.md — /flags client-side filters (useFlagFilters composable + FlagsView filter bar) + visual checkpoint

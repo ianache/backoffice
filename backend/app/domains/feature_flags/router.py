@@ -58,6 +58,51 @@ def _check_scope_permission(scope: str, roles: list[str], detail_action: str) ->
         )
 
 
+_TARGET_FIELD_BY_SCOPE = {
+    'tenant': 'tenant_id',
+    'product': 'product_id',
+    'company': 'company_id',
+}
+
+
+def _validate_update_target(flag, update_data: dict) -> dict:
+    """Validate merged scope/target state for a PATCH payload.
+
+    If none of {'scope','tenant_id','product_id','company_id'} are present in
+    update_data, the update is a legacy edit (e.g. toggling `enabled`) and is
+    returned unchanged — no validation is performed (locked decision).
+
+    Otherwise, computes the effective scope+targets (flag state merged with
+    update_data), validates that a non-global effective scope has its required
+    target non-empty (422 if not), and — if 'scope' is being changed — clears
+    the two non-matching target columns to None for mutual exclusivity.
+    """
+    target_keys = {'scope', 'tenant_id', 'product_id', 'company_id'}
+    if not target_keys.intersection(update_data.keys()):
+        return update_data
+
+    effective_scope = update_data.get('scope', flag.scope)
+    effective_targets = {
+        'tenant_id': update_data.get('tenant_id', flag.tenant_id),
+        'product_id': update_data.get('product_id', flag.product_id),
+        'company_id': update_data.get('company_id', flag.company_id),
+    }
+
+    required_field = _TARGET_FIELD_BY_SCOPE.get(effective_scope)
+    if required_field and not effective_targets[required_field]:
+        raise HTTPException(
+            status_code=422,
+            detail=f"{required_field} is required when scope is '{effective_scope}'"
+        )
+
+    if 'scope' in update_data:
+        for scope_name, field_name in _TARGET_FIELD_BY_SCOPE.items():
+            if scope_name != effective_scope:
+                update_data[field_name] = None
+
+    return update_data
+
+
 @router.get("/", response_model=list[FlagResponse])
 async def list_flags(
     scope: Optional[str] = Query(None),
@@ -111,7 +156,15 @@ async def update_flag(
     roles = [r.strip() for r in x_user_roles.split(',') if r.strip()]
     _check_scope_permission(flag.scope, roles, "update")
 
-    updated_flag = await service.update_flag(db, flag_id, payload)
+    update_data = payload.model_dump(exclude_unset=True)
+    if 'scope' in update_data and update_data['scope'] != flag.scope:
+        # Changing INTO a different scope also requires permission for that scope
+        _check_scope_permission(update_data['scope'], roles, "update")
+
+    validated_data = _validate_update_target(flag, update_data)
+    validated_payload = FlagUpdate(**validated_data)
+
+    updated_flag = await service.update_flag(db, flag_id, validated_payload)
     # Broadcast flag change to SDK WebSocket clients for this tenant
     manager = request.app.state.ws_manager
     if updated_flag.tenant_id:

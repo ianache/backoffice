@@ -27,10 +27,25 @@ class FlagCreate(BaseModel):
     rules: List[RuleSchema] = []
     tags: List[str] = []
 
+    @model_validator(mode='after')
+    def validate_scope_target(self):
+        """Non-global flags must carry their scope's target column at creation time."""
+        if self.scope == 'tenant' and not self.tenant_id:
+            raise ValueError("tenant_id is required when scope is 'tenant'")
+        if self.scope == 'product' and not self.product_id:
+            raise ValueError("product_id is required when scope is 'product'")
+        if self.scope == 'company' and not self.company_id:
+            raise ValueError("company_id is required when scope is 'company'")
+        return self
+
 
 class FlagUpdate(BaseModel):
     name: Optional[str] = None
     description: Optional[str] = None
+    scope: Optional[str] = None
+    tenant_id: Optional[str] = None
+    product_id: Optional[str] = None
+    company_id: Optional[str] = None
     enabled: Optional[bool] = None
     default_val: Optional[bool] = None
     complex: Optional[bool] = None
@@ -40,6 +55,11 @@ class FlagUpdate(BaseModel):
     rules: Optional[List[RuleSchema]] = None
     tags: Optional[List[str]] = None
     test_context: Optional[str] = None
+
+    # NOTE: intentionally NO model_validator here — partial updates (e.g. toggling
+    # `enabled`) must not be subject to scope/target validation. Merged-state
+    # validation happens in router._validate_update_target() when scope/target
+    # fields are actually present in the update payload.
 
 
 class FlagResponse(BaseModel):

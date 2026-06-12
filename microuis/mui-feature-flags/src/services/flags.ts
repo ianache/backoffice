@@ -22,6 +22,7 @@ export interface FeatureFlag {
   environment: string     // 'production' | 'staging' | 'development'
   rollout: number         // 0-100 display only in Phase 4 (FLAG-07 deferred)
   rules: RuleSchema[]
+  rule_combination_mode: string  // 'first_match' | 'and' — backend normalizes, never null
   tags: string[]
   test_context: string | null
   created_by: string | null
@@ -43,6 +44,7 @@ export interface FlagPayload {
   environment?: string
   rollout?: number
   rules?: RuleSchema[]
+  rule_combination_mode?: string
   tags?: string[]
   test_context?: string
 }

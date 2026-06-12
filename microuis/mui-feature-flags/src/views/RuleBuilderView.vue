@@ -23,6 +23,7 @@ const flag = computed(() => store.flags.find(f => f.id === flagId.value) ?? null
 
 const localRules = ref<RuleLocal[]>([])
 const localRollout = ref(0)
+const localMode = ref<'first_match' | 'and'>('first_match')
 const isSaving = ref(false)
 
 onMounted(async () => {
@@ -30,6 +31,7 @@ onMounted(async () => {
   if (flag.value) {
     localRules.value = flag.value.rules.map(r => ({ ...r, _id: crypto.randomUUID() }))
     localRollout.value = flag.value.rollout ?? 0
+    localMode.value = flag.value.rule_combination_mode === 'and' ? 'and' : 'first_match'
   } else {
     // Flag not found — redirect back
     router.push({ name: 'flags' })
@@ -63,6 +65,7 @@ async function saveChanges(): Promise<void> {
       rules,
       rollout: localRollout.value,
       complex: rules.length > 0,  // auto-set complex=true when rules exist
+      rule_combination_mode: localMode.value,
     })
     router.push({ name: 'flags' })
   } finally {
@@ -146,6 +149,21 @@ function cancel(): void {
             <span class="font-label-lg text-label-lg font-bold text-primary w-10 text-right">{{ localRollout }}%</span>
           </div>
 
+          <!-- Rule combination mode selector -->
+          <div class="relative z-10 flex flex-col gap-xs bg-white rounded-lg border border-outline-variant px-md py-md">
+            <div class="flex items-center gap-md">
+              <span class="font-label-lg text-label-lg text-on-surface whitespace-nowrap">Match</span>
+              <select v-model="localMode"
+                class="flex-1 px-sm py-xs rounded-lg border border-outline-variant text-sm text-on-surface bg-white focus:outline-none focus:border-primary">
+                <option value="first_match">First matching rule (legacy)</option>
+                <option value="and">All rules (AND)</option>
+              </select>
+            </div>
+            <p v-if="localMode === 'and'" class="text-xs text-on-surface-variant italic">
+              All rules must match — per-rule Result is ignored
+            </p>
+          </div>
+
           <!-- Draggable rule cards list -->
           <draggable
             v-model="localRules"
@@ -163,7 +181,7 @@ function cancel(): void {
                 <div v-if="index > 0" class="flex justify-center relative -mt-4 mb-sm z-20 pointer-events-none">
                   <div class="w-px h-12 bg-outline-variant"></div>
                   <div class="absolute top-1/2 -translate-y-1/2 bg-white px-md py-xs rounded-full border border-outline-variant shadow-sm font-label-lg text-label-lg text-primary font-bold select-none">
-                    AND
+                    {{ localMode === 'and' ? 'AND' : 'ELSE IF' }}
                   </div>
                 </div>
                 <RuleCard
@@ -197,6 +215,7 @@ function cancel(): void {
           :rules="localRules"
           mode="flag"
           :test-context="flag?.test_context"
+          :combination-mode="localMode"
           @save-test-context="handleSaveTestContext"
         />
       </div>

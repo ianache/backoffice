@@ -33,7 +33,7 @@ Full archive: `.planning/milestones/v1.0-ROADMAP.md`
 - [x] **Phase 11: mui-feature-flags + SDK Clients** — Feature flags MUI migrated; Segments UI with orphan detection; JS/TS + Python SDK packages (completed 2026-06-10)
 - [x] **Phase 12: Dogfooding Feature Flags** — Portal gated by its own flags (product `backoffice`): bo.feature, bo.feature.create, bo.feature.update (completed 2026-06-11)
 - [x] **Phase 13: Simulator Test Contexts** — Persistent per-flag test contexts in Live Simulator + toggle to use the logged-in user's real context (completed 2026-06-11)
-- [ ] **Phase 14: Flag Scope Targeting + List-Valued Rules** — Combobox de producto/tenant/company según scope del flag (persistido y aplicado por el SDK) + values de Rule como lista separada por coma para atributos lista (ej. roles)
+- [x] **Phase 14: Flag Scope Targeting + List-Valued Rules** — Combobox de producto/tenant/company según scope del flag (persistido y aplicado por el SDK) + values de Rule como lista separada por coma para atributos lista (ej. roles) (completed 2026-06-12)
 
 ## Phase Details
 
@@ -183,7 +183,7 @@ Plans:
 **Goal**: Los feature flags con scope no-global apuntan a una entidad concreta y las reglas soportan listas de valores: (1) **Scope targeting** — al crear/editar un feature flag, cuando el `scope` seleccionado sea `product`, `tenant` o `company`, el formulario muestra un combobox para elegir el producto/tenant/company específico al que aplica el flag; la selección se **almacena en backend** (target del scope) y el **SDK** (bootstrap + evaluación local sdk-js/sdk-python + `POST /sdk/evaluate`) activa o desactiva el flag según el scope+target definidos — un flag scoped a `product=X` no se activa para `product=Y`. (2) **List-valued rule values** — en el editor de Rules del Rule Builder, cuando el `attribute` del contexto sea una lista (ej. `roles`), el `value` de la Rule acepta una **lista de valores separados por coma** (ej. `PlatformAdmin, TenantOwner`) que hace match si **cualquiera** de los valores aplica — evitando crear una regla por cada valor específico. El operador de evaluación correspondiente debe existir con paridad en backend OPERATORS, sdk-js evaluator, sdk-python evaluator y useRuleSimulator.ts.
 **Requirements**: TBD (derive at plan time: TGT-01 combobox por scope, TGT-02 persistencia del target, TGT-03 enforcement en SDK/bootstrap/evaluate, LST-01 value como lista separada por coma con match any, LST-02 paridad del operador en los 4 evaluadores)
 **Depends on:** Phase 13
-**Plans:** 4/6 plans executed
+**Plans:** 6/6 plans complete
 
 Plans:
 - [ ] 14-01-PLAN.md — Companies backend domain (models/schemas/service/router) + Alembic d003 + BFF /companies proxy

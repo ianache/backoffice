@@ -2,17 +2,17 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: MVP2
-current_plan: 4
+current_plan: 6
 status: executing
-stopped_at: Completed 14-02-PLAN.md
-last_updated: "2026-06-12T00:12:07.797Z"
+stopped_at: Completed 14-06-PLAN.md (all 6 phase 14 plans executed)
+last_updated: "2026-06-12T00:19:40.417Z"
 last_activity: 2026-06-12
 progress:
   total_phases: 15
   completed_phases: 14
   total_plans: 70
-  completed_plans: 68
-  percent: 97
+  completed_plans: 70
+  percent: 100
 ---
 
 # Project State
@@ -27,13 +27,13 @@ See: .planning/PROJECT.md (updated 2026-06-07)
 ## Current Position
 
 Phase: 14 of 15 (Flag Scope Targeting + List-Valued Rules)
-**Current Plan:** 4
+**Current Plan:** 6
 **Total Plans in Phase:** 6
-**Status:** Ready to execute
+**Status:** All plans executed — pending phase verification
 **Last Activity:** 2026-06-12
-Last activity detail: 2026-06-12 — Completed 14-04-PLAN.md (anyOf evaluator parity in useRuleSimulator.ts; RuleCard.vue comma-text editing with parse-on-blur + mini-chips; RuleSimulator Matched Rule panel mini-chips). LST-01/LST-02 Rule Builder UI complete.
+Last activity detail: 2026-06-12 — Completed 14-06-PLAN.md (Companies admin UI in mui-tenants: /companies view+table+drawer+store+service, Shell nav button with apartment icon, tenant select with 403 fallback). CMP-01 complete. All 6 phase 14 plans executed.
 
-**Progress:** [██████████] 97%
+**Progress:** [██████████] 100%
 
 ## Performance Metrics
 
@@ -84,6 +84,7 @@ Last activity detail: 2026-06-12 — Completed 14-04-PLAN.md (anyOf evaluator pa
 | Phase 14-flag-scope-targeting-list-valued-rules P04 | 12min | 3 tasks | 4 files |
 | Phase 14 P03 | 9min | 3 tasks | 7 files |
 | Phase 14-flag-scope-targeting-list-valued-rules P02 | 18min | 3 tasks | 6 files |
+| Phase 14-flag-scope-targeting-list-valued-rules P05 | 12min | 3 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -182,6 +183,9 @@ Recent decisions affecting v1.1:
 - [Phase 14-flag-scope-targeting-list-valued-rules]: [14-02]: FlagUpdate has NO model_validator - merged-state scope/target validation happens in router._validate_update_target() only when scope/tenant_id/product_id/company_id are present in the PATCH payload, preserving legacy partial-update behavior
 - [Phase 14-flag-scope-targeting-list-valued-rules]: [14-02]: bootstrap_flags company-scope inclusion treats company_id as per-user-context (checked by evaluate_flag), not per-SDK-client - company-scoped flags are included in bootstrap unless flag.tenant_id also mismatches the requesting tenant
 - [Phase 14-flag-scope-targeting-list-valued-rules]: [14-02]: /sdk/evaluate now calls list_flags(db) unfiltered - the previous tenant_id pre-filter starved product/company-scoped flags (tenant_id NULL) before evaluate_flag's existing per-scope candidate matching could resolve them
+- [Phase 14-flag-scope-targeting-list-valued-rules]: [14-05]: validateFlagTarget/buildTargetFields kept dependency-free (no Vue) for direct vitest unit testing
+- [Phase 14-flag-scope-targeting-list-valued-rules]: [14-05]: Tenant lookup wrapped in try/catch with useUserContext().tenant_id fallback ('My tenant') on 403 from PlatformAdmin-only /tenants
+- [Phase 14-flag-scope-targeting-list-valued-rules]: [14-05]: Scope-switch watcher clears all three target refs unconditionally when oldScope !== newScope
 
 ### Pending Todos
 
@@ -195,6 +199,6 @@ Recent decisions affecting v1.1:
 
 ## Session Continuity
 
-**Last session:** 2026-06-12T00:12:07.788Z
-**Stopped At:** Completed 14-02-PLAN.md
+**Last session:** 2026-06-12T00:19:40.404Z
+**Stopped At:** Completed 14-05-PLAN.md
 **Resume File:** None

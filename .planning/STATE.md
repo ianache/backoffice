@@ -4,15 +4,15 @@ milestone: v1.1
 milestone_name: MVP2
 current_plan: Not started
 status: completed
-stopped_at: Completed 15-02-PLAN.md
-last_updated: "2026-06-12T12:04:35.361Z"
+stopped_at: Completed 15-01-PLAN.md
+last_updated: "2026-06-12T12:06:21.832Z"
 last_activity: 2026-06-12
 progress:
   total_phases: 16
   completed_phases: 15
   total_plans: 74
-  completed_plans: 71
-  percent: 96
+  completed_plans: 72
+  percent: 97
 ---
 
 # Project State
@@ -33,7 +33,7 @@ Phase: 14 of 15 (Flag Scope Targeting + List-Valued Rules)
 **Last Activity:** 2026-06-12
 Last activity detail: 2026-06-12 — Completed 14-06-PLAN.md (Companies admin UI in mui-tenants: /companies view+table+drawer+store+service, Shell nav button with apartment icon, tenant select with 403 fallback). CMP-01 complete. All 6 phase 14 plans executed.
 
-**Progress:** [██████████] 96%
+**Progress:** [██████████] 97%
 
 ## Performance Metrics
 
@@ -86,6 +86,7 @@ Last activity detail: 2026-06-12 — Completed 14-06-PLAN.md (Companies admin UI
 | Phase 14-flag-scope-targeting-list-valued-rules P02 | 18min | 3 tasks | 6 files |
 | Phase 14-flag-scope-targeting-list-valued-rules P05 | 12min | 3 tasks | 5 files |
 | Phase 15-and-rule-combination-semantics P02 | 12min | 2 tasks | 5 files |
+| Phase 15 P01 | 10min | 3 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -191,6 +192,9 @@ Recent decisions affecting v1.1:
 - [Phase 14-flag-scope-targeting-list-valued-rules]: [14-05]: Scope-switch watcher clears all three target refs unconditionally when oldScope !== newScope
 - [Phase 15-and-rule-combination-semantics]: [15-02]: Both SDK evaluators branch on rule_combination_mode immediately after the company-scope guard and before the existing rules loop, mirroring backend Plan 15-01 placement exactly
 - [Phase 15-and-rule-combination-semantics]: [15-02]: AND mode with non-empty rules is strict-false (any failure returns false immediately, no segment/default_val fallback); empty rules fall through unchanged to legacy path
+- [Phase 15]: [15-01]: AND mode with non-empty rules is strict-false (no segment/default_val fallback) - locked CONTEXT.md Option C decision
+- [Phase 15]: [15-01]: Empty rules + mode='and' falls through to exact legacy no-rules path - vacuous AND unchanged
+- [Phase 15]: [15-01]: FlagUpdate keeps no model_validator (14-02 precedent) - rule_combination_mode validated via standalone field_validator
 
 ### Pending Todos
 
@@ -204,6 +208,6 @@ Recent decisions affecting v1.1:
 
 ## Session Continuity
 
-**Last session:** 2026-06-12T12:04:35.350Z
-**Stopped At:** Completed 15-02-PLAN.md
+**Last session:** 2026-06-12T12:06:21.822Z
+**Stopped At:** Completed 15-01-PLAN.md
 **Resume File:** None

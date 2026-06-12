@@ -24,6 +24,7 @@ class FeatureFlag(Base):
     rules: Mapped[Optional[str]] = mapped_column(Text, nullable=True)   # JSON array as TEXT — MySQL 5.6 safe
     tags: Mapped[Optional[str]] = mapped_column(Text, nullable=True)    # JSON array as TEXT — MySQL 5.6 safe
     test_context: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # JSON object as TEXT — Live Simulator saved example (Phase 13)
+    rule_combination_mode: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)  # 'first_match' | 'and'; NULL = 'first_match' (Phase 15)
     created_by: Mapped[Optional[str]] = mapped_column(String(36), nullable=True)
     created_at: Mapped[datetime] = mapped_column(server_default=func.now(), nullable=False)
     updated_at: Mapped[datetime] = mapped_column(server_default=func.now(), onupdate=func.now(), nullable=False)

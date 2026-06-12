@@ -1,7 +1,13 @@
 import json
 from datetime import datetime
 from typing import Any, List, Optional
-from pydantic import BaseModel, ConfigDict, model_validator
+from pydantic import BaseModel, ConfigDict, field_validator, model_validator
+
+
+def _validate_rule_combination_mode(v: Optional[str]) -> Optional[str]:
+    if v is not None and v not in ('first_match', 'and'):
+        raise ValueError("rule_combination_mode must be 'first_match' or 'and'")
+    return v
 
 
 class RuleSchema(BaseModel):
@@ -26,6 +32,12 @@ class FlagCreate(BaseModel):
     rollout: int = 100
     rules: List[RuleSchema] = []
     tags: List[str] = []
+    rule_combination_mode: Optional[str] = None
+
+    @field_validator('rule_combination_mode')
+    @classmethod
+    def validate_rule_combination_mode(cls, v):
+        return _validate_rule_combination_mode(v)
 
     @model_validator(mode='after')
     def validate_scope_target(self):
@@ -55,6 +67,12 @@ class FlagUpdate(BaseModel):
     rules: Optional[List[RuleSchema]] = None
     tags: Optional[List[str]] = None
     test_context: Optional[str] = None
+    rule_combination_mode: Optional[str] = None
+
+    @field_validator('rule_combination_mode')
+    @classmethod
+    def validate_rule_combination_mode(cls, v):
+        return _validate_rule_combination_mode(v)
 
     # NOTE: intentionally NO model_validator here — partial updates (e.g. toggling
     # `enabled`) must not be subject to scope/target validation. Merged-state
@@ -79,6 +97,7 @@ class FlagResponse(BaseModel):
     rules: List[RuleSchema]
     tags: List[str]
     test_context: Optional[str] = None
+    rule_combination_mode: str = 'first_match'
     created_by: Optional[str]
     created_at: datetime
     updated_at: datetime
@@ -96,6 +115,8 @@ class FlagResponse(BaseModel):
                     values[field] = json.loads(v) if v else []
                 elif v is None:
                     values[field] = []
+            if not values.get('rule_combination_mode'):
+                values['rule_combination_mode'] = 'first_match'
             return values
         # Handle ORM object
         obj = values
@@ -103,6 +124,8 @@ class FlagResponse(BaseModel):
         tags_raw = getattr(obj, 'tags', None)
         obj.rules = json.loads(rules_raw) if rules_raw else []
         obj.tags = json.loads(tags_raw) if tags_raw else []
+        if not getattr(obj, 'rule_combination_mode', None):
+            obj.rule_combination_mode = 'first_match'
         return obj
 
 

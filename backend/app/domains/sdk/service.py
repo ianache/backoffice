@@ -74,6 +74,7 @@ async def bootstrap_flags(
             "rules": rules,
             "segments": inlined_segments,
             "default_val": bool(flag.default_val) if hasattr(flag, 'default_val') else False,
+            "rule_combination_mode": getattr(flag, 'rule_combination_mode', None) or 'first_match',
             "scope": flag.scope,
             "tenant_id": getattr(flag, 'tenant_id', None),
             "product_id": getattr(flag, 'product_id', None),

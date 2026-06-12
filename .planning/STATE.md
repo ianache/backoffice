@@ -94,6 +94,7 @@ Last activity detail: 2026-06-12 — Completed 14-06-PLAN.md (Companies admin UI
 - Phase 13 added (2026-06-11): Simulator Test Contexts — persistent per-flag test contexts in the Live Simulator + toggle to use the logged-in user's real property values as Test Context
 - Phase 14 added (2026-06-11): Flag Scope Targeting + List-Valued Rules — combobox producto/tenant/company según scope del flag (target persistido en backend, enforcement en SDK bootstrap/evaluación) + Rule values como lista separada por coma con match-any para atributos lista (ej. roles), con paridad de operador en backend/sdk-js/sdk-python/useRuleSimulator
 - Phase 15 added (2026-06-12): AND Rule Combination Semantics — multi-rule evaluation combina con AND (true solo si TODAS las reglas matchean, false en caso contrario) con paridad en los 4 evaluadores (backend, sdk-js, sdk-python, useRuleSimulator); OR y grupos de reglas diferidos a un release futuro
+- Phase 15 expanded (2026-06-12): Flags Page Filters — filtros en `/flags` por Status, Tags, Complexity, Environment y target de scope (Products, Tenants o Global)
 
 ### Decisions
 

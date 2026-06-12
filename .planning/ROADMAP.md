@@ -34,7 +34,7 @@ Full archive: `.planning/milestones/v1.0-ROADMAP.md`
 - [x] **Phase 12: Dogfooding Feature Flags** — Portal gated by its own flags (product `backoffice`): bo.feature, bo.feature.create, bo.feature.update (completed 2026-06-11)
 - [x] **Phase 13: Simulator Test Contexts** — Persistent per-flag test contexts in Live Simulator + toggle to use the logged-in user's real context (completed 2026-06-11)
 - [x] **Phase 14: Flag Scope Targeting + List-Valued Rules** — Combobox de producto/tenant/company según scope del flag (persistido y aplicado por el SDK) + values de Rule como lista separada por coma para atributos lista (ej. roles) (completed 2026-06-12)
-- [ ] **Phase 15: AND Rule Combination Semantics** — Multi-rule evaluation combina con AND: el flag/segment evalúa true solo si TODAS las reglas individuales matchean, false en caso contrario; paridad en los 4 evaluadores (backend, sdk-js, sdk-python, useRuleSimulator). OR y grupos de reglas diferidos a un release futuro
+- [ ] **Phase 15: AND Rule Combination Semantics + Flags Page Filters** — Multi-rule evaluation combina con AND: el flag/segment evalúa true solo si TODAS las reglas individuales matchean, false en caso contrario; paridad en los 4 evaluadores (backend, sdk-js, sdk-python, useRuleSimulator); OR y grupos de reglas diferidos a un release futuro. Además, filtros en la página `/flags`: Status, Tags, Complexity, Environment y target de scope (Products, Tenants o Global)
 
 ## Phase Details
 
@@ -194,9 +194,9 @@ Plans:
 - [ ] 14-05-PLAN.md — FlagForm scope-target comboboxes (tenants/products/companies lookups, validation, mutual exclusivity)
 - [ ] 14-06-PLAN.md — Companies UI in mui-tenants (/companies view+table+drawer+store+service) + Shell nav button
 
-### Phase 15: AND Rule Combination Semantics
+### Phase 15: AND Rule Combination Semantics + Flags Page Filters
 
-**Goal:** Multi-rule evaluation combines with AND — a flag/segment with multiple rules evaluates true only when ALL individual rules match, false otherwise, with parity across the 4 evaluators (backend, sdk-js, sdk-python, useRuleSimulator). OR operator and rule groups (complex compositions) deferred to a future release.
+**Goal:** (1) Multi-rule evaluation combines with AND — a flag/segment with multiple rules evaluates true only when ALL individual rules match, false otherwise, with parity across the 4 evaluators (backend, sdk-js, sdk-python, useRuleSimulator). OR operator and rule groups (complex compositions) deferred to a future release. (2) The `/flags` page gains filters: by Status, Tags, Complexity, Environment, and by scope target — Products, Tenants, or Global.
 **Requirements**: TBD
 **Depends on:** Phase 14
 **Plans:** 0 plans

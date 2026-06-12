@@ -2,17 +2,17 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: MVP2
-current_plan: Not started
-status: completed
-stopped_at: Phase 14 planned (6 plans, verification passed)
-last_updated: "2026-06-11T23:58:40.181Z"
-last_activity: 2026-06-11
+current_plan: 3
+status: executing
+stopped_at: Completed 14-03-PLAN.md
+last_updated: "2026-06-12T00:10:16.379Z"
+last_activity: 2026-06-12
 progress:
   total_phases: 15
   completed_phases: 14
   total_plans: 70
-  completed_plans: 64
-  percent: 100
+  completed_plans: 67
+  percent: 96
 ---
 
 # Project State
@@ -26,14 +26,14 @@ See: .planning/PROJECT.md (updated 2026-06-07)
 
 ## Current Position
 
-Phase: 13 of 14 (Simulator Test Contexts)
-**Current Plan:** Not started
-**Total Plans in Phase:** 4
-**Status:** Milestone complete
-**Last Activity:** 2026-06-11
-Last activity detail: 2026-06-11 — Completed 13-02-PLAN.md (useUserContext composable + Module Federation wiring for SIM-03). Auth store gained real JWT `sub` claim; new useUserContext() exposed via shell/useUserContext for mui-feature-flags consumption in Plan 13-03.
+Phase: 14 of 15 (Flag Scope Targeting + List-Valued Rules)
+**Current Plan:** 3
+**Total Plans in Phase:** 6
+**Status:** Ready to execute
+**Last Activity:** 2026-06-12
+Last activity detail: 2026-06-12 — Completed 14-01-PLAN.md (Companies catalog backend: companies domain CRUD API, Alembic d003 migration, BFF /companies proxy route). Foundation for flag.company_id scope targeting (Plans 14-05/14-06).
 
-**Progress:** [██████████] 100%
+**Progress:** [██████████] 96%
 
 ## Performance Metrics
 
@@ -80,6 +80,9 @@ Last activity detail: 2026-06-11 — Completed 13-02-PLAN.md (useUserContext com
 | Phase 13-simulator-test-contexts P01 | 12min | 3 tasks | 5 files |
 | Phase 13-simulator-test-contexts P03 | 8min | 3 tasks | 3 files |
 | Phase 13-simulator-test-contexts P04 | 8min | 3 tasks | 3 files |
+| Phase 14-flag-scope-targeting-list-valued-rules P01 | 12min | 3 tasks | 11 files |
+| Phase 14-flag-scope-targeting-list-valued-rules P04 | 12min | 3 tasks | 4 files |
+| Phase 14 P03 | 9min | 3 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -167,6 +170,14 @@ Recent decisions affecting v1.1:
 - [Phase 13-simulator-test-contexts]: [13-03]: contextJson initialization uses props.testContext || PLACEHOLDER_CONTEXT (truthy check) so empty-string saved contexts also fall back to placeholder
 - [Phase 13-simulator-test-contexts]: [13-04]: RuleBuilderView omits isSavingTestContext loading flag - RuleSimulator has no loading-state prop, kept handler minimal
 - [Phase 13-simulator-test-contexts]: [13-04]: SegmentsView.handleSaveTestContext reassigns editingSegment to updateSegment() response so SegmentForm reflects persisted test_context without remounting
+- [Phase 14-flag-scope-targeting-list-valued-rules]: [14-01]: Companies domain mirrors products domain 1:1 (models/schemas/service/router) - Company.id is immutable slug, tenant_id has no FK, CompanyUpdate excludes id+tenant_id
+- [Phase 14-flag-scope-targeting-list-valued-rules]: [14-01]: BFF /companies route uses requireAuth only - backend enforces role+tenant isolation via X-User-Roles/X-User-Tenant-Id headers, per resolved open question #3
+- [Phase 14-04]: isArrayValueOperator (in/notIn/anyOf) replaces isArrayOperator for RuleCard operator-switch value coercion; ChipTagInput rendering stays gated on isArrayOperator (in/notIn only)
+- [Phase 14-04]: anyOfRaw local ref synced via watch on [rule._id, rule.operator] with immediate:true (not on rule.value change) to avoid trailing-comma keystroke round-trip
+- [Phase 14-04]: RuleSimulator.vue mini-chips use inline Tailwind utility classes instead of adding a new scoped style block
+- [Phase 14]: [14-03]: anyOf operator lambda identical across backend/sdk-js/sdk-python - set intersection for list actual, membership for scalar actual, case-sensitive
+- [Phase 14]: [14-03]: Company-scope target guard in SDK evaluators uses null-check (!= null / is not None) so missing/null company_id skips guard - preserves legacy cached payload behavior
+- [Phase 14]: [14-03]: No tenant/product guards added to SDK local evaluators - bootstrap already filters by SDK client identity per CONTEXT.md
 
 ### Pending Todos
 
@@ -180,6 +191,6 @@ Recent decisions affecting v1.1:
 
 ## Session Continuity
 
-**Last session:** 2026-06-11T23:58:40.154Z
-**Stopped At:** Phase 14 planned (6 plans, verification passed)
-**Resume File:** .planning/phases/14-flag-scope-targeting-list-valued-rules/14-01-PLAN.md
+**Last session:** 2026-06-12T00:10:16.364Z
+**Stopped At:** Completed 14-03-PLAN.md
+**Resume File:** None

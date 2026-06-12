@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: MVP2
-current_plan: 6
-status: executing
-stopped_at: Completed 14-06-PLAN.md (all 6 phase 14 plans executed)
-last_updated: "2026-06-12T00:19:40.417Z"
+current_plan: Not started
+status: completed
+stopped_at: Completed 14-05-PLAN.md
+last_updated: "2026-06-12T05:20:41.816Z"
 last_activity: 2026-06-12
 progress:
   total_phases: 15
-  completed_phases: 14
+  completed_phases: 15
   total_plans: 70
   completed_plans: 70
   percent: 100
@@ -27,9 +27,9 @@ See: .planning/PROJECT.md (updated 2026-06-07)
 ## Current Position
 
 Phase: 14 of 15 (Flag Scope Targeting + List-Valued Rules)
-**Current Plan:** 6
+**Current Plan:** Not started
 **Total Plans in Phase:** 6
-**Status:** All plans executed — pending phase verification
+**Status:** Milestone complete
 **Last Activity:** 2026-06-12
 Last activity detail: 2026-06-12 — Completed 14-06-PLAN.md (Companies admin UI in mui-tenants: /companies view+table+drawer+store+service, Shell nav button with apartment icon, tenant select with 403 fallback). CMP-01 complete. All 6 phase 14 plans executed.
 

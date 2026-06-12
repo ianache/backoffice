@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
-import { evaluateRule } from './useRuleSimulator'
+import { ref, effectScope, nextTick } from 'vue'
+import { evaluateRule, useRuleSimulator } from './useRuleSimulator'
 import type { RuleSchema } from '../services/flags'
 
 // ---------------------------------------------------------------------------
@@ -108,5 +109,139 @@ describe('evaluateRule - real user context shape (Phase 13)', () => {
     // (no new logic added — this is a documentation/regression test).
     const result = evaluateRule(rule, realContext)
     expect(typeof result).toBe('boolean')
+  })
+})
+
+// ---------------------------------------------------------------------------
+// useRuleSimulator — AND combination mode (Plan 15-03)
+// New 3rd `mode` param: 'and' exposes per-rule ruleResults[] + overallResult
+// (true only when ALL rules pass); 'first_match' (default) preserves the
+// existing first-match-wins behavior with ruleResults populated too.
+// ---------------------------------------------------------------------------
+
+const andRules: RuleSchema[] = [
+  { attribute: 'country', operator: 'equals', value: 'PE', result: true },
+  { attribute: 'plan', operator: 'equals', value: 'pro', result: true },
+]
+
+describe('useRuleSimulator — AND combination mode', () => {
+  it('and + all match: ruleResults all true, overallResult true, matchedIndex/matchedResult null', async () => {
+    const scope = effectScope()
+    let api!: ReturnType<typeof useRuleSimulator>
+    scope.run(() => {
+      const rules = ref<RuleSchema[]>(andRules)
+      const contextJson = ref(JSON.stringify({ country: 'PE', plan: 'pro' }))
+      const mode = ref('and')
+      api = useRuleSimulator(rules as any, contextJson, mode)
+    })
+    await nextTick()
+
+    expect(api.ruleResults.value).toEqual([true, true])
+    expect(api.overallResult.value).toBe(true)
+    expect(api.matchedIndex.value).toBeNull()
+    expect(api.matchedResult.value).toBeNull()
+    scope.stop()
+  })
+
+  it('and + one fails: ruleResults [true, false], overallResult false', async () => {
+    const scope = effectScope()
+    let api!: ReturnType<typeof useRuleSimulator>
+    scope.run(() => {
+      const rules = ref<RuleSchema[]>(andRules)
+      const contextJson = ref(JSON.stringify({ country: 'PE', plan: 'free' }))
+      const mode = ref('and')
+      api = useRuleSimulator(rules as any, contextJson, mode)
+    })
+    await nextTick()
+
+    expect(api.ruleResults.value).toEqual([true, false])
+    expect(api.overallResult.value).toBe(false)
+    scope.stop()
+  })
+
+  it('and + per-rule result ignored: overallResult true even when rules have result:false', async () => {
+    const scope = effectScope()
+    let api!: ReturnType<typeof useRuleSimulator>
+    scope.run(() => {
+      const rules = ref<RuleSchema[]>([
+        { attribute: 'country', operator: 'equals', value: 'PE', result: false },
+        { attribute: 'plan', operator: 'equals', value: 'pro', result: false },
+      ])
+      const contextJson = ref(JSON.stringify({ country: 'PE', plan: 'pro' }))
+      const mode = ref('and')
+      api = useRuleSimulator(rules as any, contextJson, mode)
+    })
+    await nextTick()
+
+    expect(api.ruleResults.value).toEqual([true, true])
+    expect(api.overallResult.value).toBe(true)
+    scope.stop()
+  })
+
+  it('and + empty rules: ruleResults [], overallResult null', async () => {
+    const scope = effectScope()
+    let api!: ReturnType<typeof useRuleSimulator>
+    scope.run(() => {
+      const rules = ref<RuleSchema[]>([])
+      const contextJson = ref(JSON.stringify({ country: 'PE', plan: 'pro' }))
+      const mode = ref('and')
+      api = useRuleSimulator(rules as any, contextJson, mode)
+    })
+    await nextTick()
+
+    expect(api.ruleResults.value).toEqual([])
+    expect(api.overallResult.value).toBeNull()
+    scope.stop()
+  })
+
+  it('and + invalid context JSON: contextError set, ruleResults [], overallResult null', async () => {
+    const scope = effectScope()
+    let api!: ReturnType<typeof useRuleSimulator>
+    scope.run(() => {
+      const rules = ref<RuleSchema[]>(andRules)
+      const contextJson = ref('{ not valid json')
+      const mode = ref('and')
+      api = useRuleSimulator(rules as any, contextJson, mode)
+    })
+    await nextTick()
+
+    expect(api.contextError.value).not.toBeNull()
+    expect(api.ruleResults.value).toEqual([])
+    expect(api.overallResult.value).toBeNull()
+    scope.stop()
+  })
+
+  it('first_match (default 3rd param omitted): existing behavior preserved with ruleResults populated', async () => {
+    const scope = effectScope()
+    let api!: ReturnType<typeof useRuleSimulator>
+    scope.run(() => {
+      const rules = ref<RuleSchema[]>(andRules)
+      const contextJson = ref(JSON.stringify({ country: 'PE', plan: 'pro' }))
+      api = useRuleSimulator(rules as any, contextJson)
+    })
+    await nextTick()
+
+    expect(api.matchedIndex.value).toBe(0)
+    expect(api.matchedResult.value).toBe(andRules[0].result)
+    expect(api.overallResult.value).toBe(api.matchedResult.value)
+    expect(api.ruleResults.value).toEqual([true, true])
+    scope.stop()
+  })
+
+  it('first_match + no match: matchedIndex null, overallResult null', async () => {
+    const scope = effectScope()
+    let api!: ReturnType<typeof useRuleSimulator>
+    scope.run(() => {
+      const rules = ref<RuleSchema[]>(andRules)
+      const contextJson = ref(JSON.stringify({ country: 'AR', plan: 'free' }))
+      api = useRuleSimulator(rules as any, contextJson)
+    })
+    await nextTick()
+
+    expect(api.matchedIndex.value).toBeNull()
+    expect(api.matchedResult.value).toBeNull()
+    expect(api.overallResult.value).toBeNull()
+    expect(api.ruleResults.value).toEqual([false, false])
+    scope.stop()
   })
 })

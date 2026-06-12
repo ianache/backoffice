@@ -55,15 +55,20 @@ export function evaluateRule(rule: RuleSchema, user: Record<string, unknown>): b
 export function useRuleSimulator(
   rules: Readonly<Ref<RuleSchema[]>>,
   contextJson: Ref<string>,
+  mode: Readonly<Ref<string>> = ref('first_match') as Readonly<Ref<string>>,
 ) {
   const matchedIndex  = ref<number | null>(null)
   const matchedResult = ref<boolean | null>(null)
+  const ruleResults   = ref<boolean[]>([])
+  const overallResult = ref<boolean | null>(null)
   const contextError  = ref<string | null>(null)
 
   watchEffect(() => {
     // Reset state on every evaluation run
     matchedIndex.value  = null
     matchedResult.value = null
+    ruleResults.value   = []
+    overallResult.value = null
     contextError.value  = null
 
     // Parse context JSON
@@ -80,17 +85,28 @@ export function useRuleSimulator(
       return
     }
 
-    // First-match-wins loop
     const ruleList = rules.value
+    ruleResults.value = ruleList.map((r) => evaluateRule(r, user))
+
+    if (mode.value === 'and') {
+      // AND mode: per-rule `result` ignored; overall true only when ALL rules
+      // pass. Empty rules => no verdict from rules (null).
+      overallResult.value = ruleList.length > 0 ? ruleResults.value.every(Boolean) : null
+      // matchedIndex/matchedResult are first_match-only; always null in AND mode
+      return
+    }
+
+    // first_match-wins loop
     for (let i = 0; i < ruleList.length; i++) {
-      if (evaluateRule(ruleList[i], user)) {
+      if (ruleResults.value[i]) {
         matchedIndex.value  = i
         matchedResult.value = ruleList[i].result
+        overallResult.value = matchedResult.value
         return
       }
     }
     // No rule matched
   })
 
-  return { matchedIndex, matchedResult, contextError }
+  return { matchedIndex, matchedResult, ruleResults, overallResult, contextError }
 }

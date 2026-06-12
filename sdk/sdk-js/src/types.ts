@@ -29,6 +29,7 @@ export interface FlagEntry {
   tenant_id?: string | null
   product_id?: string | null
   company_id?: string | null
+  rule_combination_mode?: string | null
 }
 
 export type BootstrapResponse = Record<string, FlagEntry>

@@ -55,7 +55,14 @@ export function evaluateRule(rule: RuleSchema, user: UserContext): boolean {
  *   Legacy entries with `company_id` null/undefined skip this check.
  *   Tenant/product targeting is enforced upstream by bootstrap filtering
  *   (by SDK client identity), not here.
- * - First matching rule wins → returns `rule.result ?? entry.default_val`
+ * - Rule combination mode (AND-01): `entry.rule_combination_mode ?? 'first_match'`.
+ *   - 'and' with non-empty `rules`: true only if EVERY rule matches (per-rule
+ *     `result` is ignored); any failure returns false immediately without
+ *     consulting segments or default_val.
+ *   - 'and' with empty `rules`: falls through to the legacy segment/default_val
+ *     path unchanged (vacuous AND).
+ *   - 'first_match' (or missing/null): first matching rule wins → returns
+ *     `rule.result ?? entry.default_val`
  * - rule_based segments: any matching condition → true
  * - manual segments: user id (id/sub/user_id) present in `members[]` → true
  * - No match → `entry.default_val`
@@ -65,6 +72,12 @@ export function evaluateFlag(entry: FlagEntry, user: UserContext): boolean {
 
   if (entry.scope === 'company' && entry.company_id != null) {
     if (user.company_id !== entry.company_id) return false
+  }
+
+  const mode = entry.rule_combination_mode ?? 'first_match'
+  if (mode === 'and' && entry.rules.length > 0) {
+    // AND mode: true only if ALL rules match; per-rule `result` is ignored (AND-01).
+    return entry.rules.every((rule) => evaluateRule(rule, user))
   }
 
   for (const rule of entry.rules) {

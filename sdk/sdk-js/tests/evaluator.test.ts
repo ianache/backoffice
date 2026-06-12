@@ -236,6 +236,126 @@ describe('evaluateFlag', () => {
     expect(evaluateFlag(entry, { country: 'US', id: 'user-uuid-001' })).toBe(true)
   })
 
+  describe('rule_combination_mode AND (AND-01)', () => {
+    const andBaseEntry: FlagEntry = {
+      enabled: true,
+      rules: [],
+      segments: [],
+      default_val: false,
+      scope: 'global',
+    }
+
+    it('and + all rules match => true', () => {
+      const entry: FlagEntry = {
+        ...andBaseEntry,
+        rule_combination_mode: 'and',
+        rules: [
+          { attribute: 'country', operator: 'equals', value: 'PE', result: true },
+          { attribute: 'plan', operator: 'equals', value: 'pro', result: true },
+        ],
+      }
+      expect(evaluateFlag(entry, { country: 'PE', plan: 'pro' })).toBe(true)
+    })
+
+    it('and + one rule fails => false', () => {
+      const entry: FlagEntry = {
+        ...andBaseEntry,
+        rule_combination_mode: 'and',
+        rules: [
+          { attribute: 'country', operator: 'equals', value: 'PE', result: true },
+          { attribute: 'plan', operator: 'equals', value: 'pro', result: true },
+        ],
+      }
+      expect(evaluateFlag(entry, { country: 'PE', plan: 'free' })).toBe(false)
+    })
+
+    it('and + one rule fails => false even with default_val:true and a matching manual segment (strict-false)', () => {
+      const entry: FlagEntry = {
+        ...andBaseEntry,
+        rule_combination_mode: 'and',
+        default_val: true,
+        rules: [
+          { attribute: 'country', operator: 'equals', value: 'PE', result: true },
+          { attribute: 'plan', operator: 'equals', value: 'pro', result: true },
+        ],
+        segments: [
+          { id: 1, type: 'manual', conditions: [], members: ['u1'] },
+        ],
+      }
+      expect(evaluateFlag(entry, { sub: 'u1', country: 'PE', plan: 'free' })).toBe(false)
+    })
+
+    it('and + per-rule result ignored: all match with result:false => true', () => {
+      const entry: FlagEntry = {
+        ...andBaseEntry,
+        rule_combination_mode: 'and',
+        rules: [
+          { attribute: 'country', operator: 'equals', value: 'PE', result: false },
+          { attribute: 'plan', operator: 'equals', value: 'pro', result: false },
+        ],
+      }
+      expect(evaluateFlag(entry, { country: 'PE', plan: 'pro' })).toBe(true)
+    })
+
+    it('and + empty rules + default_val:true => true (legacy fall-through)', () => {
+      const entry: FlagEntry = {
+        ...andBaseEntry,
+        rule_combination_mode: 'and',
+        rules: [],
+        default_val: true,
+      }
+      expect(evaluateFlag(entry, {})).toBe(true)
+    })
+
+    it('and + empty rules + matching manual segment => true (legacy fall-through)', () => {
+      const entry: FlagEntry = {
+        ...andBaseEntry,
+        rule_combination_mode: 'and',
+        rules: [],
+        default_val: false,
+        segments: [
+          { id: 1, type: 'manual', conditions: [], members: ['u1'] },
+        ],
+      }
+      expect(evaluateFlag(entry, { sub: 'u1' })).toBe(true)
+    })
+
+    it('legacy: rule_combination_mode undefined => first-match behavior', () => {
+      const entry: FlagEntry = {
+        ...andBaseEntry,
+        rules: [
+          { attribute: 'country', operator: 'equals', value: 'PE', result: false },
+          { attribute: 'plan', operator: 'equals', value: 'pro', result: true },
+        ],
+      }
+      expect(evaluateFlag(entry, { country: 'PE', plan: 'pro' })).toBe(false)
+    })
+
+    it("explicit 'first_match' behaves identically to undefined", () => {
+      const entry: FlagEntry = {
+        ...andBaseEntry,
+        rule_combination_mode: 'first_match',
+        rules: [
+          { attribute: 'country', operator: 'equals', value: 'PE', result: false },
+          { attribute: 'plan', operator: 'equals', value: 'pro', result: true },
+        ],
+      }
+      expect(evaluateFlag(entry, { country: 'PE', plan: 'pro' })).toBe(false)
+    })
+
+    it('and + rule with missing attribute => false (fail-closed)', () => {
+      const entry: FlagEntry = {
+        ...andBaseEntry,
+        rule_combination_mode: 'and',
+        rules: [
+          { attribute: 'country', operator: 'equals', value: 'PE', result: true },
+          { attribute: 'plan', operator: 'equals', value: 'pro', result: true },
+        ],
+      }
+      expect(evaluateFlag(entry, { country: 'PE' })).toBe(false)
+    })
+  })
+
   describe('company-scope target guard (TGT-03)', () => {
     it('company-scoped entry with matching user.company_id falls through to default_val', () => {
       const entry: FlagEntry = {

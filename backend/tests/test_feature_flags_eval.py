@@ -25,6 +25,7 @@ def make_flag(
     default_val=0,
     rules=None,
     id=None,
+    rule_combination_mode=None,
 ):
     """Build a minimal FeatureFlag-like object without a DB session."""
     return SimpleNamespace(
@@ -36,6 +37,7 @@ def make_flag(
         enabled=enabled,
         default_val=default_val,
         rules=json.dumps(rules) if rules is not None else '[]',
+        rule_combination_mode=rule_combination_mode,
     )
 
 
@@ -354,3 +356,109 @@ class TestEvaluateFlagSegments:
             'segment_members': {20: ['user-uuid-111', 'user-uuid-555', 'user-uuid-999']},
         }
         assert evaluate_flag([flag], context) is True
+
+
+# ---------------------------------------------------------------------------
+# AND-01: rule_combination_mode='and' — all rules must match
+# ---------------------------------------------------------------------------
+
+class TestAndCombinationMode:
+
+    def test_all_rules_match_returns_true(self):
+        """All rules match the user context => True."""
+        rules = [
+            {'attribute': 'country', 'operator': 'equals', 'value': 'PE', 'result': True},
+            {'attribute': 'plan', 'operator': 'equals', 'value': 'pro', 'result': True},
+        ]
+        flag = make_flag('global', enabled=1, default_val=0, rules=rules, rule_combination_mode='and')
+        context = {'user': {'country': 'PE', 'plan': 'pro'}}
+        assert evaluate_flag([flag], context) is True
+
+    def test_one_rule_fails_returns_false(self):
+        """One rule fails to match => False."""
+        rules = [
+            {'attribute': 'country', 'operator': 'equals', 'value': 'PE', 'result': True},
+            {'attribute': 'plan', 'operator': 'equals', 'value': 'pro', 'result': True},
+        ]
+        flag = make_flag('global', enabled=1, default_val=0, rules=rules, rule_combination_mode='and')
+        context = {'user': {'country': 'PE', 'plan': 'free'}}
+        assert evaluate_flag([flag], context) is False
+
+    def test_one_rule_fails_returns_false_even_with_default_val_and_segment_membership(self):
+        """Strict-false: when an AND rule fails, segments/default_val are NOT consulted,
+        even if default_val=1 and the user is in a linked segment for this flag."""
+        rules = [
+            {'attribute': 'country', 'operator': 'equals', 'value': 'PE', 'result': True},
+            {'attribute': 'plan', 'operator': 'equals', 'value': 'pro', 'result': True},
+        ]
+        flag = make_flag('global', enabled=1, default_val=1, rules=rules, rule_combination_mode='and', id=30)
+        context = {
+            'user': {'country': 'PE', 'plan': 'free', 'id': 'user-uuid-001'},
+            'segment_members': {30: ['user-uuid-001']},
+        }
+        assert evaluate_flag([flag], context) is False
+
+    def test_per_rule_result_field_ignored_in_and_mode(self):
+        """Per-rule `result` fields are inert in AND mode — all matching => True
+        even if every rule's `result` is False."""
+        rules = [
+            {'attribute': 'country', 'operator': 'equals', 'value': 'PE', 'result': False},
+            {'attribute': 'plan', 'operator': 'equals', 'value': 'pro', 'result': False},
+        ]
+        flag = make_flag('global', enabled=1, default_val=0, rules=rules, rule_combination_mode='and')
+        context = {'user': {'country': 'PE', 'plan': 'pro'}}
+        assert evaluate_flag([flag], context) is True
+
+    def test_empty_rules_with_and_mode_falls_through_to_default_val_true(self):
+        """Vacuous AND: empty rules list + mode='and' behaves like legacy no-rules path.
+        default_val=1 => True."""
+        flag = make_flag('global', enabled=1, default_val=1, rules=[], rule_combination_mode='and')
+        context = {'user': {}}
+        assert evaluate_flag([flag], context) is True
+
+    def test_empty_rules_with_and_mode_falls_through_to_default_val_false(self):
+        """Vacuous AND: empty rules list + mode='and', default_val=0 => False."""
+        flag = make_flag('global', enabled=1, default_val=0, rules=[], rule_combination_mode='and')
+        context = {'user': {}}
+        assert evaluate_flag([flag], context) is False
+
+    def test_empty_rules_with_and_mode_segment_membership_still_grants_true(self):
+        """Vacuous AND: empty rules + mode='and', default_val=0, but user is in a
+        linked segment => True (segment check still reachable when rules empty)."""
+        flag = make_flag('global', enabled=1, default_val=0, rules=[], rule_combination_mode='and', id=40)
+        context = {
+            'user': {'id': 'user-uuid-002'},
+            'segment_members': {40: ['user-uuid-002']},
+        }
+        assert evaluate_flag([flag], context) is True
+
+    def test_legacy_mode_none_two_rules_first_match_wins(self):
+        """Legacy regression: mode=None, 2-rule flag, first rule matches with
+        result=True => True via first-match-wins (existing behavior, now explicit)."""
+        rules = [
+            {'attribute': 'country', 'operator': 'equals', 'value': 'PE', 'result': True},
+            {'attribute': 'plan', 'operator': 'equals', 'value': 'pro', 'result': True},
+        ]
+        flag = make_flag('global', enabled=1, default_val=0, rules=rules, rule_combination_mode=None)
+        context = {'user': {'country': 'PE', 'plan': 'free'}}
+        assert evaluate_flag([flag], context) is True
+
+    def test_first_match_mode_explicit_behaves_like_none(self):
+        """mode='first_match' explicit behaves identically to mode=None."""
+        rules = [
+            {'attribute': 'country', 'operator': 'equals', 'value': 'PE', 'result': True},
+            {'attribute': 'plan', 'operator': 'equals', 'value': 'pro', 'result': True},
+        ]
+        flag = make_flag('global', enabled=1, default_val=0, rules=rules, rule_combination_mode='first_match')
+        context = {'user': {'country': 'PE', 'plan': 'free'}}
+        assert evaluate_flag([flag], context) is True
+
+    def test_single_failing_rule_and_mode_missing_attribute_returns_false(self):
+        """Single rule in AND mode whose attribute is missing from user context
+        fails closed via _evaluate_rule => False."""
+        rules = [
+            {'attribute': 'country', 'operator': 'equals', 'value': 'PE', 'result': True},
+        ]
+        flag = make_flag('global', enabled=1, default_val=1, rules=rules, rule_combination_mode='and')
+        context = {'user': {}}
+        assert evaluate_flag([flag], context) is False

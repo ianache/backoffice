@@ -7,6 +7,7 @@ import { usersRouter } from './routes/users.js'
 import { flagsRouter } from './routes/flags.js'
 import { sdkRouter } from './routes/sdk.js'
 import { productsRouter } from './routes/products.js'
+import { companiesRouter } from './routes/companies.js'
 
 const app = express()
 
@@ -44,6 +45,10 @@ app.use('/sdk', sdkRouter)
 // Products catalog and tenant subscriptions: proxied to backend /api/v1/products/*
 // NOTE: express.json() is intentionally NOT applied here; the proxy streams the raw body
 app.use('/products', productsRouter)
+
+// Companies catalog: proxied to backend /api/v1/companies/*, role + tenant isolation enforced backend-side
+// NOTE: express.json() is intentionally NOT applied here; the proxy streams the raw body
+app.use('/companies', companiesRouter)
 
 app.listen(config.port, () => {
   console.log(`BFF running on http://localhost:${config.port}`)

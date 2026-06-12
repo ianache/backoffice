@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import { storeToRefs } from 'pinia'
 import { useFeatureFlagsStore } from '../stores/flags'
 import { useToastStore, extractErrorMessage } from 'shell/toastStore'
 import type { FeatureFlag } from '../services/flags'
@@ -8,10 +9,14 @@ import FlagDrawer from '../components/flags/FlagDrawer.vue'
 import ConfirmDialog from '../components/flags/ConfirmDialog.vue'
 import StitchButton from 'shell/StitchButton'
 import { useBoFlags } from 'shell/boFlags'
+import { useFlagFilters } from '../composables/useFlagFilters'
 
 const flagsStore = useFeatureFlagsStore()
 const toast = useToastStore()
 const { boFeatureCreate } = useBoFlags()
+
+const { flags } = storeToRefs(flagsStore)
+const { filters, filteredFlags, availableTags, hasActiveFilters, clearFilters } = useFlagFilters(flags)
 
 const showDrawer = ref(false)
 const selectedFlag = ref<FeatureFlag | null>(null)
@@ -102,26 +107,45 @@ const handlePromote = (flag: FeatureFlag) => {
       </StitchButton>
     </div>
 
-    <!-- Filter bar (visual only, Phase 4) -->
+    <!-- Filter bar (FLT-01..05, client-side) -->
     <div class="flex flex-wrap items-center gap-sm">
-      <select class="filter-select" disabled>
-        <option>All Statuses</option>
+      <select class="filter-select" v-model="filters.status">
+        <option value="all">All Statuses</option>
+        <option value="enabled">Enabled</option>
+        <option value="disabled">Disabled</option>
       </select>
-      <select class="filter-select" disabled>
-        <option>Any Tags</option>
+      <select class="filter-select" v-model="filters.tag">
+        <option value="">Any Tags</option>
+        <option v-for="t in availableTags" :key="t" :value="t">{{ t }}</option>
       </select>
-      <select class="filter-select" disabled>
-        <option>Complexity</option>
+      <select class="filter-select" v-model="filters.complexity">
+        <option value="all">Complexity</option>
+        <option value="complex">Complex</option>
+        <option value="simple">Simple</option>
       </select>
-      <select class="filter-select" disabled>
-        <option>Environment</option>
+      <select class="filter-select" v-model="filters.environment">
+        <option value="">All Environments</option>
+        <option value="production">production</option>
+        <option value="staging">staging</option>
+        <option value="development">development</option>
       </select>
+      <select class="filter-select" v-model="filters.scopeTarget">
+        <option value="">All Scopes</option>
+        <option value="global">Global</option>
+        <option value="tenant">Tenants</option>
+        <option value="product">Products</option>
+        <option value="company">Companies</option>
+      </select>
+      <button v-if="hasActiveFilters" class="clear-filters-btn" @click="clearFilters">
+        <span class="material-symbols-outlined text-[16px]">close</span>
+        Clear filters
+      </button>
     </div>
 
     <!-- Data table card -->
     <div class="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm overflow-hidden">
       <FlagTable
-        :flags="flagsStore.flags"
+        :flags="filteredFlags"
         :is-loading="flagsStore.isLoading"
         @edit="openEditDrawer"
         @clone="handleClone"
@@ -170,10 +194,28 @@ const handlePromote = (flag: FeatureFlag) => {
   border-radius: var(--rounded);
   border: 1px solid var(--outline-variant);
   background: var(--surface-container-low);
+  color: var(--on-surface);
+  font-size: 0.875rem;
+  font-family: var(--font-family-sans);
+  cursor: pointer;
+}
+
+.clear-filters-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  border: none;
+  background: transparent;
   color: var(--on-surface-variant);
   font-size: 0.875rem;
   font-family: var(--font-family-sans);
-  cursor: not-allowed;
-  opacity: 0.6;
+  cursor: pointer;
+  border-radius: var(--rounded);
+}
+
+.clear-filters-btn:hover {
+  color: var(--on-surface);
+  background: var(--surface-container-low);
 }
 </style>

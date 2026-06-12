@@ -50,7 +50,7 @@
             </select>
           </div>
 
-          <!-- Value: ChipTagInput for in/notIn, plain text for others -->
+          <!-- Value: ChipTagInput for in/notIn, comma-text for anyOf, plain text for others -->
           <div>
             <label class="form-label">Value</label>
             <ChipTagInput
@@ -58,6 +58,19 @@
               :modelValue="Array.isArray(rule.value) ? rule.value : []"
               @update:modelValue="emit('update', { ...rule, value: $event })"
             />
+            <div v-else-if="isAnyOfOperator(rule.operator)">
+              <input
+                type="text"
+                v-model="anyOfRaw"
+                @blur="commitAnyOf"
+                @keydown.enter.prevent="commitAnyOf"
+                placeholder="PlatformAdmin, TenantOwner"
+                class="form-input"
+              />
+              <div v-if="Array.isArray(rule.value) && rule.value.length" class="flex flex-wrap gap-1 mt-1">
+                <span v-for="(v, i) in rule.value" :key="i" class="mini-chip">{{ v }}</span>
+              </div>
+            </div>
             <input
               v-else
               type="text"
@@ -93,6 +106,7 @@
 </template>
 
 <script setup lang="ts">
+import { ref, watch } from 'vue'
 import type { RuleSchema } from '../../services/flags'
 import ChipTagInput from './ChipTagInput.vue'
 
@@ -120,9 +134,11 @@ const emit = defineEmits<{
 // Operator constants
 // ---------------------------------------------------------------------------
 
-const OPERATORS = ['equals', 'in', 'notIn', 'contains', 'regex', 'greaterThan', 'lessThan'] as const
+const OPERATORS = ['equals', 'in', 'notIn', 'anyOf', 'contains', 'regex', 'greaterThan', 'lessThan'] as const
 
 const isArrayOperator = (op: string): boolean => op === 'in' || op === 'notIn'
+const isAnyOfOperator = (op: string): boolean => op === 'anyOf'
+const isArrayValueOperator = (op: string): boolean => op === 'in' || op === 'notIn' || op === 'anyOf'
 
 // ---------------------------------------------------------------------------
 // Operator change handler — coerces value type when switching operator family
@@ -131,15 +147,44 @@ const isArrayOperator = (op: string): boolean => op === 'in' || op === 'notIn'
 function onOperatorChange(newOp: string): void {
   let newValue: unknown = props.rule.value
 
-  if (isArrayOperator(newOp) && !Array.isArray(props.rule.value)) {
-    // Switching TO array operator: wrap scalar into array (or empty array)
+  if (isArrayValueOperator(newOp) && !Array.isArray(props.rule.value)) {
+    // Switching TO array-valued operator: wrap scalar into array (or empty array)
     newValue = props.rule.value ? [String(props.rule.value)] : []
-  } else if (!isArrayOperator(newOp) && Array.isArray(props.rule.value)) {
-    // Switching AWAY from array operator: join array into comma-separated string
+  } else if (!isArrayValueOperator(newOp) && Array.isArray(props.rule.value)) {
+    // Switching AWAY from array-valued operator: join array into comma-separated string
     newValue = (props.rule.value as string[]).join(', ')
   }
 
   emit('update', { ...props.rule, operator: newOp, value: newValue })
+}
+
+// ---------------------------------------------------------------------------
+// anyOf comma-text editing (Pitfall 3 fix): local raw string state, synced
+// from rule.value only on mount/rule-identity/operator change — NOT on
+// every rule.value update. Parse-and-emit only on blur/Enter.
+// ---------------------------------------------------------------------------
+
+const anyOfRaw = ref('')
+
+watch(
+  [() => props.rule._id, () => props.rule.operator],
+  () => {
+    anyOfRaw.value = Array.isArray(props.rule.value)
+      ? props.rule.value.join(', ')
+      : String(props.rule.value ?? '')
+  },
+  { immediate: true },
+)
+
+function parseAnyOfInput(raw: string): string[] {
+  return raw
+    .split(',')
+    .map((s) => s.trim())
+    .filter((s) => s.length > 0)
+}
+
+function commitAnyOf(): void {
+  emit('update', { ...props.rule, value: parseAnyOfInput(anyOfRaw.value) })
 }
 </script>
 
@@ -168,5 +213,15 @@ function onOperatorChange(newOp: string): void {
 .form-input:focus {
   border-color: var(--primary);
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary) 15%, transparent);
+}
+
+.mini-chip {
+  display: inline-flex;
+  background: var(--primary-container);
+  color: var(--on-primary-container);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  padding: 1px 8px;
+  border-radius: 9999px;
 }
 </style>

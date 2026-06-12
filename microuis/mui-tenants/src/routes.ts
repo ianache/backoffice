@@ -23,6 +23,17 @@ const routes: RouteRecordRaw[] = [
       roles: ['PlatformAdmin'],
     },
   },
+  {
+    path: '/companies',
+    name: 'companies',
+    component: () => import('./views/CompaniesView.vue'),
+    meta: {
+      requiresAuth: true,
+      layout: 'main',
+      title: 'Company Management',
+      roles: ['PlatformAdmin', 'TenantAdmin', 'TenantOwner'],
+    },
+  },
 ]
 
 export default routes

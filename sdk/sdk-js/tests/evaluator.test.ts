@@ -3,9 +3,9 @@ import { OPERATORS, evaluateRule, evaluateFlag } from '../src/evaluator'
 import type { FlagEntry } from '../src/types'
 
 describe('OPERATORS', () => {
-  it('has exactly 7 entries matching backend semantics', () => {
+  it('has exactly 8 entries matching backend semantics', () => {
     expect(Object.keys(OPERATORS).sort()).toEqual(
-      ['contains', 'equals', 'greaterThan', 'in', 'lessThan', 'notIn', 'regex'].sort(),
+      ['anyOf', 'contains', 'equals', 'greaterThan', 'in', 'lessThan', 'notIn', 'regex'].sort(),
     )
   })
 })
@@ -81,6 +81,34 @@ describe('evaluateRule', () => {
 
   it('unknown operator returns false', () => {
     expect(evaluateRule({ attribute: 'country', operator: 'bogus', value: 'PE' }, { country: 'PE' })).toBe(false)
+  })
+
+  it('anyOf: list context intersecting returns true', () => {
+    expect(evaluateRule({ attribute: 'roles', operator: 'anyOf', value: ['PlatformAdmin', 'TenantOwner'] }, { roles: ['TenantOwner', 'viewer'] })).toBe(true)
+  })
+
+  it('anyOf: list context disjoint returns false', () => {
+    expect(evaluateRule({ attribute: 'roles', operator: 'anyOf', value: ['PlatformAdmin', 'TenantOwner'] }, { roles: ['viewer'] })).toBe(false)
+  })
+
+  it('anyOf: scalar context member returns true', () => {
+    expect(evaluateRule({ attribute: 'roles', operator: 'anyOf', value: ['PlatformAdmin', 'TenantOwner'] }, { roles: 'PlatformAdmin' })).toBe(true)
+  })
+
+  it('anyOf: scalar context non-member returns false', () => {
+    expect(evaluateRule({ attribute: 'roles', operator: 'anyOf', value: ['PlatformAdmin', 'TenantOwner'] }, { roles: 'guest' })).toBe(false)
+  })
+
+  it('anyOf: empty expected array returns false', () => {
+    expect(evaluateRule({ attribute: 'roles', operator: 'anyOf', value: [] }, { roles: ['x'] })).toBe(false)
+  })
+
+  it('anyOf: case-sensitive returns false', () => {
+    expect(evaluateRule({ attribute: 'roles', operator: 'anyOf', value: ['PlatformAdmin'] }, { roles: ['platformadmin'] })).toBe(false)
+  })
+
+  it('anyOf: non-array expected with scalar actual returns false (fail-closed)', () => {
+    expect(evaluateRule({ attribute: 'role', operator: 'anyOf', value: 'admin' }, { role: 'admin' })).toBe(false)
   })
 })
 
@@ -206,5 +234,73 @@ describe('evaluateFlag', () => {
       ],
     }
     expect(evaluateFlag(entry, { country: 'US', id: 'user-uuid-001' })).toBe(true)
+  })
+
+  describe('company-scope target guard (TGT-03)', () => {
+    it('company-scoped entry with matching user.company_id falls through to default_val', () => {
+      const entry: FlagEntry = {
+        ...baseEntry,
+        enabled: true,
+        scope: 'company',
+        company_id: 'acme',
+        rules: [],
+        segments: [],
+        default_val: true,
+      }
+      expect(evaluateFlag(entry, { company_id: 'acme' })).toBe(true)
+    })
+
+    it('company-scoped entry with non-matching user.company_id returns false', () => {
+      const entry: FlagEntry = {
+        ...baseEntry,
+        enabled: true,
+        scope: 'company',
+        company_id: 'acme',
+        rules: [],
+        segments: [],
+        default_val: true,
+      }
+      expect(evaluateFlag(entry, { company_id: 'other' })).toBe(false)
+    })
+
+    it('company-scoped entry with user missing company_id returns false', () => {
+      const entry: FlagEntry = {
+        ...baseEntry,
+        enabled: true,
+        scope: 'company',
+        company_id: 'acme',
+        rules: [],
+        segments: [],
+        default_val: true,
+      }
+      expect(evaluateFlag(entry, {})).toBe(false)
+    })
+
+    it('legacy company-scoped entry with null company_id skips guard regardless of user', () => {
+      const entry: FlagEntry = {
+        ...baseEntry,
+        enabled: true,
+        scope: 'company',
+        company_id: null,
+        rules: [],
+        segments: [],
+        default_val: true,
+      }
+      expect(evaluateFlag(entry, { company_id: 'anything' })).toBe(true)
+      expect(evaluateFlag(entry, {})).toBe(true)
+    })
+
+    it('non-company scopes are unaffected by the guard', () => {
+      const entry: FlagEntry = {
+        ...baseEntry,
+        enabled: true,
+        scope: 'product',
+        product_id: 'p1',
+        rules: [],
+        segments: [],
+        default_val: true,
+      }
+      expect(evaluateFlag(entry, {})).toBe(true)
+    })
   })
 })

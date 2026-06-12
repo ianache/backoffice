@@ -16,6 +16,13 @@ export const OPERATORS: Record<string, (actual: unknown, expected: unknown) => b
   regex: (actual, expected) => new RegExp(String(expected)).test(String(actual)),
   greaterThan: (actual, expected) => Number(actual) > Number(expected),
   lessThan: (actual, expected) => Number(actual) < Number(expected),
+  anyOf: (actual, expected) => {
+    if (Array.isArray(actual)) {
+      const expectedArr = Array.isArray(expected) ? expected : []
+      return actual.some((v) => expectedArr.includes(v))
+    }
+    return Array.isArray(expected) && expected.includes(actual)
+  },
 }
 
 /**
@@ -42,6 +49,12 @@ export function evaluateRule(rule: RuleSchema, user: UserContext): boolean {
 /**
  * Port of backend `evaluate_flag()` for a single bootstrap-inlined flag entry.
  * - `enabled: false` → always false
+ * - Company-scope target guard (TGT-03): when `scope === 'company'` and
+ *   `entry.company_id` is non-null, the entry only applies if
+ *   `user.company_id === entry.company_id` — otherwise false (fail-closed).
+ *   Legacy entries with `company_id` null/undefined skip this check.
+ *   Tenant/product targeting is enforced upstream by bootstrap filtering
+ *   (by SDK client identity), not here.
  * - First matching rule wins → returns `rule.result ?? entry.default_val`
  * - rule_based segments: any matching condition → true
  * - manual segments: user id (id/sub/user_id) present in `members[]` → true
@@ -49,6 +62,10 @@ export function evaluateRule(rule: RuleSchema, user: UserContext): boolean {
  */
 export function evaluateFlag(entry: FlagEntry, user: UserContext): boolean {
   if (!entry.enabled) return false
+
+  if (entry.scope === 'company' && entry.company_id != null) {
+    if (user.company_id !== entry.company_id) return false
+  }
 
   for (const rule of entry.rules) {
     if (evaluateRule(rule, user)) return Boolean(rule.result ?? entry.default_val)

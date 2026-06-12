@@ -26,6 +26,9 @@ export interface FlagEntry {
   segments: BootstrapSegment[]
   default_val: boolean
   scope: string
+  tenant_id?: string | null
+  product_id?: string | null
+  company_id?: string | null
 }
 
 export type BootstrapResponse = Record<string, FlagEntry>

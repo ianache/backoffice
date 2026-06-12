@@ -59,6 +59,15 @@ def evaluate_flag(entry: dict, user: dict) -> bool:
     (fail-closed). Legacy entries without a 'company_id' key (or with it set
     to None) skip this check entirely. Tenant/product targeting is enforced
     upstream by bootstrap filtering (by SDK client identity), not here.
+
+    Rule combination mode (AND-01): `entry.get('rule_combination_mode') or
+    'first_match'`.
+    - 'and' with non-empty rules: True only if EVERY rule matches (per-rule
+      `result` is ignored); any failure returns False immediately without
+      consulting segments or default_val.
+    - 'and' with empty rules: falls through to the legacy segment/default_val
+      path unchanged (vacuous AND).
+    - 'first_match' (or missing/empty): first matching rule wins, as before.
     """
     if not entry.get('enabled'):
         return False
@@ -67,7 +76,13 @@ def evaluate_flag(entry: dict, user: dict) -> bool:
         if user.get('company_id') != entry.get('company_id'):
             return False
 
-    for rule in entry.get('rules', []):
+    mode = entry.get('rule_combination_mode') or 'first_match'
+    rules = entry.get('rules', [])
+    if mode == 'and' and rules:
+        # AND mode: True only if ALL rules match; per-rule `result` is ignored (AND-01).
+        return all(evaluate_rule(rule, user) for rule in rules)
+
+    for rule in rules:
         if evaluate_rule(rule, user):
             return bool(rule.get('result', entry.get('default_val', False)))
 

@@ -4,15 +4,15 @@ milestone: v1.1
 milestone_name: MVP2
 current_plan: Not started
 status: completed
-stopped_at: Completed 15-01-PLAN.md
-last_updated: "2026-06-12T12:06:21.832Z"
+stopped_at: Completed 15-04-PLAN.md
+last_updated: "2026-06-12T13:26:56.000Z"
 last_activity: 2026-06-12
 progress:
   total_phases: 16
   completed_phases: 15
   total_plans: 74
-  completed_plans: 72
-  percent: 97
+  completed_plans: 73
+  percent: 99
 ---
 
 # Project State
@@ -26,14 +26,14 @@ See: .planning/PROJECT.md (updated 2026-06-07)
 
 ## Current Position
 
-Phase: 14 of 15 (Flag Scope Targeting + List-Valued Rules)
+Phase: 15 of 15 (AND Rule Combination Semantics + Flags Page Filters)
 **Current Plan:** Not started
-**Total Plans in Phase:** 6
+**Total Plans in Phase:** 4
 **Status:** Milestone complete
 **Last Activity:** 2026-06-12
-Last activity detail: 2026-06-12 — Completed 14-06-PLAN.md (Companies admin UI in mui-tenants: /companies view+table+drawer+store+service, Shell nav button with apartment icon, tenant select with 403 fallback). CMP-01 complete. All 6 phase 14 plans executed.
+Last activity detail: 2026-06-12 — Completed 15-04-PLAN.md (Flags page filters: useFlagFilters composable wired into FlagsView.vue — Status, Tags, Complexity, Environment, Scope Target filters, AND-combined, client-side, with Clear filters affordance). FLT-01..FLT-05 complete.
 
-**Progress:** [██████████] 97%
+**Progress:** [██████████] 99%
 
 ## Performance Metrics
 
@@ -87,6 +87,7 @@ Last activity detail: 2026-06-12 — Completed 14-06-PLAN.md (Companies admin UI
 | Phase 14-flag-scope-targeting-list-valued-rules P05 | 12min | 3 tasks | 5 files |
 | Phase 15-and-rule-combination-semantics P02 | 12min | 2 tasks | 5 files |
 | Phase 15 P01 | 10min | 3 tasks | 8 files |
+| Phase 15-and-rule-combination-semantics P04 | 12min | 3 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -195,6 +196,7 @@ Recent decisions affecting v1.1:
 - [Phase 15]: [15-01]: AND mode with non-empty rules is strict-false (no segment/default_val fallback) - locked CONTEXT.md Option C decision
 - [Phase 15]: [15-01]: Empty rules + mode='and' falls through to exact legacy no-rules path - vacuous AND unchanged
 - [Phase 15]: [15-01]: FlagUpdate keeps no model_validator (14-02 precedent) - rule_combination_mode validated via standalone field_validator
+- [Phase 15-and-rule-combination-semantics]: [15-04]: Client-side computed filtering only for /flags (no URL sync, no backend params); FlagFilterState as single reactive ref with spread-reset clearFilters; Scope Target uses 4 buckets (Global/Tenants/Products/Companies)
 
 ### Pending Todos
 
@@ -208,6 +210,6 @@ Recent decisions affecting v1.1:
 
 ## Session Continuity
 
-**Last session:** 2026-06-12T12:06:21.822Z
-**Stopped At:** Completed 15-01-PLAN.md
+**Last session:** 2026-06-12T13:26:56.000Z
+**Stopped At:** Completed 15-04-PLAN.md
 **Resume File:** None

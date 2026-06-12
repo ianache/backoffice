@@ -4,15 +4,15 @@ milestone: v1.1
 milestone_name: MVP2
 current_plan: Not started
 status: completed
-stopped_at: Completed 14-05-PLAN.md
-last_updated: "2026-06-12T05:20:41.816Z"
+stopped_at: Completed 15-02-PLAN.md
+last_updated: "2026-06-12T12:04:35.361Z"
 last_activity: 2026-06-12
 progress:
-  total_phases: 15
+  total_phases: 16
   completed_phases: 15
-  total_plans: 70
-  completed_plans: 70
-  percent: 100
+  total_plans: 74
+  completed_plans: 71
+  percent: 96
 ---
 
 # Project State
@@ -33,7 +33,7 @@ Phase: 14 of 15 (Flag Scope Targeting + List-Valued Rules)
 **Last Activity:** 2026-06-12
 Last activity detail: 2026-06-12 — Completed 14-06-PLAN.md (Companies admin UI in mui-tenants: /companies view+table+drawer+store+service, Shell nav button with apartment icon, tenant select with 403 fallback). CMP-01 complete. All 6 phase 14 plans executed.
 
-**Progress:** [██████████] 100%
+**Progress:** [██████████] 96%
 
 ## Performance Metrics
 
@@ -85,6 +85,7 @@ Last activity detail: 2026-06-12 — Completed 14-06-PLAN.md (Companies admin UI
 | Phase 14 P03 | 9min | 3 tasks | 7 files |
 | Phase 14-flag-scope-targeting-list-valued-rules P02 | 18min | 3 tasks | 6 files |
 | Phase 14-flag-scope-targeting-list-valued-rules P05 | 12min | 3 tasks | 5 files |
+| Phase 15-and-rule-combination-semantics P02 | 12min | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -188,6 +189,8 @@ Recent decisions affecting v1.1:
 - [Phase 14-flag-scope-targeting-list-valued-rules]: [14-05]: validateFlagTarget/buildTargetFields kept dependency-free (no Vue) for direct vitest unit testing
 - [Phase 14-flag-scope-targeting-list-valued-rules]: [14-05]: Tenant lookup wrapped in try/catch with useUserContext().tenant_id fallback ('My tenant') on 403 from PlatformAdmin-only /tenants
 - [Phase 14-flag-scope-targeting-list-valued-rules]: [14-05]: Scope-switch watcher clears all three target refs unconditionally when oldScope !== newScope
+- [Phase 15-and-rule-combination-semantics]: [15-02]: Both SDK evaluators branch on rule_combination_mode immediately after the company-scope guard and before the existing rules loop, mirroring backend Plan 15-01 placement exactly
+- [Phase 15-and-rule-combination-semantics]: [15-02]: AND mode with non-empty rules is strict-false (any failure returns false immediately, no segment/default_val fallback); empty rules fall through unchanged to legacy path
 
 ### Pending Todos
 
@@ -201,6 +204,6 @@ Recent decisions affecting v1.1:
 
 ## Session Continuity
 
-**Last session:** 2026-06-12T00:19:40.404Z
-**Stopped At:** Completed 14-05-PLAN.md
+**Last session:** 2026-06-12T12:04:35.350Z
+**Stopped At:** Completed 15-02-PLAN.md
 **Resume File:** None

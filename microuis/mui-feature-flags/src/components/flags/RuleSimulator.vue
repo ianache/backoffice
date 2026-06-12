@@ -9,18 +9,18 @@
 
       <!-- Result badge: shown only when no contextError -->
       <div
-        v-if="!contextError && matchedResult !== null"
+        v-if="!contextError && overallResult !== null"
         :class="[
           'ml-auto px-2 py-0.5 rounded font-label-md text-label-md uppercase',
-          matchedResult
+          overallResult
             ? 'bg-green-100 text-green-700'
             : 'bg-error-container text-on-error-container',
         ]"
       >
-        {{ matchedResult ? 'Passing' : 'Failing' }}
+        {{ overallResult ? 'Passing' : 'Failing' }}
       </div>
       <div
-        v-else-if="!contextError && matchedResult === null && rules.length > 0"
+        v-else-if="!contextError && overallResult === null && rules.length > 0"
         class="ml-auto px-2 py-0.5 rounded font-label-md text-label-md uppercase bg-surface-container text-on-surface-variant"
       >
         No match
@@ -63,8 +63,8 @@
       </button>
     </div>
 
-    <!-- Matched rule highlight -->
-    <div class="px-4 pb-4 flex-1 overflow-auto">
+    <!-- First-match mode: Matched rule highlight -->
+    <div v-if="effectiveMode !== 'and'" class="px-4 pb-4 flex-1 overflow-auto">
       <label class="text-xs font-medium text-on-surface-variant mb-2 block">Matched Rule</label>
       <div
         v-if="matchedIndex !== null"
@@ -93,6 +93,34 @@
         No rule matched — flag returns default value
       </div>
     </div>
+
+    <!-- AND mode: per-rule pass/fail list -->
+    <div v-else class="px-4 pb-4 flex-1 overflow-auto">
+      <label class="text-xs font-medium text-on-surface-variant mb-2 block">Rules (ALL must match)</label>
+      <div v-if="rules.length === 0" class="text-xs text-on-surface-variant italic">
+        Add rules to start simulation
+      </div>
+      <div v-else class="space-y-2">
+        <div
+          v-for="(rule, i) in rules"
+          :key="rule._id"
+          class="flex items-center gap-2 p-2 rounded-lg bg-surface-container"
+        >
+          <span
+            :class="[
+              'material-symbols-outlined text-base',
+              ruleResults[i] ? 'text-green-700' : 'text-error',
+            ]"
+          >
+            {{ ruleResults[i] ? 'check_circle' : 'cancel' }}
+          </span>
+          <span class="text-sm text-on-surface">Rule {{ i + 1 }}</span>
+        </div>
+        <p v-if="overallResult === false" class="text-xs text-on-surface-variant italic mt-2">
+          Not all rules match — flag evaluates false
+        </p>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -111,6 +139,7 @@ const props = defineProps<{
   rules: (RuleSchema & { _id: string })[]
   mode?: 'flag' | 'segment'
   testContext?: string | null
+  combinationMode?: string
 }>()
 
 // ---------------------------------------------------------------------------
@@ -169,11 +198,15 @@ const strippedRules = computed<RuleSchema[]>(() =>
   props.rules.map(({ _id: _ignored, ...r }) => r as RuleSchema),
 )
 
+// Effective combination mode — defaults to 'first_match' when unset (legacy flags)
+const effectiveMode = computed(() => props.combinationMode ?? 'first_match')
+
 // Cast as Readonly<Ref> to satisfy composable signature while avoiding
 // deep-readonly mismatch from Vue's readonly() wrapper
-const { matchedIndex, matchedResult, contextError } = useRuleSimulator(
+const { matchedIndex, matchedResult, ruleResults, overallResult, contextError } = useRuleSimulator(
   strippedRules as unknown as Readonly<Ref<RuleSchema[]>>,
   contextJson,
+  effectiveMode,
 )
 
 // Matched rule object (with original _id) for Matched Rule panel display

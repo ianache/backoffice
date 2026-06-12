@@ -74,6 +74,17 @@
         <p class="text-xs text-on-primary-container opacity-80 mt-1">
           Result: <strong>{{ String(matchedResult) }}</strong>
         </p>
+        <div
+          v-if="matchedRule?.operator === 'anyOf' && Array.isArray(matchedRule.value)"
+          class="flex flex-wrap gap-1 mt-2"
+        >
+          <span
+            v-for="(v, i) in matchedRule.value"
+            :key="i"
+            class="bg-primary-container text-on-primary-container text-[11px] font-medium px-2 py-0.5 rounded-full"
+            >{{ v }}</span
+          >
+        </div>
       </div>
       <div v-else-if="rules.length === 0" class="text-xs text-on-surface-variant italic">
         Add rules to start simulation
@@ -163,5 +174,10 @@ const strippedRules = computed<RuleSchema[]>(() =>
 const { matchedIndex, matchedResult, contextError } = useRuleSimulator(
   strippedRules as unknown as Readonly<Ref<RuleSchema[]>>,
   contextJson,
+)
+
+// Matched rule object (with original _id) for Matched Rule panel display
+const matchedRule = computed(() =>
+  matchedIndex.value !== null ? props.rules[matchedIndex.value] : null,
 )
 </script>

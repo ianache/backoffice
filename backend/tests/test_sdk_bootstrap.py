@@ -27,7 +27,7 @@ from app.config import settings
 
 def make_flag(name='my_flag', enabled=1, default_val=0, scope='global',
                product_id=None, environment='production', rules=None, id=1,
-               tenant_id=None, company_id=None):
+               tenant_id=None, company_id=None, rule_combination_mode=None):
     return SimpleNamespace(
         id=id,
         name=name,
@@ -39,6 +39,7 @@ def make_flag(name='my_flag', enabled=1, default_val=0, scope='global',
         company_id=company_id,
         environment=environment,
         rules=json.dumps(rules) if rules is not None else '[]',
+        rule_combination_mode=rule_combination_mode,
     )
 
 
@@ -229,6 +230,37 @@ class TestBootstrapTargetFiltering:
         flag = make_flag(name='staging_flag', scope='global', environment='staging')
         result = await self._bootstrap(monkeypatch, [flag], tenant_id='t1', product_id='p1', environment='production')
         assert 'staging_flag' not in result
+
+
+# ---------------------------------------------------------------------------
+# AND-02: bootstrap entries expose rule_combination_mode
+# ---------------------------------------------------------------------------
+
+class TestBootstrapRuleCombinationMode:
+
+    async def _bootstrap(self, monkeypatch, flags, tenant_id='t1', product_id='p1', environment='production'):
+        async def fake_list_flags(db, tenant_id=None):
+            return flags
+
+        async def fake_get_flag_segments(db, flag_id):
+            return []
+
+        monkeypatch.setattr('app.domains.feature_flags.service.list_flags', fake_list_flags)
+        monkeypatch.setattr('app.domains.feature_flags.service.get_flag_segments', fake_get_flag_segments)
+
+        return await bootstrap_flags(db=None, tenant_id=tenant_id, product_id=product_id, environment=environment)
+
+    @pytest.mark.asyncio
+    async def test_and_mode_flag_exposes_and(self, monkeypatch):
+        flag = make_flag(name='and_flag', scope='global', rule_combination_mode='and')
+        result = await self._bootstrap(monkeypatch, [flag])
+        assert result['and_flag']['rule_combination_mode'] == 'and'
+
+    @pytest.mark.asyncio
+    async def test_legacy_flag_normalizes_to_first_match(self, monkeypatch):
+        flag = make_flag(name='legacy_flag', scope='global', rule_combination_mode=None)
+        result = await self._bootstrap(monkeypatch, [flag])
+        assert result['legacy_flag']['rule_combination_mode'] == 'first_match'
 
 
 # ---------------------------------------------------------------------------

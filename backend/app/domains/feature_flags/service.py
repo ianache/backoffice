@@ -82,10 +82,17 @@ def evaluate_flag(flags: list, context: dict) -> bool:
     if not winner.enabled:
         return False
 
-    # Evaluate rules — first matching rule wins
+    # Evaluate rules — first matching rule wins (or AND combination, AND-01)
     rules_raw = winner.rules
     rules = json.loads(rules_raw) if isinstance(rules_raw, str) and rules_raw else (rules_raw if isinstance(rules_raw, list) else [])
     user = context.get('user', {})
+    mode = getattr(winner, 'rule_combination_mode', None) or 'first_match'
+
+    if mode == 'and' and rules:
+        # AND mode: True only if ALL rules match; per-rule `result` is ignored (AND-01).
+        return all(_evaluate_rule(rule, user) for rule in rules)
+
+    # Legacy first-match-wins (also the path for 'and' with zero rules)
     for rule in rules:
         if _evaluate_rule(rule, user):
             return bool(rule.get('result', winner.default_val))

@@ -28,6 +28,10 @@ OPERATORS = {
     'regex':       lambda actual, expected: bool(re.match(expected, str(actual))),
     'greaterThan': lambda actual, expected: float(actual) > float(expected),
     'lessThan':    lambda actual, expected: float(actual) < float(expected),
+    'anyOf':       lambda actual, expected: (
+        bool(set(actual) & set(expected)) if isinstance(actual, (list, tuple, set))
+        else actual in expected
+    ),
 }
 
 

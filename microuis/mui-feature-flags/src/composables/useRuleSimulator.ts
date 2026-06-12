@@ -4,6 +4,7 @@ import type { RuleSchema } from '../services/flags'
 
 // ---------------------------------------------------------------------------
 // Operator dispatch — direct TypeScript port of OPERATORS dict in service.py
+// (8 operators: equals, in, notIn, contains, regex, greaterThan, lessThan, anyOf)
 // ---------------------------------------------------------------------------
 
 type OperatorFn = (actual: unknown, expected: unknown) => boolean
@@ -22,6 +23,13 @@ export const OPERATORS: Record<string, OperatorFn> = {
   },
   greaterThan: (actual, expected) => Number(actual) > Number(expected),
   lessThan:    (actual, expected) => Number(actual) < Number(expected),
+  anyOf: (actual, expected) => {
+    if (Array.isArray(actual)) {
+      const expectedArr = Array.isArray(expected) ? expected : []
+      return actual.some((v) => expectedArr.includes(v))
+    }
+    return Array.isArray(expected) && expected.includes(actual)
+  },
 }
 
 // ---------------------------------------------------------------------------

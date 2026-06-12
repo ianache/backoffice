@@ -230,11 +230,11 @@ class TestEvaluateRule:
         rule = {'attribute': 'ltv', 'operator': 'lessThan', 'value': 500}
         assert _evaluate_rule(rule, {}) is False
 
-    def test_all_seven_operators_have_true_case(self):
-        """Ensure all 7 operators produce True when conditions match."""
+    def test_all_eight_operators_have_true_case(self):
+        """Ensure all 8 operators produce True when conditions match."""
         from app.domains.feature_flags.service import OPERATORS
         assert set(OPERATORS.keys()) == {
-            'equals', 'in', 'notIn', 'contains', 'regex', 'greaterThan', 'lessThan',
+            'equals', 'in', 'notIn', 'contains', 'regex', 'greaterThan', 'lessThan', 'anyOf',
         }
         true_cases = {
             'equals': ({'attribute': 'country', 'operator': 'equals', 'value': 'PE'}, {'country': 'PE'}),
@@ -244,9 +244,45 @@ class TestEvaluateRule:
             'regex': ({'attribute': 'email', 'operator': 'regex', 'value': '^admin'}, {'email': 'admin@co.com'}),
             'greaterThan': ({'attribute': 'ltv', 'operator': 'greaterThan', 'value': 500}, {'ltv': 600}),
             'lessThan': ({'attribute': 'ltv', 'operator': 'lessThan', 'value': 500}, {'ltv': 100}),
+            'anyOf': ({'attribute': 'roles', 'operator': 'anyOf', 'value': ['PlatformAdmin', 'TenantOwner']}, {'roles': ['TenantOwner', 'viewer']}),
         }
         for op, (rule, user) in true_cases.items():
             assert _evaluate_rule(rule, user) is True, f"operator {op} should return True"
+
+
+# ---------------------------------------------------------------------------
+# LST-02: anyOf operator (list/scalar match-any semantics)
+# ---------------------------------------------------------------------------
+
+class TestAnyOfOperator:
+
+    def test_list_context_intersecting_returns_true(self):
+        rule = {'attribute': 'roles', 'operator': 'anyOf', 'value': ['PlatformAdmin', 'TenantOwner']}
+        assert _evaluate_rule(rule, {'roles': ['TenantOwner', 'viewer']}) is True
+
+    def test_list_context_disjoint_returns_false(self):
+        rule = {'attribute': 'roles', 'operator': 'anyOf', 'value': ['PlatformAdmin', 'TenantOwner']}
+        assert _evaluate_rule(rule, {'roles': ['viewer']}) is False
+
+    def test_scalar_context_member_returns_true(self):
+        rule = {'attribute': 'roles', 'operator': 'anyOf', 'value': ['PlatformAdmin', 'TenantOwner']}
+        assert _evaluate_rule(rule, {'roles': 'PlatformAdmin'}) is True
+
+    def test_scalar_context_non_member_returns_false(self):
+        rule = {'attribute': 'roles', 'operator': 'anyOf', 'value': ['PlatformAdmin', 'TenantOwner']}
+        assert _evaluate_rule(rule, {'roles': 'guest'}) is False
+
+    def test_empty_value_array_returns_false(self):
+        rule = {'attribute': 'roles', 'operator': 'anyOf', 'value': []}
+        assert _evaluate_rule(rule, {'roles': ['x']}) is False
+
+    def test_case_sensitive_returns_false(self):
+        rule = {'attribute': 'roles', 'operator': 'anyOf', 'value': ['PlatformAdmin']}
+        assert _evaluate_rule(rule, {'roles': ['platformadmin']}) is False
+
+    def test_missing_attribute_returns_false(self):
+        rule = {'attribute': 'roles', 'operator': 'anyOf', 'value': ['PlatformAdmin']}
+        assert _evaluate_rule(rule, {}) is False
 
 
 # ---------------------------------------------------------------------------

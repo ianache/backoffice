@@ -30,7 +30,12 @@ async def evaluate(
     """Remote flag evaluation. Pre-resolves rule_based segment membership before calling evaluate_flag()."""
     from app.domains.feature_flags.service import list_flags, evaluate_flag
 
-    flags = await list_flags(db, tenant_id=payload.user.get('tenant_id'))
+    # Fetch unfiltered: list_flags(tenant_id=...) keeps only tenant-scoped (matching
+    # tenant_id) + global flags, which excludes product/company-scoped flags whose
+    # tenant_id is NULL. evaluate_flag() already does per-scope candidate matching
+    # (company_id/product_id/tenant_id) against `context`, so filtering here would
+    # incorrectly starve those flags before evaluate_flag() ever sees them.
+    flags = await list_flags(db)
     target_flags = [f for f in flags if f.name == payload.flag_key]
     flag_ids = [f.id for f in target_flags]
 

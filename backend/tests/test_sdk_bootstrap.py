@@ -229,3 +229,59 @@ class TestBootstrapTargetFiltering:
         flag = make_flag(name='staging_flag', scope='global', environment='staging')
         result = await self._bootstrap(monkeypatch, [flag], tenant_id='t1', product_id='p1', environment='production')
         assert 'staging_flag' not in result
+
+
+# ---------------------------------------------------------------------------
+# /sdk/evaluate — unfiltered fetch fix (TGT-03)
+# ---------------------------------------------------------------------------
+
+class TestSdkEvaluateScoping:
+
+    async def _evaluate(self, monkeypatch, flags, user, flag_key='my_flag'):
+        from app.domains.sdk.router import evaluate
+        from app.domains.sdk.schemas import EvaluateRequest
+
+        async def fake_list_flags(db, tenant_id=None):
+            # Replicate the real list_flags() tenant filter: when tenant_id is
+            # truthy, only tenant-matching or global flags are returned. This
+            # is the filter that starves product/company-scoped flags
+            # (tenant_id NULL) when /sdk/evaluate passes payload.user.get('tenant_id').
+            if tenant_id:
+                return [
+                    f for f in flags
+                    if f.scope == 'global' or (f.tenant_id is not None and str(f.tenant_id) == str(tenant_id))
+                ]
+            return flags
+
+        async def fake_resolve_segment_members(db, flag_ids, user):
+            return {}
+
+        monkeypatch.setattr('app.domains.feature_flags.service.list_flags', fake_list_flags)
+        monkeypatch.setattr('app.domains.sdk.service.resolve_segment_members', fake_resolve_segment_members)
+
+        payload = EvaluateRequest(flag_key=flag_key, user=user)
+        response = await evaluate(payload, db=None)
+        return response.result
+
+    @pytest.mark.asyncio
+    async def test_product_scoped_flag_resolves(self, monkeypatch):
+        """Product-scoped flag (tenant_id=None) was previously unreachable via list_flags tenant filter
+        when the requesting user context also carries a tenant_id."""
+        flag = make_flag(name='my_flag', scope='product', product_id='p1', tenant_id=None,
+                          enabled=1, default_val=1, rules=[])
+        result = await self._evaluate(monkeypatch, [flag], user={'product_id': 'p1', 'tenant_id': 't1'})
+        assert result is True
+
+    @pytest.mark.asyncio
+    async def test_company_scoped_flag_matching_company_resolves_true(self, monkeypatch):
+        flag = make_flag(name='my_flag', scope='company', company_id='acme', tenant_id=None,
+                          enabled=1, default_val=1, rules=[])
+        result = await self._evaluate(monkeypatch, [flag], user={'company_id': 'acme', 'tenant_id': 't1'})
+        assert result is True
+
+    @pytest.mark.asyncio
+    async def test_company_scoped_flag_mismatched_company_resolves_false(self, monkeypatch):
+        flag = make_flag(name='my_flag', scope='company', company_id='acme', tenant_id=None,
+                          enabled=1, default_val=1, rules=[])
+        result = await self._evaluate(monkeypatch, [flag], user={'company_id': 'other', 'tenant_id': 't1'})
+        assert result is False

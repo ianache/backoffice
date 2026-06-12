@@ -303,6 +303,137 @@ class TestEvaluateFlag:
 
 
 # ---------------------------------------------------------------------------
+# AND-01: rule_combination_mode AND
+# ---------------------------------------------------------------------------
+
+class TestAndCombinationMode:
+
+    def test_all_rules_match_returns_true(self):
+        entry = {
+            'enabled': True,
+            'scope': 'global',
+            'segments': [],
+            'default_val': False,
+            'rule_combination_mode': 'and',
+            'rules': [
+                {'attribute': 'country', 'operator': 'equals', 'value': 'PE', 'result': True},
+                {'attribute': 'plan', 'operator': 'equals', 'value': 'pro', 'result': True},
+            ],
+        }
+        assert evaluate_flag(entry, {'country': 'PE', 'plan': 'pro'}) is True
+
+    def test_one_rule_fails_returns_false(self):
+        entry = {
+            'enabled': True,
+            'scope': 'global',
+            'segments': [],
+            'default_val': False,
+            'rule_combination_mode': 'and',
+            'rules': [
+                {'attribute': 'country', 'operator': 'equals', 'value': 'PE', 'result': True},
+                {'attribute': 'plan', 'operator': 'equals', 'value': 'pro', 'result': True},
+            ],
+        }
+        assert evaluate_flag(entry, {'country': 'PE', 'plan': 'free'}) is False
+
+    def test_one_rule_fails_strict_false_with_default_val_and_matching_segment(self):
+        """Strict-false: segments/default_val not consulted when AND rules fail."""
+        entry = {
+            'enabled': True,
+            'scope': 'global',
+            'segments': [
+                {'id': 1, 'type': 'manual', 'conditions': [], 'members': ['u1']},
+            ],
+            'default_val': True,
+            'rule_combination_mode': 'and',
+            'rules': [
+                {'attribute': 'country', 'operator': 'equals', 'value': 'PE', 'result': True},
+                {'attribute': 'plan', 'operator': 'equals', 'value': 'pro', 'result': True},
+            ],
+        }
+        assert evaluate_flag(entry, {'sub': 'u1', 'country': 'PE', 'plan': 'free'}) is False
+
+    def test_per_rule_result_ignored_all_match_returns_true(self):
+        entry = {
+            'enabled': True,
+            'scope': 'global',
+            'segments': [],
+            'default_val': False,
+            'rule_combination_mode': 'and',
+            'rules': [
+                {'attribute': 'country', 'operator': 'equals', 'value': 'PE', 'result': False},
+                {'attribute': 'plan', 'operator': 'equals', 'value': 'pro', 'result': False},
+            ],
+        }
+        assert evaluate_flag(entry, {'country': 'PE', 'plan': 'pro'}) is True
+
+    def test_empty_rules_falls_through_to_default_val_true(self):
+        entry = {
+            'enabled': True,
+            'scope': 'global',
+            'segments': [],
+            'default_val': True,
+            'rule_combination_mode': 'and',
+            'rules': [],
+        }
+        assert evaluate_flag(entry, {}) is True
+
+    def test_empty_rules_falls_through_to_matching_segment(self):
+        entry = {
+            'enabled': True,
+            'scope': 'global',
+            'segments': [
+                {'id': 1, 'type': 'manual', 'conditions': [], 'members': ['u1']},
+            ],
+            'default_val': False,
+            'rule_combination_mode': 'and',
+            'rules': [],
+        }
+        assert evaluate_flag(entry, {'sub': 'u1'}) is True
+
+    def test_missing_mode_key_uses_legacy_first_match(self):
+        entry = {
+            'enabled': True,
+            'scope': 'global',
+            'segments': [],
+            'default_val': False,
+            'rules': [
+                {'attribute': 'country', 'operator': 'equals', 'value': 'PE', 'result': False},
+                {'attribute': 'plan', 'operator': 'equals', 'value': 'pro', 'result': True},
+            ],
+        }
+        assert evaluate_flag(entry, {'country': 'PE', 'plan': 'pro'}) is False
+
+    def test_explicit_first_match_identical_to_missing(self):
+        entry = {
+            'enabled': True,
+            'scope': 'global',
+            'segments': [],
+            'default_val': False,
+            'rule_combination_mode': 'first_match',
+            'rules': [
+                {'attribute': 'country', 'operator': 'equals', 'value': 'PE', 'result': False},
+                {'attribute': 'plan', 'operator': 'equals', 'value': 'pro', 'result': True},
+            ],
+        }
+        assert evaluate_flag(entry, {'country': 'PE', 'plan': 'pro'}) is False
+
+    def test_and_mode_missing_attribute_fails_closed(self):
+        entry = {
+            'enabled': True,
+            'scope': 'global',
+            'segments': [],
+            'default_val': False,
+            'rule_combination_mode': 'and',
+            'rules': [
+                {'attribute': 'country', 'operator': 'equals', 'value': 'PE', 'result': True},
+                {'attribute': 'plan', 'operator': 'equals', 'value': 'pro', 'result': True},
+            ],
+        }
+        assert evaluate_flag(entry, {'country': 'PE'}) is False
+
+
+# ---------------------------------------------------------------------------
 # TGT-03: company-scope target guard
 # ---------------------------------------------------------------------------
 

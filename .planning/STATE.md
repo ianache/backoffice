@@ -2,17 +2,17 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: MVP2
-current_plan: Not started
+current_plan: All plans complete (15-01..15-04)
 status: completed
-stopped_at: Completed 15-04-PLAN.md
-last_updated: "2026-06-12T13:26:56.000Z"
+stopped_at: Completed 15-03-PLAN.md
+last_updated: "2026-06-12T13:36:06.063Z"
 last_activity: 2026-06-12
 progress:
   total_phases: 16
-  completed_phases: 15
+  completed_phases: 16
   total_plans: 74
-  completed_plans: 73
-  percent: 99
+  completed_plans: 74
+  percent: 100
 ---
 
 # Project State
@@ -27,13 +27,13 @@ See: .planning/PROJECT.md (updated 2026-06-07)
 ## Current Position
 
 Phase: 15 of 15 (AND Rule Combination Semantics + Flags Page Filters)
-**Current Plan:** Not started
+**Current Plan:** All plans complete (15-01..15-04)
 **Total Plans in Phase:** 4
 **Status:** Milestone complete
 **Last Activity:** 2026-06-12
-Last activity detail: 2026-06-12 — Completed 15-04-PLAN.md (Flags page filters: useFlagFilters composable wired into FlagsView.vue — Status, Tags, Complexity, Environment, Scope Target filters, AND-combined, client-side, with Clear filters affordance). FLT-01..FLT-05 complete.
+Last activity detail: 2026-06-12 — Completed 15-03-PLAN.md (Rule Simulator AND mode + Rule Builder Match selector: useRuleSimulator gains ruleResults[]/overallResult per the locked AND truth table, RuleSimulator.vue renders per-rule pass/fail rows + overall badge in AND mode, RuleBuilderView.vue Match selector persists rule_combination_mode via PATCH). AND-01/AND-02 complete (4-evaluator parity + UI).
 
-**Progress:** [██████████] 99%
+**Progress:** [██████████] 100%
 
 ## Performance Metrics
 
@@ -88,6 +88,7 @@ Last activity detail: 2026-06-12 — Completed 15-04-PLAN.md (Flags page filters
 | Phase 15-and-rule-combination-semantics P02 | 12min | 2 tasks | 5 files |
 | Phase 15 P01 | 10min | 3 tasks | 8 files |
 | Phase 15-and-rule-combination-semantics P04 | 12min | 3 tasks | 3 files |
+| Phase 15-and-rule-combination-semantics P03 | 9min | 3 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -197,6 +198,9 @@ Recent decisions affecting v1.1:
 - [Phase 15]: [15-01]: Empty rules + mode='and' falls through to exact legacy no-rules path - vacuous AND unchanged
 - [Phase 15]: [15-01]: FlagUpdate keeps no model_validator (14-02 precedent) - rule_combination_mode validated via standalone field_validator
 - [Phase 15-and-rule-combination-semantics]: [15-04]: Client-side computed filtering only for /flags (no URL sync, no backend params); FlagFilterState as single reactive ref with spread-reset clearFilters; Scope Target uses 4 buckets (Global/Tenants/Products/Companies)
+- [Phase 15-and-rule-combination-semantics]: [15-03]: overallResult computed inside the existing watchEffect (AND: ruleResults.every(Boolean) when rules non-empty else null; first_match: mirrors matchedResult) - unifies badge logic across both modes
+- [Phase 15-and-rule-combination-semantics]: [15-03]: RuleSimulator badge bound to overallResult in both modes (overallResult === matchedResult in first_match) - avoids duplicate badge branches
+- [Phase 15-and-rule-combination-semantics]: [15-03]: AND/ELSE IF connector label dynamic on localMode - first_match chains no longer visually read as AND
 
 ### Pending Todos
 
@@ -210,6 +214,6 @@ Recent decisions affecting v1.1:
 
 ## Session Continuity
 
-**Last session:** 2026-06-12T13:26:56.000Z
-**Stopped At:** Completed 15-04-PLAN.md
+**Last session:** 2026-06-12T13:36:06.037Z
+**Stopped At:** Completed 15-03-PLAN.md
 **Resume File:** None

@@ -34,7 +34,7 @@ Full archive: `.planning/milestones/v1.0-ROADMAP.md`
 - [x] **Phase 12: Dogfooding Feature Flags** — Portal gated by its own flags (product `backoffice`): bo.feature, bo.feature.create, bo.feature.update (completed 2026-06-11)
 - [x] **Phase 13: Simulator Test Contexts** — Persistent per-flag test contexts in Live Simulator + toggle to use the logged-in user's real context (completed 2026-06-11)
 - [x] **Phase 14: Flag Scope Targeting + List-Valued Rules** — Combobox de producto/tenant/company según scope del flag (persistido y aplicado por el SDK) + values de Rule como lista separada por coma para atributos lista (ej. roles) (completed 2026-06-12)
-- [ ] **Phase 15: AND Rule Combination Semantics + Flags Page Filters** — Multi-rule evaluation combina con AND: el flag/segment evalúa true solo si TODAS las reglas individuales matchean, false en caso contrario; paridad en los 4 evaluadores (backend, sdk-js, sdk-python, useRuleSimulator); OR y grupos de reglas diferidos a un release futuro. Además, filtros en la página `/flags`: Status, Tags, Complexity, Environment y target de scope (Products, Tenants o Global)
+- [x] **Phase 15: AND Rule Combination Semantics + Flags Page Filters** — Multi-rule evaluation combina con AND: el flag/segment evalúa true solo si TODAS las reglas individuales matchean, false en caso contrario; paridad en los 4 evaluadores (backend, sdk-js, sdk-python, useRuleSimulator); OR y grupos de reglas diferidos a un release futuro. Además, filtros en la página `/flags`: Status, Tags, Complexity, Environment y target de scope (Products, Tenants o Global) (completed 2026-06-12)
 
 ## Phase Details
 
@@ -199,7 +199,7 @@ Plans:
 **Goal:** (1) Multi-rule evaluation combines with AND — a flag whose rules combine with AND evaluates true only when ALL individual rules match, false otherwise, with parity across the 4 evaluators (backend, sdk-js, sdk-python, useRuleSimulator) — implemented as opt-in flag-level `rule_combination_mode` ('first_match' legacy default | 'and'); segment conditions keep OR semantics; OR operator and rule groups deferred to a future release. (2) The `/flags` page gains client-side filters: Status, Tags, Complexity (stored `complex` boolean), Environment, and scope target (Products / Tenants / Companies / Global).
 **Requirements**: AND-01, AND-02, FLT-01, FLT-02, FLT-03, FLT-04, FLT-05 (assigned at plan time — registration gap vs REQUIREMENTS.md noted in phase deferred-items.md, same as Phase 14)
 **Depends on:** Phase 14
-**Plans:** 3/4 plans executed
+**Plans:** 4/4 plans complete
 
 Plans:
 - [ ] 15-01-PLAN.md — Backend AND mode: d004 migration + rule_combination_mode column/schemas + evaluate_flag AND branch + bootstrap field

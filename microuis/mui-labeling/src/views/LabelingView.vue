@@ -38,6 +38,9 @@
       <KeysMatrix />
       <TranslationDrawer />
     </div>
+
+    <!-- Modals -->
+    <AddKeyModal v-if="state.showAddKeyModal" />
   </div>
 </template>
 
@@ -47,6 +50,7 @@ import WorkspaceContextSelector from '../components/labeling/WorkspaceContextSel
 import NamespaceSidebar from '../components/labeling/NamespaceSidebar.vue'
 import KeysMatrix from '../components/labeling/KeysMatrix.vue'
 import TranslationDrawer from '../components/labeling/TranslationDrawer.vue'
+import AddKeyModal from '../components/labeling/AddKeyModal.vue'
 import { useLabelingState } from '../composables/useLabelingState'
 
 const state = useLabelingState()

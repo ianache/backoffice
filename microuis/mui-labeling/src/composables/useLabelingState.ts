@@ -21,6 +21,8 @@ export interface LabelingState {
   showImportExport: boolean
   showDiagnostics: boolean
   quickCreatePrefill: QuickCreatePrefill | null
+  /** Bumped whenever keys are mutated elsewhere (Add/Diagnostics) so KeysMatrix can refetch. */
+  refreshTrigger: number
 }
 
 export const LABELING_STATE_KEY: InjectionKey<LabelingState> = Symbol('labelingState')
@@ -42,6 +44,7 @@ const state: LabelingState = reactive({
   showImportExport: false,
   showDiagnostics: false,
   quickCreatePrefill: null,
+  refreshTrigger: 0,
 })
 
 export function useLabelingState(): LabelingState {

@@ -187,7 +187,7 @@ onMounted(async () => {
   await fetchKeys()
 })
 
-watch([() => state.activeNamespace, () => state.workspaceContext], fetchKeys, { deep: true })
+watch([() => state.activeNamespace, () => state.workspaceContext, () => state.refreshTrigger], fetchKeys, { deep: true })
 
 async function fetchNamespacesCache() {
   try {
@@ -220,7 +220,6 @@ function selectKey(row: KeyRow) {
 }
 
 function onAddKeyClick() {
-  // TODO: 20-08 — wire to the Add Key modal (RF-06/RF-07).
-  console.warn('TODO: 20-08 — Add Key modal not yet implemented')
+  state.showAddKeyModal = true
 }
 </script>

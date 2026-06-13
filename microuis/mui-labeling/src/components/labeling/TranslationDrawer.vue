@@ -339,6 +339,7 @@ async function saveKeyChanges() {
     }
 
     toast.success('Cambios guardados correctamente')
+    state.refreshTrigger++
     await refreshRelatedRows()
 
     // Refresh selectedKey reference to a fresh row for this key
@@ -429,6 +430,7 @@ async function restoreInheritedValue() {
       label_key: state.selectedKey.label_key,
     })
     toast.success('Override eliminado. Volviendo a herencia.')
+    state.refreshTrigger++
     await refreshRelatedRows()
     const refreshed = relatedRows.value.find((r) => r.label_key === state.selectedKey?.label_key)
     if (refreshed) {

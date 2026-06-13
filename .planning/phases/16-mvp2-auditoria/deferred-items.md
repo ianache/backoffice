@@ -14,3 +14,8 @@ issues directly caused by the current task's changes).
 **Action needed:** Add AUD-01 through AUD-06 to `.planning/REQUIREMENTS.md` traceability table
 (separately, likely during a later plan or a dedicated requirements-sync pass), then re-run
 `requirements mark-complete AUD-01 AUD-02 AUD-03` for 16-01's completed requirements.
+
+**16-03 update:** `requirements mark-complete AUD-05` also returned `not_found` during 16-03
+execution, confirming the same gap. AUD-05 (users/tenants/companies write-path instrumentation)
+is functionally complete per 16-03-SUMMARY.md; only the REQUIREMENTS.md traceability entry is
+missing.

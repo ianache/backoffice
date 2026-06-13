@@ -31,7 +31,7 @@ Phase: 16 of 20 (MVP2 Auditoria — Audit Log Timeline + Diff Viewer)
 **Total Plans in Phase:** 4
 **Status:** Ready to execute
 **Last Activity:** 2026-06-13
-Last activity detail: 2026-06-13 — Completed 16-01-PLAN.md (Audit log domain foundation: AuditLog ORM model + e001 migration with 3 indexes, write_audit_log/list_audit_logs/get_audit_log/compute_diff service, GET-only /audit-logs router with page/limit/COUNT(*) pagination and tenant scoping, BFF audit.ts proxy forwarding X-User-Email). AUD-01/AUD-02/AUD-03 complete.
+Last activity detail: 2026-06-13 — Completed 16-03-PLAN.md (users/tenants/companies write-path audit instrumentation: create_user/update_user/set_enabled/reset_mfa write audit_logs rows target_type=USER alongside user_events; create_tenant/update_tenant/delete_tenant write target_type=TENANT rows with whitelabel fields; create_company/update_company write target_type=COMPANY rows; bff companies.ts forwards X-User-Email; environment defaults to 'production'). AUD-05 complete (REQUIREMENTS.md registration gap logged in deferred-items.md).
 
 **Progress:** [██████████] 99%
 

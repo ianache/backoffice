@@ -1,3 +1,5 @@
+import csv
+import io
 import json
 from datetime import datetime
 from typing import Optional
@@ -293,3 +295,50 @@ async def list_missing_label_reports(db: AsyncSession, *, tenant_id: str) -> lis
     stmt = select(MissingLabelReport).where(MissingLabelReport.tenant_id == tenant_id).order_by(MissingLabelReport.hits.desc())
     result = await db.execute(stmt)
     return list(result.scalars().all())
+
+
+# ---------------------------------------------------------------------------
+# RF-07 export (JSON / CSV)
+# ---------------------------------------------------------------------------
+
+async def export_namespace_json(db: AsyncSession, *, tenant_id: str, company_id: Optional[str], product_id: Optional[str], namespace: str) -> dict:
+    """RF-07 JSON export: resolved label values for both locales, SDK-bootstrap-like
+    shape but nested per locale: {namespace: {label_key: {locale: value}}}."""
+    es = await resolve_labels(db, tenant_id=tenant_id, company_id=company_id, product_id=product_id, namespace=namespace, locale='es_PE')
+    en = await resolve_labels(db, tenant_id=tenant_id, company_id=company_id, product_id=product_id, namespace=namespace, locale='en_US')
+    keys = set(es) | set(en)
+    return {namespace: {k: {'es_PE': es.get(k, ''), 'en_US': en.get(k, '')} for k in sorted(keys)}}
+
+
+async def _resolve_with_level(db: AsyncSession, *, tenant_id: str, company_id: Optional[str], product_id: Optional[str], namespace: str, locale: str) -> dict[str, tuple[str, str]]:
+    """Like resolve_labels() but also returns which level ('tenant'|'company'|'product')
+    contributed each key's value — used for the CSV 'level' column."""
+    tenant_labels = await _fetch_labels(db, tenant_id, None, None, namespace, locale)
+    company_labels = await _fetch_labels(db, tenant_id, company_id, None, namespace, locale) if company_id else {}
+    product_labels = await _fetch_labels(db, tenant_id, company_id, product_id, namespace, locale) if (company_id and product_id) else {}
+
+    result: dict[str, tuple[str, str]] = {}
+    for k, v in tenant_labels.items():
+        result[k] = (v, 'tenant')
+    for k, v in company_labels.items():
+        result[k] = (v, 'company')
+    for k, v in product_labels.items():
+        result[k] = (v, 'product')
+    return result
+
+
+async def export_namespace_csv(db: AsyncSession, *, tenant_id: str, company_id: Optional[str], product_id: Optional[str], namespace: str) -> str:
+    """RF-07 CSV export via Python stdlib csv module (RFC 4180 quoting/escaping).
+    'level' column reflects the most-specific level contributing the es_PE value."""
+    es = await _resolve_with_level(db, tenant_id=tenant_id, company_id=company_id, product_id=product_id, namespace=namespace, locale='es_PE')
+    en = await _resolve_with_level(db, tenant_id=tenant_id, company_id=company_id, product_id=product_id, namespace=namespace, locale='en_US')
+    keys = sorted(set(es) | set(en))
+
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(['namespace', 'label_key', 'es_PE', 'en_US', 'level'])
+    for key in keys:
+        es_value, es_level = es.get(key, ('', 'tenant'))
+        en_value, _ = en.get(key, ('', 'tenant'))
+        writer.writerow([namespace, key, es_value, en_value, es_level])
+    return output.getvalue()

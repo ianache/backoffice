@@ -5,6 +5,7 @@ from app.domains.feature_flags.router import router as flags_router
 from app.domains.feature_flags.router import segments_router
 from app.domains.products.router import router as products_router
 from app.domains.companies.router import router as companies_router
+from app.domains.audit.router import router as audit_router
 from app.ws.connection_manager import ConnectionManager
 from app.domains.sdk.router import router as sdk_router
 from app.domains.sdk.ws_router import ws_flags_endpoint
@@ -20,6 +21,7 @@ app.include_router(flags_router)
 app.include_router(segments_router)
 app.include_router(products_router)
 app.include_router(companies_router)
+app.include_router(audit_router)
 app.include_router(sdk_router)          # /api/v1/sdk/bootstrap, /evaluate, /eval-events
 app.add_websocket_route("/ws/flags/{tenant_id}", ws_flags_endpoint)
 

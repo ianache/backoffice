@@ -56,6 +56,16 @@ def _clear_label_cache():
     service.clear_cache()
 
 
+def _export_path() -> str:
+    """Resolve the actual mounted path for the export endpoint — the labels
+    router may be included with or without an '/api/v1' prefix depending on
+    how app.main wires it up (concurrent plans 20-03/20-09 own that wiring)."""
+    return next(
+        r.path for r in app.routes
+        if getattr(r, "name", None) == "export_namespace"
+    )
+
+
 async def _add_namespace(db_session: AsyncSession, namespace_id: str = "common"):
     ns = Namespace(id=namespace_id, strategy="lazy", description=None)
     db_session.add(ns)
@@ -226,7 +236,7 @@ async def test_export_endpoint_json(db_session: AsyncSession, client):
     await _seed_common_namespace(db_session)
 
     resp = client.get(
-        "/labels/export",
+        _export_path(),
         params={"tenant_id": "T", "namespace": "common", "format": "json"},
         headers=INTERNAL_HEADERS,
     )
@@ -251,7 +261,7 @@ async def test_export_endpoint_csv(db_session: AsyncSession, client):
     await _seed_common_namespace(db_session)
 
     resp = client.get(
-        "/labels/export",
+        _export_path(),
         params={"tenant_id": "T", "namespace": "common", "format": "csv"},
         headers=INTERNAL_HEADERS,
     )
@@ -279,7 +289,7 @@ async def test_export_endpoint_invalid_format(db_session: AsyncSession, client):
     await _seed_common_namespace(db_session)
 
     resp = client.get(
-        "/labels/export",
+        _export_path(),
         params={"tenant_id": "T", "namespace": "common", "format": "xml"},
         headers=INTERNAL_HEADERS,
     )

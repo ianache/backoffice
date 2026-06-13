@@ -4,8 +4,8 @@ milestone: v1.1
 milestone_name: MVP2
 current_plan: 4
 status: executing
-stopped_at: Completed 20-04-PLAN.md
-last_updated: "2026-06-13T20:13:55.914Z"
+stopped_at: Completed 20-03-PLAN.md
+last_updated: "2026-06-13T20:18:19.469Z"
 last_activity: 2026-06-13
 progress:
   total_phases: 14
@@ -100,6 +100,7 @@ Last activity detail: 2026-06-13 — Completed 20-02-PLAN.md (labels service lay
 | Phase 20-localization-white-label-engine P02 | 20min | 2 tasks | 3 files |
 | Phase 20-localization-white-label-engine P09 | 12min | 2 tasks | 3 files |
 | Phase 20 P04 | 18min | 2 tasks | 3 files |
+| Phase 20-localization-white-label-engine P03 | 25min | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -239,6 +240,8 @@ Recent decisions affecting v1.1:
 - [Phase 20]: labels_report_missing returns 204 with no body (matches plan's status_code=204 spec); service.report_missing_label() return value discarded
 - [Phase 20]: delete_namespace also broadcasts INVALIDATE_NAMESPACE (per plan prose: cascades label invalidation), gated on x_user_tenant_id being non-empty since namespace deletion has no per-row tenant_id to snapshot
 - [Phase 20]: Test 6's PATCH path resolved dynamically via app.routes lookup by route name (update_key_value) to be resilient to the /labels vs /api/v1/labels prefix decision made in app/main.py by concurrent plan 20-03
+- [Phase 20-03]: labels_router registered with app.include_router(labels_router, prefix="/api/v1") - router.py declares prefix="/labels", admin API mounts at /api/v1/labels/* to match test_labels_sdk_router.py (20-04) expectations
+- [Phase 20-03]: RestoreOverridePayload(BaseModel) declared via standard top-level pydantic import, not walrus-operator hack
 
 ### Pending Todos
 
@@ -252,6 +255,6 @@ Recent decisions affecting v1.1:
 
 ## Session Continuity
 
-**Last session:** 2026-06-13T20:13:55.891Z
-**Stopped At:** Completed 20-04-PLAN.md
+**Last session:** 2026-06-13T20:18:19.443Z
+**Stopped At:** Completed 20-03-PLAN.md
 **Resume File:** None

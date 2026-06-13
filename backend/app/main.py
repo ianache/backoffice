@@ -9,6 +9,7 @@ from app.domains.audit.router import router as audit_router
 from app.ws.connection_manager import ConnectionManager
 from app.domains.sdk.router import router as sdk_router
 from app.domains.sdk.ws_router import ws_flags_endpoint
+from app.domains.labels.router import router as labels_router
 
 app = FastAPI(title="BackOffice Backend", version="1.0.0")
 
@@ -23,6 +24,7 @@ app.include_router(products_router)
 app.include_router(companies_router)
 app.include_router(audit_router)
 app.include_router(sdk_router)          # /api/v1/sdk/bootstrap, /evaluate, /eval-events
+app.include_router(labels_router, prefix="/api/v1")  # /api/v1/labels/namespaces, /keys, /missing
 app.add_websocket_route("/ws/flags/{tenant_id}", ws_flags_endpoint)
 
 @app.get("/health")

@@ -1,5 +1,6 @@
 from typing import Optional
 from fastapi import APIRouter, Depends, Header, HTTPException, Query, Request, status
+from fastapi.responses import JSONResponse, PlainTextResponse
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -206,6 +207,9 @@ async def create_key(
         client_ip=client_ip,
         user_agent=user_agent,
     ))
+    ws_manager = getattr(request.app.state, "ws_manager", None)
+    if ws_manager is not None:
+        await ws_manager.broadcast(payload.tenant_id, {"type": "INVALIDATE_NAMESPACE", "namespace": payload.namespace})
     return [LocalizedLabelResponse.model_validate(r) for r in rows]
 
 
@@ -239,6 +243,9 @@ async def update_key(
         client_ip=client_ip,
         user_agent=user_agent,
     ))
+    ws_manager = getattr(request.app.state, "ws_manager", None)
+    if ws_manager is not None:
+        await ws_manager.broadcast(updated.tenant_id, {"type": "INVALIDATE_NAMESPACE", "namespace": updated.namespace})
     return LocalizedLabelResponse.model_validate(updated)
 
 
@@ -273,6 +280,9 @@ async def update_key_value(
         client_ip=client_ip,
         user_agent=user_agent,
     ))
+    ws_manager = getattr(request.app.state, "ws_manager", None)
+    if ws_manager is not None:
+        await ws_manager.broadcast(updated.tenant_id, {"type": "INVALIDATE_NAMESPACE", "namespace": updated.namespace})
     return LocalizedLabelResponse.model_validate(updated)
 
 
@@ -292,6 +302,7 @@ async def delete_key(
         raise HTTPException(status_code=404, detail="Label not found")
     payload_before = LocalizedLabelResponse.model_validate(existing).model_dump(mode='json')
     tenant_id_snapshot = existing.tenant_id
+    namespace_snapshot = existing.namespace
     await service.delete_label(db, label_id)
     client_ip, user_agent = _audit_request_meta(request)
     await audit_service.write_audit_log(db, AuditLogCreate(
@@ -306,6 +317,9 @@ async def delete_key(
         client_ip=client_ip,
         user_agent=user_agent,
     ))
+    ws_manager = getattr(request.app.state, "ws_manager", None)
+    if ws_manager is not None:
+        await ws_manager.broadcast(tenant_id_snapshot, {"type": "INVALIDATE_NAMESPACE", "namespace": namespace_snapshot})
 
 
 @router.post("/keys/restore", status_code=status.HTTP_204_NO_CONTENT)
@@ -344,6 +358,9 @@ async def restore_override(
         client_ip=client_ip,
         user_agent=user_agent,
     ))
+    ws_manager = getattr(request.app.state, "ws_manager", None)
+    if ws_manager is not None:
+        await ws_manager.broadcast(payload.tenant_id, {"type": "INVALIDATE_NAMESPACE", "namespace": payload.namespace})
 
 
 # ---------------------------------------------------------------------------

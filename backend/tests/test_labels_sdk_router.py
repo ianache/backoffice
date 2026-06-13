@@ -269,9 +269,18 @@ async def test_update_label_value_broadcasts_invalidate_namespace(db_session, cl
     original_ws_manager = app.state.ws_manager
     app.state.ws_manager = SimpleNamespace(broadcast=broadcast_mock)
 
+    # Resolve the actual mounted path for update_key_value — the labels router
+    # may be included with or without an "/api/v1" prefix depending on how
+    # app.main wires it up (concurrent plans 20-03/20-09 own that wiring).
+    path_template = next(
+        r.path for r in app.routes
+        if getattr(r, "name", None) == "update_key_value"
+    )
+    path = path_template.format(label_id=label.id)
+
     try:
         resp = client.patch(
-            f"/labels/keys/{label.id}/value",
+            path,
             json={"locale": "es_PE", "label_value": "Aceptar (actualizado)", "version": 1},
             headers={
                 "X-Internal-Secret": "test",

@@ -66,3 +66,15 @@ def test_audit_router_has_only_get_routes():
     assert len(router.routes) > 0
     for r in router.routes:
         assert r.methods == {'GET'}
+
+
+def test_action_type_constants_cover_flags_and_segments():
+    from app.domains.audit.schemas import ActionType
+    for name in ["CREATE_FLAG", "UPDATE_FLAG", "DELETE_FLAG", "ENABLE_FLAG", "DISABLE_FLAG",
+                  "CREATE_SEGMENT", "UPDATE_SEGMENT", "DELETE_SEGMENT"]:
+        assert hasattr(ActionType, name)
+
+
+def test_audit_request_meta_returns_none_for_none_request():
+    from app.domains.feature_flags.router import _audit_request_meta
+    assert _audit_request_meta(None) == (None, None)

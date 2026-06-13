@@ -449,10 +449,28 @@ async def list_segments_handler(
 @segments_router.post("/", response_model=SegmentResponse, status_code=status.HTTP_201_CREATED)
 async def create_segment(
     payload: SegmentCreate,
+    request: Request,
     x_user_roles: str = Header(...),
+    x_user_sub: str = Header(default=''),
+    x_user_email: str = Header(default=''),
+    x_user_tenant_id: str = Header(default=''),
     db: AsyncSession = Depends(get_db),
 ):
     segment = await service.create_segment(db, payload)
+    client_ip, user_agent = _audit_request_meta(request)
+    await audit_service.write_audit_log(db, AuditLogCreate(
+        tenant_id=segment.tenant_id,
+        user_id=x_user_sub,
+        user_email=x_user_email,
+        action_type=ActionType.CREATE_SEGMENT,
+        environment='production',  # segments have no environment field — platform default per CONTEXT.md
+        target_type="SEGMENT",
+        target_id=str(segment.id),
+        payload_before=None,
+        payload_after=SegmentResponse.model_validate(segment).model_dump(mode='json'),
+        client_ip=client_ip,
+        user_agent=user_agent,
+    ))
     return SegmentResponse.model_validate(segment)
 
 
@@ -460,21 +478,68 @@ async def create_segment(
 async def update_segment(
     segment_id: int,
     payload: SegmentCreate,
+    request: Request,
     x_user_roles: str = Header(...),
+    x_user_sub: str = Header(default=''),
+    x_user_email: str = Header(default=''),
     db: AsyncSession = Depends(get_db),
 ):
+    existing = await service.get_segment(db, segment_id)
+    if existing is None:
+        raise HTTPException(status_code=404, detail="Segment not found")
+    payload_before = SegmentResponse.model_validate(existing).model_dump(mode='json')
+
     segment = await service.update_segment(db, segment_id, payload)
     if not segment:
         raise HTTPException(status_code=404, detail="Segment not found")
+
+    client_ip, user_agent = _audit_request_meta(request)
+    await audit_service.write_audit_log(db, AuditLogCreate(
+        tenant_id=segment.tenant_id,
+        user_id=x_user_sub,
+        user_email=x_user_email,
+        action_type=ActionType.UPDATE_SEGMENT,
+        environment='production',
+        target_type="SEGMENT",
+        target_id=str(segment.id),
+        payload_before=payload_before,
+        payload_after=SegmentResponse.model_validate(segment).model_dump(mode='json'),
+        client_ip=client_ip,
+        user_agent=user_agent,
+    ))
     return SegmentResponse.model_validate(segment)
 
 
 @segments_router.delete("/{segment_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_segment(
     segment_id: int,
+    request: Request,
     x_user_roles: str = Header(...),
+    x_user_sub: str = Header(default=''),
+    x_user_email: str = Header(default=''),
     db: AsyncSession = Depends(get_db),
 ):
+    existing = await service.get_segment(db, segment_id)
+    if existing is None:
+        raise HTTPException(status_code=404, detail="Segment not found")
+    payload_before = SegmentResponse.model_validate(existing).model_dump(mode='json')
+    tenant_id_snapshot = existing.tenant_id
+
     deleted = await service.delete_segment(db, segment_id)
     if not deleted:
         raise HTTPException(status_code=404, detail="Segment not found")
+
+    client_ip, user_agent = _audit_request_meta(request)
+    await audit_service.write_audit_log(db, AuditLogCreate(
+        tenant_id=tenant_id_snapshot,
+        user_id=x_user_sub,
+        user_email=x_user_email,
+        action_type=ActionType.DELETE_SEGMENT,
+        environment='production',
+        target_type="SEGMENT",
+        target_id=str(segment_id),
+        payload_before=payload_before,
+        payload_after=None,
+        client_ip=client_ip,
+        user_agent=user_agent,
+    ))

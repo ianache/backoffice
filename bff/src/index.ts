@@ -5,6 +5,7 @@ import { authRouter } from './routes/auth.js'
 import { tenantsRouter } from './routes/tenants.js'
 import { usersRouter } from './routes/users.js'
 import { flagsRouter } from './routes/flags.js'
+import { labelsRouter } from './routes/labels.js'
 import { sdkRouter } from './routes/sdk.js'
 import { productsRouter } from './routes/products.js'
 import { companiesRouter } from './routes/companies.js'
@@ -37,6 +38,10 @@ app.use('/users', usersRouter)
 // Feature flags management: proxied to backend, multi-role (PlatformAdmin | TenantAdmin | TenantOwner | ProductManager)
 // NOTE: express.json() is intentionally NOT applied here; the proxy streams the raw body
 app.use('/flags', flagsRouter)
+
+// Labels/namespaces management: proxied to backend, multi-role incl. UXWriter (value-only enforced backend-side)
+// NOTE: express.json() is intentionally NOT applied here; the proxy streams the raw body
+app.use('/labels', labelsRouter)
 
 // SDK endpoints: proxied to backend /api/v1/sdk/*, no Keycloak auth (SDK key auth handled by backend)
 // WebSocket connections to /sdk/ws/flags/:tenant_id are upgraded and forwarded to backend /ws/flags/:tenant_id

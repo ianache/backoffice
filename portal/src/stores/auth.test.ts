@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 
 // Set up sessionStorage globally before any module evaluation
 globalThis.sessionStorage = {
@@ -86,4 +86,45 @@ describe('auth store', () => {
     expect(store.roles).toEqual([])
     expect(store.isLoading).toBe(false)
   })
+
+  describe('loginWithCredentials()', () => {
+    beforeEach(() => {
+      vi.stubGlobal('fetch', vi.fn())
+    })
+
+    afterEach(() => {
+      vi.unstubAllGlobals()
+    })
+
+    it('throws AUTH_ERR_INVALID_CREDENTIALS on invalid request status', async () => {
+      const { AUTH_ERR_INVALID_CREDENTIALS } = await import('./auth')
+      vi.mocked(fetch).mockResolvedValue({
+        ok: false,
+        status: 401,
+      } as Response)
+
+      const store = useAuthStore()
+      await expect(store.loginWithCredentials('test@example.com', 'wrong-pass'))
+        .rejects.toThrow(AUTH_ERR_INVALID_CREDENTIALS)
+    })
+
+    it('throws AUTH_ERR_FAILED_AFTER_EXCHANGE on Keycloak post-exchange failure', async () => {
+      const { AUTH_ERR_FAILED_AFTER_EXCHANGE } = await import('./auth')
+      vi.mocked(fetch).mockResolvedValue({
+        ok: true,
+        json: async () => ({
+          access_token: 'new-acc',
+          refresh_token: 'new-ref',
+          id_token: 'new-id',
+        }),
+      } as Response)
+
+      vi.mocked(keycloak.init).mockResolvedValue(false) // authentication fails after exchange
+
+      const store = useAuthStore()
+      await expect(store.loginWithCredentials('test@example.com', 'correct-pass'))
+        .rejects.toThrow(AUTH_ERR_FAILED_AFTER_EXCHANGE)
+    })
+  })
 })
+

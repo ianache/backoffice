@@ -2,17 +2,17 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: MVP2
-current_plan: 3
+current_plan: 4
 status: executing
-stopped_at: Completed 16-03-PLAN.md
-last_updated: "2026-06-13T04:24:25.534Z"
+stopped_at: Completed 16-04-PLAN.md
+last_updated: "2026-06-13T04:30:34.307Z"
 last_activity: 2026-06-13
 progress:
   total_phases: 21
-  completed_phases: 16
+  completed_phases: 17
   total_plans: 78
-  completed_plans: 77
-  percent: 99
+  completed_plans: 78
+  percent: 100
 ---
 
 # Project State
@@ -27,13 +27,13 @@ See: .planning/PROJECT.md (updated 2026-06-07)
 ## Current Position
 
 Phase: 16 of 20 (MVP2 Auditoria — Audit Log Timeline + Diff Viewer)
-**Current Plan:** 3
+**Current Plan:** 4
 **Total Plans in Phase:** 4
 **Status:** Ready to execute
 **Last Activity:** 2026-06-13
 Last activity detail: 2026-06-13 — Completed 16-03-PLAN.md (users/tenants/companies write-path audit instrumentation: create_user/update_user/set_enabled/reset_mfa write audit_logs rows target_type=USER alongside user_events; create_tenant/update_tenant/delete_tenant write target_type=TENANT rows with whitelabel fields; create_company/update_company write target_type=COMPANY rows; bff companies.ts forwards X-User-Email; environment defaults to 'production'). AUD-05 complete (REQUIREMENTS.md registration gap logged in deferred-items.md).
 
-**Progress:** [██████████] 99%
+**Progress:** [██████████] 100%
 
 ## Performance Metrics
 
@@ -92,6 +92,7 @@ Last activity detail: 2026-06-13 — Completed 16-03-PLAN.md (users/tenants/comp
 | Phase 16-mvp2-auditoria P01 | 12min | 3 tasks | 10 files |
 | Phase 16-mvp2-auditoria P02 | 8min | 2 tasks | 3 files |
 | Phase 16 P03 | 8min | 2 tasks | 5 files |
+| Phase 16-mvp2-auditoria P04 | 10min | 3 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -216,6 +217,9 @@ Recent decisions affecting v1.1:
 - [Phase 16-mvp2-auditoria]: [16-03]: users/service.py write_audit_log() calls use user_email=None for target user - Keycloak Admin API service layer has no FastAPI Request/Header context
 - [Phase 16-mvp2-auditoria]: [16-03]: tenants router update_tenant/delete_tenant accept extra pre-fetch select(Tenant) for before-snapshot, no service signature refactor
 - [Phase 16-mvp2-auditoria]: [16-03]: companies router gained x_user_sub/x_user_email Header(default='') params for audit actor attribution
+- [Phase 16-mvp2-auditoria]: [16-04]: Environment badges colored via mockup convention - production=error-container, staging=tertiary-container, development=secondary-container
+- [Phase 16-mvp2-auditoria]: [16-04]: Pagination reuses lastFilters ref (set only by Apply Filters) so page navigation doesn't reset filter form fields
+- [Phase 16-mvp2-auditoria]: [16-04]: User filter is a plain text input bound to user_id (Keycloak sub) - no user-picker dropdown for MVP per CONTEXT.md
 
 ### Pending Todos
 
@@ -229,6 +233,6 @@ Recent decisions affecting v1.1:
 
 ## Session Continuity
 
-**Last session:** 2026-06-13T04:24:25.526Z
-**Stopped At:** Completed 16-03-PLAN.md
+**Last session:** 2026-06-13T04:30:28.142Z
+**Stopped At:** Completed 16-04-PLAN.md
 **Resume File:** None

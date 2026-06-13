@@ -4,8 +4,8 @@ milestone: v1.1
 milestone_name: MVP2
 current_plan: 6
 status: executing
-stopped_at: Completed 20-05-PLAN.md
-last_updated: "2026-06-13T20:25:08.115Z"
+stopped_at: Completed 20-06-PLAN.md
+last_updated: "2026-06-13T20:25:35.089Z"
 last_activity: 2026-06-13
 progress:
   total_phases: 14
@@ -246,6 +246,9 @@ Recent decisions affecting v1.1:
 - [Phase 20-03]: RestoreOverridePayload(BaseModel) declared via standard top-level pydantic import, not walrus-operator hack
 - [Phase ?]: [20-05]: labels.ts pathRewrite is /api/v1/labels (not /labels like flags.ts) - backend labels_router mounted at /api/v1/labels per 20-03, verified via live FastAPI route inspection
 - [Phase ?]: [20-05]: UXWriter added to labels.ts requireRole allow-list alongside PlatformAdmin/TenantAdmin/TenantOwner/ProductManager - backend enforces value-only restriction on PATCH /keys/{id}/value
+- [Phase ?]: [20-06]: Tests placed in sdk/sdk-js/tests/labels.test.ts (matching client.test.ts/websocket.test.ts location), not src/labels.test.ts as plan literally states
+- [Phase ?]: [20-06]: vue added as optional peerDependency (^3.4.0) + devDependency (^3.4.29) to sdk-js; pnpm install --filter @backoffice/sdk-js linked vue@3.5.35 from workspace store
+- [Phase ?]: [20-06]: LabelClient owns its own ReconnectingSocket to /sdk/ws/flags/{tenantId}, filtering INVALIDATE_NAMESPACE - fully decoupled from FeatureFlagClient, no shared WS state
 
 ### Pending Todos
 
@@ -259,6 +262,6 @@ Recent decisions affecting v1.1:
 
 ## Session Continuity
 
-**Last session:** 2026-06-13T20:24:02.687Z
-**Stopped At:** Completed 20-05-PLAN.md
+**Last session:** 2026-06-13T20:25:35.053Z
+**Stopped At:** Completed 20-06-PLAN.md
 **Resume File:** None

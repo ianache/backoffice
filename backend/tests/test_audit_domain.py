@@ -78,3 +78,17 @@ def test_action_type_constants_cover_flags_and_segments():
 def test_audit_request_meta_returns_none_for_none_request():
     from app.domains.feature_flags.router import _audit_request_meta
     assert _audit_request_meta(None) == (None, None)
+
+
+def test_action_type_constants_cover_users_tenants_companies():
+    from app.domains.audit.schemas import ActionType
+    for name in ["CREATE_USER", "UPDATE_USER", "ENABLE_USER", "DISABLE_USER", "RESET_MFA",
+                  "CREATE_TENANT", "UPDATE_TENANT", "DELETE_TENANT",
+                  "CREATE_COMPANY", "UPDATE_COMPANY"]:
+        assert hasattr(ActionType, name)
+
+
+def test_audit_log_create_defaults_environment_to_production():
+    from app.domains.audit.schemas import AuditLogCreate
+    entry = AuditLogCreate(user_id="u1", action_type="CREATE_TENANT", target_type="TENANT", target_id="1")
+    assert entry.environment == "production"

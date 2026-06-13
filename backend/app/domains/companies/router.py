@@ -6,6 +6,8 @@ from typing import List, Optional
 from app.dependencies import verify_internal_secret, get_db
 from app.domains.companies import service
 from app.domains.companies.schemas import CompanyCreate, CompanyUpdate, CompanyResponse
+from app.domains.audit import service as audit_service
+from app.domains.audit.schemas import AuditLogCreate, ActionType
 
 router = APIRouter(
     prefix="/companies",
@@ -38,6 +40,8 @@ async def create_company(
     payload: CompanyCreate,
     x_user_roles: str = Header(...),
     x_user_tenant_id: str = Header(default=''),
+    x_user_sub: str = Header(default=''),
+    x_user_email: str = Header(default=''),
     db: AsyncSession = Depends(get_db),
 ):
     """Create a new company. PlatformAdmin manages all tenants; TenantAdmin/TenantOwner only their own."""
@@ -49,6 +53,18 @@ async def create_company(
     except IntegrityError:
         await db.rollback()
         raise HTTPException(status_code=409, detail=f"Company with id '{payload.id}' already exists")
+
+    await audit_service.write_audit_log(db, AuditLogCreate(
+        tenant_id=company.tenant_id,
+        user_id=x_user_sub,
+        user_email=x_user_email,
+        action_type=ActionType.CREATE_COMPANY,
+        environment='production',
+        target_type="COMPANY",
+        target_id=company.id,
+        payload_before=None,
+        payload_after=CompanyResponse.model_validate(company).model_dump(mode='json'),
+    ))
     return company
 
 
@@ -72,6 +88,8 @@ async def update_company(
     payload: CompanyUpdate,
     x_user_roles: str = Header(...),
     x_user_tenant_id: str = Header(default=''),
+    x_user_sub: str = Header(default=''),
+    x_user_email: str = Header(default=''),
     db: AsyncSession = Depends(get_db),
 ):
     """Update a company. Requires PlatformAdmin or TenantAdmin/TenantOwner of the owning tenant."""
@@ -82,4 +100,19 @@ async def update_company(
         raise HTTPException(status_code=404, detail=f"Company '{company_id}' not found")
     if 'PlatformAdmin' not in roles and company.tenant_id != x_user_tenant_id:
         raise HTTPException(status_code=403, detail="Cannot manage companies for another tenant")
-    return await service.update_company(db, company_id, payload)
+
+    payload_before = CompanyResponse.model_validate(company).model_dump(mode='json')
+
+    updated = await service.update_company(db, company_id, payload)
+    await audit_service.write_audit_log(db, AuditLogCreate(
+        tenant_id=updated.tenant_id,
+        user_id=x_user_sub,
+        user_email=x_user_email,
+        action_type=ActionType.UPDATE_COMPANY,
+        environment='production',
+        target_type="COMPANY",
+        target_id=updated.id,
+        payload_before=payload_before,
+        payload_after=CompanyResponse.model_validate(updated).model_dump(mode='json'),
+    ))
+    return updated

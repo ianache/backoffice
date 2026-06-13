@@ -19,6 +19,7 @@ companiesRouter.use(
         proxyReq.setHeader('X-User-Sub', (req as any).user?.sub ?? '')
         proxyReq.setHeader('X-User-Roles', ((req as any).user?.roles ?? []).join(','))
         proxyReq.setHeader('X-User-Tenant-Id', (req as any).user?.tenantId ?? '')
+        proxyReq.setHeader('X-User-Email', (req as any).user?.email ?? '')
       },
     },
   })

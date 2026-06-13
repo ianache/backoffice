@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: MVP2
-current_plan: 6
+current_plan: 7
 status: executing
-stopped_at: Completed 20-06-PLAN.md
-last_updated: "2026-06-13T20:25:35.089Z"
+stopped_at: Completed 20-07-PLAN.md
+last_updated: "2026-06-13T20:40:16.966Z"
 last_activity: 2026-06-13
 progress:
   total_phases: 14
   completed_phases: 10
   total_plans: 59
-  completed_plans: 57
+  completed_plans: 58
   percent: 71
 ---
 
@@ -27,13 +27,13 @@ See: .planning/PROJECT.md (updated 2026-06-07)
 ## Current Position
 
 Phase: 20 of 20 (Localization White Label Engine)
-**Current Plan:** 6
+**Current Plan:** 7
 **Total Plans in Phase:** 9
 **Status:** Ready to execute
 **Last Activity:** 2026-06-13
 Last activity detail: 2026-06-13 — Completed 20-02-PLAN.md (labels service layer: backend/app/domains/labels/service.py implementing resolve_labels() 3-level inheritance resolver (tenant/company/product override-by-proximity) with an in-memory cache + invalidate_namespace_cache(), full Namespace/LocalizedLabel CRUD with optimistic-concurrency 409s on update_label/update_label_value (PI-02 message), and missing-label report dedup/hit-counting with auto-cleanup on create_label() (RF-06); 11 async unit tests across test_labels_resolve.py and test_labels_service.py). LBL-03/LBL-04/LBL-13 complete (pending REQUIREMENTS.md traceability entries — see deferred-items.md).
 
-**Progress:** [██████████] 97%
+**Progress:** [██████████] 98%
 
 ## Performance Metrics
 
@@ -103,6 +103,7 @@ Last activity detail: 2026-06-13 — Completed 20-02-PLAN.md (labels service lay
 | Phase 20-localization-white-label-engine P03 | 25min | 2 tasks | 4 files |
 | Phase 20-localization-white-label-engine P05 | 8min | 1 tasks | 2 files |
 | Phase 20-localization-white-label-engine P06 | 12min | 2 tasks | 4 files |
+| Phase 20 P07 | 14min | 3 tasks | 21 files |
 
 ## Accumulated Context
 
@@ -249,6 +250,9 @@ Recent decisions affecting v1.1:
 - [Phase ?]: [20-06]: Tests placed in sdk/sdk-js/tests/labels.test.ts (matching client.test.ts/websocket.test.ts location), not src/labels.test.ts as plan literally states
 - [Phase ?]: [20-06]: vue added as optional peerDependency (^3.4.0) + devDependency (^3.4.29) to sdk-js; pnpm install --filter @backoffice/sdk-js linked vue@3.5.35 from workspace store
 - [Phase ?]: [20-06]: LabelClient owns its own ReconnectingSocket to /sdk/ws/flags/{tenantId}, filtering INVALIDATE_NAMESPACE - fully decoupled from FeatureFlagClient, no shared WS state
+- [Phase 20-07]: WorkspaceContextSelector tenant dropdown locked to user's own tenant_id for non-PlatformAdmin roles; PlatformAdmin gets full listTenantsLookup() list
+- [Phase 20-07]: KeysMatrix groups flat per-locale LocalizedLabel[] response into per-label_key rows with es_PE/en_US columns - matches prototype one-row-per-key #keysTableBody layout
+- [Phase 20-07]: mui-labeling registers as Module Federation remote on port 5179 via VITE_REMOTE_LABELING, following the exact REMOTE_MANIFEST/importRemote pattern as mui-feature-flags
 
 ### Pending Todos
 
@@ -262,6 +266,6 @@ Recent decisions affecting v1.1:
 
 ## Session Continuity
 
-**Last session:** 2026-06-13T20:25:35.053Z
-**Stopped At:** Completed 20-06-PLAN.md
+**Last session:** 2026-06-13T20:40:16.865Z
+**Stopped At:** Completed 20-07-PLAN.md
 **Resume File:** None

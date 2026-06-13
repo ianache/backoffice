@@ -12,3 +12,12 @@ interface ImportMetaEnv {
 interface ImportMeta {
   readonly env: ImportMetaEnv
 }
+
+import { ComponentCustomProperties } from 'vue'
+
+declare module 'vue' {
+  interface ComponentCustomProperties {
+    $t: (path: string, variables?: Record<string, unknown>) => string
+  }
+}
+

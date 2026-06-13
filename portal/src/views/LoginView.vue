@@ -13,14 +13,14 @@
           </div>
           <h1 class="text-[28px] font-semibold tracking-tight text-primary leading-none">BackOffice CC</h1>
         </div>
-        <p class="text-sm text-on-surface-variant mt-sm">Control Center &amp; Multi-tenant Administration</p>
+        <p class="text-sm text-on-surface-variant mt-sm">{{ $t('login.brand_tagline') }}</p>
       </div>
 
       <!-- Auth Section -->
       <div class="z-10 flex flex-col gap-lg max-w-sm">
         <div class="space-y-sm">
-          <h2 class="text-[22px] font-semibold leading-7 text-on-surface">Welcome back</h2>
-          <p class="text-sm text-on-surface-variant">Access your administrative dashboard using enterprise credentials.</p>
+          <h2 class="text-[22px] font-semibold leading-7 text-on-surface">{{ $t('login.welcome_title') }}</h2>
+          <p class="text-sm text-on-surface-variant">{{ $t('login.welcome_body') }}</p>
         </div>
 
         <!-- Primary: Keycloak SSO -->
@@ -32,13 +32,13 @@
         >
           <md-icon v-if="!keycloakLoading">key</md-icon>
           <md-circular-progress v-else indeterminate style="--md-circular-progress-size:20px;--md-circular-progress-active-indicator-width:14;--md-circular-progress-active-indicator-color:#fff"></md-circular-progress>
-          <span>{{ keycloakLoading ? 'Connecting...' : 'Sign in with Keycloak' }}</span>
+          <span>{{ keycloakLoading ? $t('login.sso_connecting') : $t('login.sso_action') }}</span>
         </button>
 
         <!-- OR divider -->
         <div class="flex items-center gap-sm">
           <div class="h-px flex-1 bg-outline-variant"></div>
-          <span class="text-[11px] font-semibold tracking-widest text-outline uppercase">or</span>
+          <span class="text-[11px] font-semibold tracking-widest text-outline uppercase">{{ $t('login.divider_or') }}</span>
           <div class="h-px flex-1 bg-outline-variant"></div>
         </div>
 
@@ -49,14 +49,14 @@
             class="flex items-center justify-center gap-sm py-sm border border-outline rounded-lg text-on-surface hover:bg-surface-container-low transition-colors font-medium text-base"
             @click="toggleLocalForm"
           >
-            Local Admin Login
+            {{ $t('login.local_action') }}
           </button>
 
           <!-- Collapsible credentials form -->
           <div v-if="showLocalForm" class="flex flex-col gap-sm pt-xs">
             <StitchTextField
               v-model="email"
-              label="Email"
+              :label="$t('login.email_label')"
               type="email"
               required
               placeholder="admin@backoffice.dev"
@@ -67,7 +67,7 @@
 
             <StitchTextField
               v-model="password"
-              label="Password"
+              :label="$t('login.password_label')"
               type="password"
               required
               :disabled="isLoading"
@@ -90,13 +90,13 @@
               @click="handleLocalLogin"
             >
               <md-circular-progress v-if="isLoading" indeterminate style="--md-circular-progress-size:18px;--md-circular-progress-active-indicator-width:14;--md-circular-progress-active-indicator-color:#fff"></md-circular-progress>
-              <span>{{ isLoading ? 'Signing in...' : 'Sign In' }}</span>
+              <span>{{ isLoading ? $t('login.submit_loading') : $t('login.submit_action') }}</span>
             </button>
           </div>
 
           <p class="text-[11px] font-medium text-on-surface-variant text-center">
-            Trouble signing in?
-            <a href="#" class="text-primary font-bold hover:underline">Contact Support</a>
+            {{ $t('login.help_prompt') }}
+            <a href="#" class="text-primary font-bold hover:underline">{{ $t('login.help_action') }}</a>
           </p>
         </div>
       </div>
@@ -199,12 +199,14 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { useAuthStore } from '../stores/auth'
+import { useAuthStore, AUTH_ERR_INVALID_CREDENTIALS, AUTH_ERR_FAILED_AFTER_EXCHANGE } from '../stores/auth'
+import { useLoginLabels } from '../composables/useLoginLabels'
 import StitchTextField from '../components/ui/StitchTextField.vue'
 
 const authStore = useAuthStore()
 const router = useRouter()
 const route = useRoute()
+const loginLabels = useLoginLabels()
 
 const email = ref('')
 const password = ref('')
@@ -232,7 +234,14 @@ async function handleLocalLogin() {
     const redirect = typeof route.query.redirect === 'string' ? route.query.redirect : '/stub'
     router.push(redirect)
   } catch (e: any) {
-    error.value = e.message || 'Failed to sign in. Please check your credentials.'
+    const code = e.message
+    if (code === AUTH_ERR_INVALID_CREDENTIALS) {
+      error.value = loginLabels.t('login.error_invalid_credentials')
+    } else if (code === AUTH_ERR_FAILED_AFTER_EXCHANGE) {
+      error.value = loginLabels.t('login.error_authentication_failed')
+    } else {
+      error.value = loginLabels.t('login.error_generic')
+    }
   } finally {
     isLoading.value = false
   }

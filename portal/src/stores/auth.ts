@@ -2,6 +2,9 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import keycloak from '../plugins/keycloak'
 
+export const AUTH_ERR_INVALID_CREDENTIALS = 'AUTH_ERR_INVALID_CREDENTIALS'
+export const AUTH_ERR_FAILED_AFTER_EXCHANGE = 'AUTH_ERR_FAILED_AFTER_EXCHANGE'
+
 export const useAuthStore = defineStore('auth', () => {
   const isAuthenticated = ref(false)
   const token = ref<string | null>(null)
@@ -83,7 +86,7 @@ export const useAuthStore = defineStore('auth', () => {
       })
 
       if (!response.ok) {
-        throw new Error('Invalid email or password')
+        throw new Error(AUTH_ERR_INVALID_CREDENTIALS)
       }
 
       const data = await response.json()
@@ -110,7 +113,7 @@ export const useAuthStore = defineStore('auth', () => {
           }
         }, 30_000)
       } else {
-        throw new Error('Authentication failed after token exchange')
+        throw new Error(AUTH_ERR_FAILED_AFTER_EXCHANGE)
       }
     } catch (error: any) {
       console.error('Login failed:', error)

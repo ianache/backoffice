@@ -274,7 +274,7 @@ Plans:
 **Goal:** Aplicar el Localization White Label Engine en la pagina de inicio/login del Portal: inicializar `LabelClient` antes de renderizar la experiencia de login, hidratar los namespaces eager requeridos mediante el SDK, reemplazar textos hardcodeados por `$t` con interpolacion y fallback seguro, reportar claves faltantes, respetar locale y contexto tenant/company/product disponibles antes de autenticacion, y recibir hot reload `INVALIDATE_NAMESPACE` sin degradar el acceso cuando labels, SDK, BFF o WebSocket no esten disponibles.
 **Requirements**: LOGIN-LBL-01, LOGIN-LBL-02, LOGIN-LBL-03, LOGIN-LBL-04, LOGIN-LBL-05, LOGIN-LBL-06, LOGIN-LBL-07, LOGIN-LBL-08
 **Depends on:** Phase 20
-**Plans:** 2/3 plans executed
+**Plans:** 3/3 plans complete
 
 Plans:
 **Wave 1**
@@ -282,4 +282,4 @@ Plans:
 - [x] 21-02-PLAN.md — Pre-auth LabelClient runtime: locale/context, fallback-aware `$t`, one-second startup deadline, neutral loader
 
 **Wave 2** *(blocked on Wave 1 completion)*
-- [ ] 21-03-PLAN.md — LoginView localization, stable auth-error mapping, and browser/full regression coverage
+- [x] 21-03-PLAN.md — LoginView localization, stable auth-error mapping, and browser/full regression coverage

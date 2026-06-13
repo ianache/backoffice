@@ -1,3 +1,4 @@
+/// <reference types="vitest" />
 import { defineConfig, loadEnv } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import federation from '@originjs/vite-plugin-federation'
@@ -74,6 +75,9 @@ export default defineConfig(({ mode }) => {
       alias: {
         '@': fileURLToPath(new URL('./src', import.meta.url)),
       },
+    },
+    test: {
+      exclude: ['**/node_modules/**', '**/dist/**', '**/tests/visual/**'],
     },
     build: {
       target: 'esnext',

@@ -1,8 +1,11 @@
+from typing import Optional
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.dependencies import verify_sdk_secret, get_db
 from .schemas import EvaluateRequest, EvaluateResponse, EvalEventBatch, EvalEventResponse
 from . import service
+from app.domains.labels import service as labels_service
+from app.domains.labels.schemas import MissingLabelReportCreate
 
 router = APIRouter(
     prefix="/api/v1/sdk",
@@ -63,3 +66,56 @@ async def ingest_eval_events(
         product_id=payload.product_id,
     )
     return EvalEventResponse(inserted=inserted, skipped=skipped)
+
+
+@router.get("/labels/bootstrap")
+async def labels_bootstrap(
+    tenant_id: str = Query(...),
+    locale: str = Query(...),
+    company_id: Optional[str] = Query(None),
+    product_id: Optional[str] = Query(None),
+    db: AsyncSession = Depends(get_db),
+):
+    """Two-phase hydration, phase 1: returns resolved labels for all 'eager'
+    namespaces (e.g. 'common'). Target <100ms (NFR)."""
+    namespaces = await labels_service.list_namespaces(db)
+    eager_ids = [ns.id for ns in namespaces if ns.strategy == 'eager']
+    result: dict[str, dict[str, str]] = {}
+    for ns_id in eager_ids:
+        result[ns_id] = await labels_service.resolve_labels(
+            db, tenant_id=tenant_id, company_id=company_id, product_id=product_id,
+            namespace=ns_id, locale=locale,
+        )
+    return {"namespaces": result, "locale": locale}
+
+
+@router.get("/labels/prefetch")
+async def labels_prefetch(
+    tenant_id: str = Query(...),
+    locale: str = Query(...),
+    namespaces: str = Query(..., description="Comma-separated namespace IDs"),
+    company_id: Optional[str] = Query(None),
+    product_id: Optional[str] = Query(None),
+    db: AsyncSession = Depends(get_db),
+):
+    """Two-phase hydration, phase 2: returns resolved labels for the explicitly
+    requested (typically lazy page_*/form_*) namespaces. Unknown/empty namespaces
+    return an empty dict, not a 404."""
+    requested = [n.strip() for n in namespaces.split(',') if n.strip()]
+    result: dict[str, dict[str, str]] = {}
+    for ns_id in requested:
+        result[ns_id] = await labels_service.resolve_labels(
+            db, tenant_id=tenant_id, company_id=company_id, product_id=product_id,
+            namespace=ns_id, locale=locale,
+        )
+    return {"namespaces": result, "locale": locale}
+
+
+@router.post("/labels/missing", status_code=204)
+async def labels_report_missing(
+    payload: MissingLabelReportCreate,
+    db: AsyncSession = Depends(get_db),
+):
+    """RF-06: SDK $t plugin calls this when a label_key is not found in the
+    resolved cache. Dedup'd + hit-counted by labels_service.report_missing_label()."""
+    await labels_service.report_missing_label(db, payload)

@@ -292,3 +292,78 @@ async def test_update_label_value_broadcasts_invalidate_namespace(db_session, cl
     finally:
         app.state.ws_manager = original_ws_manager
         app.dependency_overrides.pop(verify_internal_secret, None)
+
+
+# ---------------------------------------------------------------------------
+# Test 7: login namespace bootstrap (Plan 21-01)
+# ---------------------------------------------------------------------------
+
+@pytest.mark.asyncio
+async def test_labels_bootstrap_returns_login_namespace(db_session, client):
+    await _add_namespace(db_session, "login", strategy="eager")
+    await _add_namespace(db_session, "page_lazy", strategy="lazy")
+
+    # Seed login namespace labels (tenant-level, es_PE & en_US)
+    # T-21-01 / D-05/D-06/D-07 copy
+    await _add_label(
+        db_session, tenant_id="T", namespace="login", locale="es_PE",
+        label_key="welcome_title", label_value="Bienvenido nuevamente"
+    )
+    await _add_label(
+        db_session, tenant_id="T", namespace="login", locale="en_US",
+        label_key="welcome_title", label_value="Welcome back"
+    )
+    await _add_label(
+        db_session, tenant_id="T", namespace="login", locale="es_PE",
+        label_key="sso_action", label_value="Iniciar sesion con Keycloak"
+    )
+    await _add_label(
+        db_session, tenant_id="T", namespace="login", locale="es_PE",
+        label_key="help_action", label_value="Contactar soporte"
+    )
+    await _add_label(
+        db_session, tenant_id="T", namespace="login", locale="es_PE",
+        label_key="error_invalid_credentials", label_value="Correo o contrasena invalidos."
+    )
+    # Excluded lazy namespace label
+    await _add_label(
+        db_session, tenant_id="T", namespace="page_lazy", locale="es_PE",
+        label_key="dummy", label_value="Should not load"
+    )
+
+    # 1. es_PE request (pre-auth scope: tenant_id="T", product_id="backoffice", company_id=None)
+    resp = client.get(
+        "/api/v1/sdk/labels/bootstrap",
+        params={"tenant_id": "T", "locale": "es_PE", "product_id": "backoffice"},
+        headers=SDK_HEADERS
+    )
+    assert resp.status_code == 200
+    body = resp.json()
+    assert body["locale"] == "es_PE"
+    assert "login" in body["namespaces"]
+    assert "page_lazy" not in body["namespaces"]
+
+    login_ns = body["namespaces"]["login"]
+    assert login_ns["welcome_title"] == "Bienvenido nuevamente"
+    assert login_ns["sso_action"] == "Iniciar sesion con Keycloak"
+    assert login_ns["help_action"] == "Contactar soporte"
+    assert login_ns["error_invalid_credentials"] == "Correo o contrasena invalidos."
+
+    # Assert fixed/excluded strings are NOT keys/values in the returned login namespace
+    for key, val in login_ns.items():
+        assert "BackOffice CC" not in val
+        assert "admin@backoffice.dev" not in val
+        assert "v2.4.12-stable" not in val
+
+    # 2. en_US request
+    resp = client.get(
+        "/api/v1/sdk/labels/bootstrap",
+        params={"tenant_id": "T", "locale": "en_US", "product_id": "backoffice"},
+        headers=SDK_HEADERS
+    )
+    assert resp.status_code == 200
+    body = resp.json()
+    assert body["locale"] == "en_US"
+    assert "login" in body["namespaces"]
+    assert body["namespaces"]["login"]["welcome_title"] == "Welcome back"
+

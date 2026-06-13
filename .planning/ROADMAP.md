@@ -210,12 +210,15 @@ Plans:
 ### Phase 16: MVP2 Auditoria (Audit Log Timeline + Diff Viewer)
 
 **Goal:** Implement the unified Audit Log per PRD_MVP3 §6 — an immutable `audit_logs` table (id, created_at, tenant_id, user_id/email, action_type, environment, target_type, target_id, payload_before/after JSON, client_ip, user_agent) populated by existing write paths (flags, segments, tenants, whitelabel, users), exposed via `GET /bff/audit-logs` (filters: environment, action_type, user_id, date range, pagination) and `GET /bff/audit-logs/{id}/diff`, with a frontend Activity Timeline view + "View Diff" modal highlighting JSON additions/removals/modifications (green/red/yellow) per the `audit-log_activity-timeline.html` mockup.
-**Requirements**: TBD — derive AUD-01..AUD-0x at plan time from PRD_MVP3 §6, §8.3, §9 (AUDIT_LOGS table)
+**Requirements**: AUD-01, AUD-02, AUD-03, AUD-04, AUD-05, AUD-06 (assigned at plan time — registration gap vs REQUIREMENTS.md noted in phase deferred-items.md, same as Phases 14/15)
 **Depends on:** Phase 15
-**Plans:** 0 plans
+**Plans:** 4 plans
 
 Plans:
-- [ ] TBD (run /gsd:plan-phase 16 to break down)
+- [ ] 16-01-PLAN.md — `audit` domain: AuditLog model/schemas/e001 migration, write_audit_log/list_audit_logs/compute_diff service, GET /audit-logs + GET /audit-logs/{id}/diff router, BFF audit.ts proxy (TDD)
+- [ ] 16-02-PLAN.md — Instrument feature_flags + segments write paths (create/update/enable/disable/delete) to emit audit_logs entries, BFF flags.ts X-User-Email
+- [ ] 16-03-PLAN.md — Instrument users/tenants/companies write paths (create/update/enable/disable/reset-mfa/delete) to emit audit_logs entries, BFF companies.ts X-User-Email
+- [ ] 16-04-PLAN.md — Frontend Activity Timeline (AuditLogView.vue) + color-coded DiffModal in mui-tenants, /audit-log route, MainLayout sidebar wiring
 
 ### Phase 17: Observabilidad SLA SLO
 

@@ -149,6 +149,25 @@ Exclusiones explÃ­citas para prevenir scope creep.
 
 ---
 
+## Phase 20 Requirements
+
+- [x] **LBL-01**: `localized_labels` stores localized labels by tenant/company/product, namespace, locale, and key
+- [x] **LBL-02**: `namespaces` supports eager/lazy strategy and administration
+- [x] **LBL-03**: Labels resolve through Tenant -> Company -> Product proximity inheritance
+- [x] **LBL-04**: Resolution uses an in-memory cache invalidated by mutations
+- [x] **LBL-05**: SDK exposes `/labels/bootstrap` for eager namespaces
+- [x] **LBL-06**: SDK exposes `/labels/prefetch` for lazy namespaces
+- [x] **LBL-07**: Mutations broadcast `INVALIDATE_NAMESPACE` through WebSocket
+- [x] **LBL-08**: sdk-js provides `LabelClient` and the Vue `$t` plugin
+- [x] **LBL-09**: Admin API provides authorized namespace and key CRUD
+- [x] **LBL-10**: `UXWriter` has a value-only update endpoint
+- [x] **LBL-11**: Updates use optimistic concurrency and PI-02 conflict responses
+- [x] **LBL-12**: Namespace and label CRUD writes audit logs
+- [x] **LBL-13**: Missing-label reports and RF-06 diagnostics track missing labels
+- [x] **LBL-14**: RF-07 exports JSON and CSV for the active context
+- [x] **LBL-15**: `mui-labeling` implements RF-01..05 and RF-08
+- [x] **LBL-16**: Seed migration creates the common namespace for existing data
+
 ## Traceability
 
 QuÃ© fases cubren quÃ© requerimientos. Actualizado durante creaciÃ³n del roadmap.
@@ -220,9 +239,26 @@ QuÃ© fases cubren quÃ© requerimientos. Actualizado durante creaciÃ³n del r
 | SDK-11 | Phase 11 | Complete |
 | SDK-12 | Phase 11 | Complete |
 
+| LBL-01 | Phase 20 | Complete |
+| LBL-02 | Phase 20 | Complete |
+| LBL-03 | Phase 20 | Complete |
+| LBL-04 | Phase 20 | Complete |
+| LBL-05 | Phase 20 | Complete |
+| LBL-06 | Phase 20 | Complete |
+| LBL-07 | Phase 20 | Complete |
+| LBL-08 | Phase 20 | Complete |
+| LBL-09 | Phase 20 | Complete |
+| LBL-10 | Phase 20 | Complete |
+| LBL-11 | Phase 20 | Complete |
+| LBL-12 | Phase 20 | Complete |
+| LBL-13 | Phase 20 | Complete |
+| LBL-14 | Phase 20 | Complete |
+| LBL-15 | Phase 20 | Complete |
+| LBL-16 | Phase 20 | Complete |
+
 **Coverage v1.1:**
-- v1.1 requirements: 29 total
-- Mapped to phases: 29
+- v1.1 requirements: 45 total
+- Mapped to phases: 45
 - Unmapped: 0 âœ“
 
 ---

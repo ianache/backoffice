@@ -227,10 +227,19 @@
           <span class="text-sm">Segments</span>
         </button>
 
-        <!-- Audit Log (placeholder) -->
+        <!-- Audit Log (served by mui-tenants remote) -->
         <button
-          class="w-full flex items-center gap-4 px-4 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all duration-200 text-left cursor-not-allowed opacity-70"
-          disabled
+          v-if="authStore.hasRole('PlatformAdmin') || authStore.hasRole('TenantAdmin') || authStore.hasRole('TenantOwner')"
+          @click="router.push('/audit-log')"
+          :class="[
+            'w-full flex items-center gap-4 px-4 py-2 rounded-lg transition-all duration-200 text-left',
+            remoteStatuses['mui-tenants'] === 'error' ? 'opacity-50 cursor-not-allowed' : '',
+            isActive('/audit-log')
+              ? 'bg-primary text-on-primary font-semibold'
+              : 'text-on-surface-variant hover:bg-surface-container-high'
+          ]"
+          :disabled="remoteStatuses['mui-tenants'] === 'error'"
+          title="Audit Log"
         >
           <span class="material-symbols-outlined text-[22px]">history_edu</span>
           <span class="text-sm">Audit Log</span>

@@ -1,0 +1,53 @@
+from app.domains.audit.schemas import (
+    AuditLogCreate,
+    AuditLogResponse,
+    AuditLogListResponse,
+)
+from app.domains.audit.service import compute_diff
+
+
+def test_compute_diff_added_removed_modified():
+    before = {"a": 1, "b": 2}
+    after = {"b": 3, "c": 4}
+    result = compute_diff(before, after)
+    assert result == {
+        "added": {"c": 4},
+        "removed": {"a": 1},
+        "modified": {"b": {"before": 2, "after": 3}},
+    }
+
+
+def test_compute_diff_none_before_defaults_to_empty():
+    result = compute_diff(None, {"a": 1})
+    assert result == {"added": {"a": 1}, "removed": {}, "modified": {}}
+
+
+def test_compute_diff_identical_payloads_no_diff():
+    result = compute_diff({"a": 1}, {"a": 1})
+    assert result == {"added": {}, "removed": {}, "modified": {}}
+
+
+def test_audit_log_create_accepts_dict_payloads():
+    payload = AuditLogCreate(
+        user_id="u1",
+        action_type="CREATE_FLAG",
+        target_type="flag",
+        target_id="f1",
+        payload_before={"a": 1},
+        payload_after={"a": 2},
+    )
+    assert payload.payload_before == {"a": 1}
+    assert payload.payload_after == {"a": 2}
+
+
+def test_audit_log_list_response_constructs_with_empty_items():
+    response = AuditLogListResponse(items=[], total=0, page=1, limit=25)
+    assert response.items == []
+    assert response.total == 0
+    assert response.page == 1
+    assert response.limit == 25
+
+
+def test_audit_log_response_round_trip_excludes_payloads():
+    assert "payload_before" not in AuditLogResponse.model_fields
+    assert "payload_after" not in AuditLogResponse.model_fields

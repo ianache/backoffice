@@ -34,6 +34,17 @@ const routes: RouteRecordRaw[] = [
       roles: ['PlatformAdmin', 'TenantAdmin', 'TenantOwner'],
     },
   },
+  {
+    path: '/audit-log',
+    name: 'audit-log',
+    component: () => import('./views/AuditLogView.vue'),
+    meta: {
+      requiresAuth: true,
+      layout: 'main',
+      title: 'Audit Log',
+      roles: ['PlatformAdmin', 'TenantAdmin', 'TenantOwner'],
+    },
+  },
 ]
 
 export default routes

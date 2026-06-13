@@ -568,6 +568,27 @@ No formal `LBL-XX` IDs exist yet in `.planning/REQUIREMENTS.md` — CONTEXT.md a
 - [ ] `sdk/sdk-js/src/labels.test.ts` — `LabelClient.translate()` interpolation (TC-05), missing-key fallback (TC-04), `invalidateNamespace()` reactivity
 - [ ] No E2E harness exists for new `mui-labeling` micro-UI — RF-01..05/08 verification is manual UAT only for v1 (consistent with how `mui-feature-flags`/`mui-tenants` were verified)
 
+## PRD4_MVP4.md Cross-Reference
+
+A separate document `PRD4_MVP4.md` (root) describes an overlapping "Feature Flags + Remote Config" platform on a NestJS/normalized-schema stack, sharing the same UX/UI reference (`design/stitch/labeling - namespaces_keys_management.html`). User directed: ignore its stack/schema for Phase 20, but review it for applicable ideas. Findings:
+
+### Confirms existing recommendations (no change needed)
+- PRD4's `sdk/` file layout splits `feature-flags/` and `labeling/` into separate modules with a shared `client.ts` facade — matches Pattern 7's plan to add `sdk/sdk-js/src/labels.ts` alongside the existing evaluator, confirming the chosen structure.
+- PRD4's separate `namespaces` table (vs inlining namespace metadata into the label table) matches LBL-02's already-planned `Namespace` model — Phase 20's 2-table design (`namespaces` + `localized_labels`) is directionally aligned, just simpler than PRD4's 3-table split (`namespaces`/`ui_labels`/`ui_label_translations`).
+- PRD4's <1ms BFF resolution target is trivially met by the in-memory dict cache (Pattern 3) — no architecture change needed to satisfy this if adopted as a non-functional target.
+
+### Low-risk enhancement within Claude's discretion (optional, LBL-05/06)
+- **Namespace hash/ETag for `NOT_MODIFIED` responses**: PRD4's bootstrap contract sends `cached_namespaces: {ns: hash}` and returns `status: "NOT_MODIFIED"` with empty `data` when unchanged. This is a payload-size optimization compatible with the single-`localized_labels`-table design — compute a hash (e.g., `md5` of the resolved dict) per `resolve_labels()` call, compare against client-sent hash. Does not require schema changes. The planner MAY include this in LBL-05/06 as a stretch goal; not required for v1 (CONTEXT.md doesn't mandate it).
+
+### New capabilities — flagged as deferred (out of CONTEXT.md scope, do not add to LBL-01..16)
+- **Role-based `targeting_rules` on label translations** (PRD4 §2/§4: per-translation JSON rules like `{"role": "VIP_CUSTOMER"}` that override the resolved value based on user profile). This is a genuinely new capability beyond "override by proximity" (Tenant→Company→Product) — CONTEXT.md and the PRD namespaces_keys_management.md scope don't include per-role label targeting. Note for future roadmap consideration; NOT part of Phase 20.
+- **SWR client persistence (IndexedDB for web)**: PRD4 §5 describes local-disk cache + stale-while-revalidate for the SDK. CONTEXT.md locked sdk-js scope to `$t` plugin + interpolation + missing-key reporting (in-memory `reactive()` cache per Pattern 7), with no offline-persistence requirement. Could be a natural follow-up to LBL-08 but would expand its scope — flagged, not added.
+- **`KILL_SWITCH` flag message type**: belongs to feature_flags domain, not labels — not applicable to Phase 20.
+
+### Not applicable / conflicts (do not adopt)
+- **ContextGuard / Sealed Context Token (`X-Context-Token` JWT)**: PRD4's NestJS auth model conflicts with this codebase's existing pattern (Keycloak token → BFF forwards `X-User-Sub`/`X-User-Roles`/`X-User-Tenant-Id`/`X-User-Email` headers, verified internal-secret on backend). CONTEXT.md already locks "Keycloak token claims" for scoping (Roles & Permissions section) — do not introduce a second auth scheme for labels.
+- **Normalized 3-table schema** (`ui_labels` + `ui_label_translations` split): would require restructuring Pattern 1/LBL-01 (single `localized_labels` row per locale). CONTEXT.md gives schema details as Claude's discretion but the 2-table design (Pattern 1 + LBL-02) is simpler and sufficient for the locked v1 scope (es_PE/en_US, no per-role targeting). Not adopted.
+
 ## Sources
 
 ### Primary (HIGH confidence)

@@ -1,12 +1,12 @@
 <template>
-  <div class="font-body-md text-on-surface bg-background dark:bg-inverse-surface dark:text-inverse-on-surface h-screen flex flex-col overflow-hidden">
+  <div class="font-body-md text-on-surface bg-background dark:bg-slate-950 dark:text-slate-200 h-screen flex flex-col overflow-hidden">
     <!-- Top App Bar -->
-    <header class="w-full h-16 bg-surface-bright border-b border-outline-variant shadow-sm z-40 flex items-center justify-between px-lg shrink-0">
-      <div class="flex items-center gap-sm text-on-surface-variant">
+    <header class="w-full h-16 bg-surface-bright dark:bg-slate-900 border-b border-outline-variant dark:border-slate-800 shadow-sm z-40 flex items-center justify-between px-lg shrink-0">
+      <div class="flex items-center gap-sm text-on-surface-variant dark:text-slate-400">
         <span class="font-label-md">Section:</span>
-        <span class="font-title-md text-on-surface font-bold">Localization Engine</span>
+        <span class="font-title-md text-on-surface dark:text-slate-200 font-bold">Localization Engine</span>
         <span class="material-symbols-outlined text-outline">chevron_right</span>
-        <span class="font-title-md text-primary font-bold">Namespaces & Keys</span>
+        <span class="font-title-md text-primary dark:text-primary-fixed-dim font-bold">Namespaces & Keys</span>
       </div>
       <div class="flex items-center gap-lg">
         <div class="relative group">
@@ -14,14 +14,14 @@
           <input
             id="globalSearch"
             v-model="state.searchQuery"
-            class="pl-10 pr-4 py-1.5 bg-surface-container border border-outline-variant rounded-full text-body-md focus:ring-2 focus:ring-primary outline-none transition-all w-64 text-on-surface"
+            class="pl-10 pr-4 py-1.5 bg-surface-container dark:bg-slate-800 border border-outline-variant dark:border-slate-700 rounded-full text-body-md focus:ring-2 focus:ring-primary outline-none transition-all w-64 text-on-surface dark:text-slate-200"
             placeholder="Search key or text..."
             type="text"
           />
         </div>
         <button
           @click="toggleDarkMode"
-          class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors"
+          class="material-symbols-outlined text-on-surface-variant dark:text-slate-400 hover:text-primary transition-colors"
           title="Toggle Theme"
         >
           {{ isDark ? 'light_mode' : 'dark_mode' }}
@@ -36,13 +36,7 @@
     <div class="flex-1 grid grid-cols-12 overflow-hidden">
       <NamespaceSidebar />
       <KeysMatrix />
-      <!-- TranslationDrawer placeholder (completed in 20-08) -->
-      <aside class="col-span-3 border-l border-outline-variant bg-surface-container-lowest flex flex-col items-center justify-center p-md">
-        <span class="material-symbols-outlined text-[48px] text-on-surface-variant opacity-60">toc</span>
-        <p class="font-title-md mt-sm text-on-surface-variant text-center opacity-60">
-          TranslationDrawer (20-08)
-        </p>
-      </aside>
+      <TranslationDrawer />
     </div>
   </div>
 </template>
@@ -52,6 +46,7 @@ import { ref, onMounted } from 'vue'
 import WorkspaceContextSelector from '../components/labeling/WorkspaceContextSelector.vue'
 import NamespaceSidebar from '../components/labeling/NamespaceSidebar.vue'
 import KeysMatrix from '../components/labeling/KeysMatrix.vue'
+import TranslationDrawer from '../components/labeling/TranslationDrawer.vue'
 import { useLabelingState } from '../composables/useLabelingState'
 
 const state = useLabelingState()

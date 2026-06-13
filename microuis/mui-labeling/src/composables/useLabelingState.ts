@@ -7,11 +7,20 @@ export interface WorkspaceContext {
   productId: string | null
 }
 
+export interface QuickCreatePrefill {
+  namespace: string
+  label_key: string
+}
+
 export interface LabelingState {
   activeNamespace: string | null
   workspaceContext: WorkspaceContext
   searchQuery: string
   selectedKey: LocalizedLabel | null
+  showAddKeyModal: boolean
+  showImportExport: boolean
+  showDiagnostics: boolean
+  quickCreatePrefill: QuickCreatePrefill | null
 }
 
 export const LABELING_STATE_KEY: InjectionKey<LabelingState> = Symbol('labelingState')
@@ -29,6 +38,10 @@ const state: LabelingState = reactive({
   },
   searchQuery: '',
   selectedKey: null,
+  showAddKeyModal: false,
+  showImportExport: false,
+  showDiagnostics: false,
+  quickCreatePrefill: null,
 })
 
 export function useLabelingState(): LabelingState {

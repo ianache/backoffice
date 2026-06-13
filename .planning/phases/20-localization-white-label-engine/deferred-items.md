@@ -1,0 +1,6 @@
+# Deferred Items — Phase 20 (Localization White Label Engine)
+
+## From Plan 20-01
+
+- **LBL-01, LBL-02, LBL-16 not present in `.planning/REQUIREMENTS.md`** — `requirements mark-complete` returned `not_found` for all three IDs. These requirement IDs are referenced in `20-01-PLAN.md` frontmatter (and presumably 20-CONTEXT.md/20-RESEARCH.md) but were never added to the master REQUIREMENTS.md traceability table. Out of scope for this plan to retroactively create requirements entries — flagging for the phase owner / next planning pass to add LBL-* requirements to REQUIREMENTS.md so future `mark-complete` calls succeed.
+- **Backend Python dependencies not installed in any accessible environment** — `sqlalchemy`, `alembic`, `pydantic`, `fastapi` are absent from system Python and no `backend/.venv` exists. Plan 20-01's specified verification commands (`python -c "from app.domains.labels.models import ..."`, `python -m alembic heads`) could not run as written; substituted with `python -m py_compile` syntax checks and a structural check for migration chain conflicts (no other migration declares `down_revision='e001'`). Recommend running `pip install -r backend/requirements.txt` (in a dedicated venv) and `alembic upgrade head` against the dev DB before/during Plan 02 to confirm the g001/g002 migration chain applies cleanly.

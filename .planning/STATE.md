@@ -2,10 +2,10 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: MVP2
-current_plan: 5
-status: verifying
+current_plan: Not started
+status: planning
 stopped_at: Completed 16-05-PLAN.md
-last_updated: "2026-06-13T04:49:49.967Z"
+last_updated: "2026-06-13T04:55:41.616Z"
 last_activity: 2026-06-13
 progress:
   total_phases: 21
@@ -27,9 +27,9 @@ See: .planning/PROJECT.md (updated 2026-06-07)
 ## Current Position
 
 Phase: 16 of 20 (MVP2 Auditoria — Audit Log Timeline + Diff Viewer)
-**Current Plan:** 5
+**Current Plan:** Not started
 **Total Plans in Phase:** 5
-**Status:** Phase complete — ready for verification
+**Status:** Ready to plan
 **Last Activity:** 2026-06-13
 Last activity detail: 2026-06-13 — Completed 16-05-PLAN.md (gap-closure: fixed Diff Viewer runtime TypeError by aligning AuditLogDiff frontend type and DiffModal.vue to the backend's flat {id, added, removed, modified} AuditLogDiffResponse shape; DiffModal now derives Action/Target meta from a new entry prop sourced from the timeline; bff tenants.ts forwards X-User-Email so TENANT-target audit_logs rows carry user_email). AUD-03 and AUD-06 complete — closes the sole blocking gap from 16-VERIFICATION.md.
 

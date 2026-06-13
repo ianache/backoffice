@@ -2,17 +2,17 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: MVP2
-current_plan: Not started
-status: completed
-stopped_at: Completed 15-03-PLAN.md
-last_updated: "2026-06-12T13:44:03.731Z"
-last_activity: 2026-06-12
+current_plan: 1 of 4
+status: in_progress
+stopped_at: Completed 16-01-PLAN.md
+last_updated: "2026-06-13T04:16:01Z"
+last_activity: 2026-06-13
 progress:
-  total_phases: 19
+  total_phases: 20
   completed_phases: 15
-  total_plans: 74
-  completed_plans: 74
-  percent: 79
+  total_plans: 78
+  completed_plans: 75
+  percent: 76
 ---
 
 # Project State
@@ -26,14 +26,14 @@ See: .planning/PROJECT.md (updated 2026-06-07)
 
 ## Current Position
 
-Phase: 15 of 15 (AND Rule Combination Semantics + Flags Page Filters)
-**Current Plan:** Not started
+Phase: 16 of 20 (MVP2 Auditoria — Audit Log Timeline + Diff Viewer)
+**Current Plan:** 1 of 4
 **Total Plans in Phase:** 4
-**Status:** Milestone complete
-**Last Activity:** 2026-06-12
-Last activity detail: 2026-06-12 — Completed 15-03-PLAN.md (Rule Simulator AND mode + Rule Builder Match selector: useRuleSimulator gains ruleResults[]/overallResult per the locked AND truth table, RuleSimulator.vue renders per-rule pass/fail rows + overall badge in AND mode, RuleBuilderView.vue Match selector persists rule_combination_mode via PATCH). AND-01/AND-02 complete (4-evaluator parity + UI).
+**Status:** In progress
+**Last Activity:** 2026-06-13
+Last activity detail: 2026-06-13 — Completed 16-01-PLAN.md (Audit log domain foundation: AuditLog ORM model + e001 migration with 3 indexes, write_audit_log/list_audit_logs/get_audit_log/compute_diff service, GET-only /audit-logs router with page/limit/COUNT(*) pagination and tenant scoping, BFF audit.ts proxy forwarding X-User-Email). AUD-01/AUD-02/AUD-03 complete.
 
-**Progress:** [██████████] 100%
+**Progress:** [█████████░] 96%
 
 ## Performance Metrics
 
@@ -89,6 +89,7 @@ Last activity detail: 2026-06-12 — Completed 15-03-PLAN.md (Rule Simulator AND
 | Phase 15 P01 | 10min | 3 tasks | 8 files |
 | Phase 15-and-rule-combination-semantics P04 | 12min | 3 tasks | 3 files |
 | Phase 15-and-rule-combination-semantics P03 | 9min | 3 tasks | 5 files |
+| Phase 16-mvp2-auditoria P01 | 12min | 3 tasks | 10 files |
 
 ## Accumulated Context
 
@@ -101,6 +102,7 @@ Last activity detail: 2026-06-12 — Completed 15-03-PLAN.md (Rule Simulator AND
 - Phase 15 expanded (2026-06-12): Flags Page Filters — filtros en `/flags` por Status, Tags, Complexity, Environment y target de scope (Products, Tenants o Global)
 - Phase 16 added (2026-06-12): MVP2 Auditoria — scope set to PRD_MVP3.md §6 (Audit Log Timeline + Diff Viewer)
 - Phases 17-19 added (2026-06-12): PRD_MVP3.md scope split across phases — 17=Observabilidad/SLA-SLO (§4), 18=Telemetry Ingestion SDK Eval Events (§5, §8.2), 19=Redis PubSub WS Scaling + Webhook Alerts (§7, §8.1)
+- Phase 20 added (2026-06-12): Localization White Label Engine — scope set to docs/white_labeling_engine_design.md (localized_labels DAG inheritance, BFF resolver+Redis cache, namespace lazy-loading, two-phase hydration, Vue/Flutter SDKs, WS/SSE hot-reload)
 
 ### Decisions
 
@@ -203,6 +205,10 @@ Recent decisions affecting v1.1:
 - [Phase 15-and-rule-combination-semantics]: [15-03]: overallResult computed inside the existing watchEffect (AND: ruleResults.every(Boolean) when rules non-empty else null; first_match: mirrors matchedResult) - unifies badge logic across both modes
 - [Phase 15-and-rule-combination-semantics]: [15-03]: RuleSimulator badge bound to overallResult in both modes (overallResult === matchedResult in first_match) - avoids duplicate badge branches
 - [Phase 15-and-rule-combination-semantics]: [15-03]: AND/ELSE IF connector label dynamic on localMode - first_match chains no longer visually read as AND
+- [Phase 16-mvp2-auditoria]: [16-01]: AuditLogResponse excludes payload_before/payload_after (list view stays light, <150ms target) - only the /diff endpoint deserializes payloads
+- [Phase 16-mvp2-auditoria]: [16-01]: AuditLogCreate is internal-only (no HTTP exposure) - write_audit_log() is the single insertion point called from other domains' service/router layers in Plans 16-02/16-03
+- [Phase 16-mvp2-auditoria]: [16-01]: e001 down_revision = 'd004' per plan; pre-existing multi-head condition in alembic/versions/ left untouched (out of scope)
+- [Phase 16-mvp2-auditoria]: [16-01]: bff audit.ts forwards X-User-Email in addition to Sub/Roles/Tenant-Id for future write-path use (Plans 16-02/16-03)
 
 ### Pending Todos
 
@@ -216,6 +222,6 @@ Recent decisions affecting v1.1:
 
 ## Session Continuity
 
-**Last session:** 2026-06-12T13:36:06.037Z
-**Stopped At:** Completed 15-03-PLAN.md
+**Last session:** 2026-06-13T04:16:01Z
+**Stopped At:** Completed 16-01-PLAN.md
 **Resume File:** None

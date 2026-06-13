@@ -212,7 +212,7 @@ Plans:
 **Goal:** Implement the unified Audit Log per PRD_MVP3 §6 — an immutable `audit_logs` table (id, created_at, tenant_id, user_id/email, action_type, environment, target_type, target_id, payload_before/after JSON, client_ip, user_agent) populated by existing write paths (flags, segments, tenants, whitelabel, users), exposed via `GET /bff/audit-logs` (filters: environment, action_type, user_id, date range, pagination) and `GET /bff/audit-logs/{id}/diff`, with a frontend Activity Timeline view + "View Diff" modal highlighting JSON additions/removals/modifications (green/red/yellow) per the `audit-log_activity-timeline.html` mockup.
 **Requirements**: AUD-01, AUD-02, AUD-03, AUD-04, AUD-05, AUD-06 (assigned at plan time — registration gap vs REQUIREMENTS.md noted in phase deferred-items.md, same as Phases 14/15)
 **Depends on:** Phase 15
-**Plans:** 4 plans
+**Plans:** 1/4 plans executed
 
 Plans:
 - [ ] 16-01-PLAN.md — `audit` domain: AuditLog model/schemas/e001 migration, write_audit_log/list_audit_logs/compute_diff service, GET /audit-logs + GET /audit-logs/{id}/diff router, BFF audit.ts proxy (TDD)
@@ -249,3 +249,13 @@ Plans:
 
 Plans:
 - [ ] TBD (run /gsd:plan-phase 19 to break down)
+
+### Phase 20: Localization White Label Engine
+
+**Goal:** Implement the multi-language White Labeling Engine per `docs/white_labeling_engine_design.md` — a `localized_labels` table (tenant_id, company_id nullable, product_id nullable, namespace, locale, label_key, label_value, version) resolved via 3-level inheritance (Tenant → Company → Product, "override by proximity"); a BFF resolver (`resolve_labels`) with Redis-backed caching; namespace-based lazy loading (`common` eager, `page_*`/`form_*` lazy); two-phase hydration (`/bootstrap` critical namespaces <100ms, `/prefetch` background); SDK integration for Vue 3 (`$t` plugin with interpolation + missing-key reporting) and Flutter (offline-capable `LabelEngine` with shared_preferences); and hot-reload invalidation via WebSocket/SSE (`INVALIDATE_NAMESPACE` broadcast on label update) so UX writers' changes propagate without app reload.
+**Requirements**: TBD — derive LBL-01..LBL-0x at plan time from `docs/white_labeling_engine_design.md` §1-7 (verification scenarios TC-01..TC-06)
+**Depends on:** Phase 19
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd:plan-phase 20 to break down)

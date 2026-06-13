@@ -5,6 +5,7 @@ import App from './App.vue'
 import router, { loadMicroUIRoutes } from './router/index'
 import { useAuthStore } from './stores/auth'
 import { useBoFlags } from './composables/useBoFlags'
+import { useLoginLabels } from './composables/useLoginLabels'
 import './assets/theme.css'
 import './assets/tailwind.css'
 import './assets/main.css'
@@ -15,6 +16,14 @@ const pinia = createPinia()
 pinia.use(piniaPluginPersistedstate)
 
 app.use(pinia)
+
+const loginLabels = useLoginLabels()
+app.use(loginLabels.plugin)
+
+// Start label initialization asynchronously (independently of auth)
+const labelInitPromise = loginLabels.initialize().catch((err) => {
+  console.warn('[main] Labels initialize warning (non-blocking):', err)
+})
 
 // Init Keycloak BEFORE registering the router or mounting — prevents flash of unauthenticated content and race conditions
 // In Playwright E2E mode (VITE_E2E_SKIP_AUTH=true), skip Keycloak init so tests can inject auth via sessionStorage
@@ -38,6 +47,13 @@ if (authStore.isAuthenticated) {
 
 // Load Micro-UI routes after auth is initialized but BEFORE the router is registered with the app
 await loadMicroUIRoutes()
+
+// Await the 1-second mount deadline for labels
+try {
+  await loginLabels.waitForInitialLabels(1000)
+} catch (err) {
+  console.warn('[main] Labels wait warning (non-blocking):', err)
+}
 
 app.use(router)
 app.mount('#app')

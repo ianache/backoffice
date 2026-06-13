@@ -161,7 +161,7 @@ export class LabelClient {
 
 export function createLabelPlugin(
   client: LabelClient,
-  fallbackResolver?: (path: string, variables?: Record<string, unknown>, translated: string) => string
+  fallbackResolver?: (path: string, variables: Record<string, unknown> | undefined, translated: string) => string
 ) {
   return {
     install(app: App) {

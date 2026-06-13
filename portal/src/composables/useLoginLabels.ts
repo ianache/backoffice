@@ -62,7 +62,7 @@ let initPromise: Promise<void> | null = null
 // detect on module load
 localeRef.value = detectLoginLocale(typeof navigator !== 'undefined' ? navigator.language : undefined)
 
-function fallbackResolver(path: string, variables?: Record<string, unknown>, translated?: string): string {
+function fallbackResolver(path: string, variables: Record<string, unknown> | undefined, translated: string): string {
   if (translated && translated.startsWith('[sys.')) {
     const [ns, key] = path.split('.')
     if (ns === 'login' && CATALOG_FALLBACK[localeRef.value]?.[key]) {

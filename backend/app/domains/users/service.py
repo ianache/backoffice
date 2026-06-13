@@ -23,6 +23,8 @@ from sqlalchemy import select
 from fastapi import HTTPException
 
 from app.services.keycloak_admin import kcAdminGet, kcAdminPost, kcAdminPut, kcAdminDelete
+from app.domains.audit import service as audit_service
+from app.domains.audit.schemas import AuditLogCreate, ActionType
 from .models import UserEvent
 from .schemas import UserCreate, UserUpdate, UserResponse
 
@@ -195,6 +197,24 @@ async def create_user(
     get_resp.raise_for_status()
     user = _parse_user(get_resp.json())
     user.tenant_role = payload.tenant_role
+
+    # user_email=None is a deliberate, documented limitation — users/service.py
+    # operates purely via the Keycloak Admin API with no FastAPI Request/Header
+    # context. If the BFF forwards X-User-Email and the router is later extended
+    # to pass it through as a new actor_email parameter, this can populate
+    # user_email for the ACTOR (not the target user).
+    await audit_service.write_audit_log(db, AuditLogCreate(
+        tenant_id=tenant_id,
+        user_id=actor_sub,
+        user_email=None,
+        action_type=ActionType.CREATE_USER,
+        environment='production',
+        target_type="USER",
+        target_id=user_id,
+        payload_before=None,
+        payload_after=user.model_dump(mode='json'),
+    ))
+
     return user
 
 
@@ -220,6 +240,8 @@ async def update_user(
     current_tenant = (attrs.get("tenant_id") or [""])[0]
     if current_tenant != tenant_id:
         raise HTTPException(status_code=403, detail="User does not belong to this tenant")
+
+    payload_before = _parse_user(kc_user).model_dump(mode='json')
 
     # Build profile update payload
     update_body: dict = {}
@@ -282,6 +304,19 @@ async def update_user(
         tenant_role, product_roles = await _get_user_roles(user_id)
         user.tenant_role = tenant_role
         user.product_roles = product_roles
+
+    await audit_service.write_audit_log(db, AuditLogCreate(
+        tenant_id=tenant_id,
+        user_id=actor_sub,
+        user_email=None,
+        action_type=ActionType.UPDATE_USER,
+        environment='production',
+        target_type="USER",
+        target_id=user_id,
+        payload_before=payload_before,
+        payload_after=user.model_dump(mode='json'),
+    ))
+
     return user
 
 
@@ -319,6 +354,18 @@ async def set_enabled(
         actor_sub=actor_sub,
         action=action,
     )
+
+    await audit_service.write_audit_log(db, AuditLogCreate(
+        tenant_id=tenant_id,
+        user_id=actor_sub,
+        user_email=None,
+        action_type=ActionType.ENABLE_USER if enabled else ActionType.DISABLE_USER,
+        environment='production',
+        target_type="USER",
+        target_id=user_id,
+        payload_before={"enabled": not enabled},
+        payload_after={"enabled": enabled},
+    ))
 
 
 async def reset_mfa(
@@ -364,6 +411,18 @@ async def reset_mfa(
         action="user.mfa_reset",
         context={"deleted_credentials": deleted_count},
     )
+
+    await audit_service.write_audit_log(db, AuditLogCreate(
+        tenant_id=tenant_id,
+        user_id=actor_sub,
+        user_email=None,
+        action_type=ActionType.RESET_MFA,
+        environment='production',
+        target_type="USER",
+        target_id=user_id,
+        payload_before=None,
+        payload_after=None,  # MFA reset has no before/after config snapshot — action itself is the record
+    ))
 
 
 async def list_user_events(user_id: str, db: AsyncSession) -> list:

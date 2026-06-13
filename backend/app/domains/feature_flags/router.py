@@ -8,6 +8,8 @@ from . import service
 from .schemas import FlagCreate, FlagUpdate, FlagResponse, SegmentCreate, SegmentResponse
 from app.domains.products import service as products_service
 from app.domains.products.schemas import ProductResponse
+from app.domains.audit import service as audit_service
+from app.domains.audit.schemas import AuditLogCreate, ActionType
 
 # ---------------------------------------------------------------------------
 # Flags Router
@@ -18,6 +20,16 @@ router = APIRouter(
     tags=["flags"],
     dependencies=[Depends(verify_internal_secret)],
 )
+
+
+def _audit_request_meta(request: Optional[Request]) -> tuple[Optional[str], Optional[str]]:
+    """Extract client_ip (X-Forwarded-For first, fallback to request.client.host)
+    and user_agent from the incoming request. Returns (None, None) if request is None."""
+    if request is None:
+        return None, None
+    client_ip = request.headers.get("x-forwarded-for") or (request.client.host if request.client else None)
+    user_agent = request.headers.get("user-agent")
+    return client_ip, user_agent
 
 
 def _get_scope_filter(roles: list[str]) -> Optional[list[str]]:
@@ -128,9 +140,11 @@ async def list_flags(
 @router.post("/", response_model=FlagResponse, status_code=status.HTTP_201_CREATED)
 async def create_flag(
     payload: FlagCreate,
+    request: Request,
     x_user_roles: str = Header(...),
     x_user_tenant_id: str = Header(default=''),
     x_user_sub: str = Header(...),
+    x_user_email: str = Header(default=''),
     db: AsyncSession = Depends(get_db),
 ):
     roles = [r.strip() for r in x_user_roles.split(',') if r.strip()]
@@ -138,6 +152,20 @@ async def create_flag(
     flag = await service.create_flag(
         db, payload, actor_sub=x_user_sub, tenant_id=x_user_tenant_id or None
     )
+    client_ip, user_agent = _audit_request_meta(request)
+    await audit_service.write_audit_log(db, AuditLogCreate(
+        tenant_id=flag.tenant_id,
+        user_id=x_user_sub,
+        user_email=x_user_email,
+        action_type=ActionType.CREATE_FLAG,
+        environment=flag.environment,
+        target_type="FLAG",
+        target_id=str(flag.id),
+        payload_before=None,
+        payload_after=FlagResponse.model_validate(flag).model_dump(mode='json'),
+        client_ip=client_ip,
+        user_agent=user_agent,
+    ))
     return FlagResponse.model_validate(flag)
 
 
@@ -147,6 +175,8 @@ async def update_flag(
     payload: FlagUpdate,
     request: Request,
     x_user_roles: str = Header(...),
+    x_user_sub: str = Header(default=''),
+    x_user_email: str = Header(default=''),
     db: AsyncSession = Depends(get_db),
 ):
     flag = await service.get_flag(db, flag_id)
@@ -155,6 +185,8 @@ async def update_flag(
 
     roles = [r.strip() for r in x_user_roles.split(',') if r.strip()]
     _check_scope_permission(flag.scope, roles, "update")
+
+    payload_before = FlagResponse.model_validate(flag).model_dump(mode='json')
 
     update_data = payload.model_dump(exclude_unset=True)
     if 'scope' in update_data and update_data['scope'] != flag.scope:
@@ -165,6 +197,22 @@ async def update_flag(
     validated_payload = FlagUpdate(**validated_data)
 
     updated_flag = await service.update_flag(db, flag_id, validated_payload)
+
+    client_ip, user_agent = _audit_request_meta(request)
+    await audit_service.write_audit_log(db, AuditLogCreate(
+        tenant_id=updated_flag.tenant_id,
+        user_id=x_user_sub,
+        user_email=x_user_email,
+        action_type=ActionType.UPDATE_FLAG,
+        environment=updated_flag.environment,
+        target_type="FLAG",
+        target_id=str(updated_flag.id),
+        payload_before=payload_before,
+        payload_after=FlagResponse.model_validate(updated_flag).model_dump(mode='json'),
+        client_ip=client_ip,
+        user_agent=user_agent,
+    ))
+
     # Broadcast flag change to SDK WebSocket clients for this tenant
     manager = request.app.state.ws_manager
     if updated_flag.tenant_id:
@@ -178,7 +226,10 @@ async def update_flag(
 @router.delete("/{flag_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_flag(
     flag_id: int,
+    request: Request,
     x_user_roles: str = Header(...),
+    x_user_sub: str = Header(default=''),
+    x_user_email: str = Header(default=''),
     db: AsyncSession = Depends(get_db),
 ):
     flag = await service.get_flag(db, flag_id)
@@ -188,9 +239,28 @@ async def delete_flag(
     roles = [r.strip() for r in x_user_roles.split(',') if r.strip()]
     _check_scope_permission(flag.scope, roles, "delete")
 
+    payload_before = FlagResponse.model_validate(flag).model_dump(mode='json')
+    tenant_id_snapshot = flag.tenant_id
+    environment_snapshot = flag.environment
+
     deleted = await service.delete_flag(db, flag_id)
     if not deleted:
         raise HTTPException(status_code=404, detail="Flag not found")
+
+    client_ip, user_agent = _audit_request_meta(request)
+    await audit_service.write_audit_log(db, AuditLogCreate(
+        tenant_id=tenant_id_snapshot,
+        user_id=x_user_sub,
+        user_email=x_user_email,
+        action_type=ActionType.DELETE_FLAG,
+        environment=environment_snapshot,
+        target_type="FLAG",
+        target_id=str(flag_id),
+        payload_before=payload_before,
+        payload_after=None,
+        client_ip=client_ip,
+        user_agent=user_agent,
+    ))
 
 
 @router.post("/{flag_id}/enable", response_model=FlagResponse)
@@ -198,6 +268,8 @@ async def enable_flag(
     flag_id: int,
     request: Request,
     x_user_roles: str = Header(...),
+    x_user_sub: str = Header(default=''),
+    x_user_email: str = Header(default=''),
     db: AsyncSession = Depends(get_db),
 ):
     flag = await service.get_flag(db, flag_id)
@@ -207,7 +279,25 @@ async def enable_flag(
     roles = [r.strip() for r in x_user_roles.split(',') if r.strip()]
     _check_scope_permission(flag.scope, roles, "enable")
 
+    payload_before = FlagResponse.model_validate(flag).model_dump(mode='json')
+
     flag = await service.set_enabled(db, flag_id, True)
+
+    client_ip, user_agent = _audit_request_meta(request)
+    await audit_service.write_audit_log(db, AuditLogCreate(
+        tenant_id=flag.tenant_id,
+        user_id=x_user_sub,
+        user_email=x_user_email,
+        action_type=ActionType.ENABLE_FLAG,
+        environment=flag.environment,
+        target_type="FLAG",
+        target_id=str(flag.id),
+        payload_before=payload_before,
+        payload_after=FlagResponse.model_validate(flag).model_dump(mode='json'),
+        client_ip=client_ip,
+        user_agent=user_agent,
+    ))
+
     # Broadcast flag change to SDK WebSocket clients for this tenant
     manager = request.app.state.ws_manager
     if flag.tenant_id:
@@ -223,6 +313,8 @@ async def disable_flag(
     flag_id: int,
     request: Request,
     x_user_roles: str = Header(...),
+    x_user_sub: str = Header(default=''),
+    x_user_email: str = Header(default=''),
     db: AsyncSession = Depends(get_db),
 ):
     flag = await service.get_flag(db, flag_id)
@@ -232,7 +324,25 @@ async def disable_flag(
     roles = [r.strip() for r in x_user_roles.split(',') if r.strip()]
     _check_scope_permission(flag.scope, roles, "disable")
 
+    payload_before = FlagResponse.model_validate(flag).model_dump(mode='json')
+
     flag = await service.set_enabled(db, flag_id, False)
+
+    client_ip, user_agent = _audit_request_meta(request)
+    await audit_service.write_audit_log(db, AuditLogCreate(
+        tenant_id=flag.tenant_id,
+        user_id=x_user_sub,
+        user_email=x_user_email,
+        action_type=ActionType.DISABLE_FLAG,
+        environment=flag.environment,
+        target_type="FLAG",
+        target_id=str(flag.id),
+        payload_before=payload_before,
+        payload_after=FlagResponse.model_validate(flag).model_dump(mode='json'),
+        client_ip=client_ip,
+        user_agent=user_agent,
+    ))
+
     # Broadcast flag change to SDK WebSocket clients for this tenant
     manager = request.app.state.ws_manager
     if flag.tenant_id:

@@ -242,5 +242,44 @@ describe('LabelClient', () => {
       expect(typeof app.config.globalProperties.$t).toBe('function')
       expect(app.config.globalProperties.$t('common.btn_aceptar')).toBe('Aceptar')
     })
+
+    it('uses fallbackResolver when provided', async () => {
+      const fetchMock = vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => BOOTSTRAP_FIXTURE,
+      })
+      vi.stubGlobal('fetch', fetchMock)
+
+      const client = new LabelClient(OPTS)
+      await client.initialize()
+
+      const resolver = vi.fn().mockImplementation((path, vars, translated) => {
+        if (translated.startsWith('[sys.')) {
+          return 'Fallback copy'
+        }
+        return translated
+      })
+
+      const plugin = createLabelPlugin(client, resolver)
+      const app = { config: { globalProperties: {} as any } } as any
+      plugin.install(app)
+
+      expect(app.config.globalProperties.$t('common.btn_aceptar')).toBe('Aceptar')
+      expect(resolver).toHaveBeenCalledWith('common.btn_aceptar', undefined, 'Aceptar')
+
+      // Cache miss test case
+      fetchMock.mockClear()
+      fetchMock.mockResolvedValue({ ok: true, json: async () => ({}) })
+      const val = app.config.globalProperties.$t('common.missing_key')
+      expect(val).toBe('Fallback copy')
+      expect(resolver).toHaveBeenCalledWith('common.missing_key', undefined, '[sys.missing_key]')
+
+      // reportMissingLabel is fire-and-forget — flush microtasks
+      await Promise.resolve()
+      await Promise.resolve()
+      const missingCall = fetchMock.mock.calls.find(([url]) => String(url).includes('/labels/missing'))
+      expect(missingCall).toBeDefined()
+    })
   })
 })
+

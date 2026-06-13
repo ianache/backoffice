@@ -159,11 +159,20 @@ export class LabelClient {
 // Vue plugin factory
 // ---------------------------------------------------------------------------
 
-export function createLabelPlugin(client: LabelClient) {
+export function createLabelPlugin(
+  client: LabelClient,
+  fallbackResolver?: (path: string, variables?: Record<string, unknown>, translated: string) => string
+) {
   return {
     install(app: App) {
-      app.config.globalProperties.$t = (path: string, vars?: Record<string, unknown>) =>
-        client.translate(path, vars)
+      app.config.globalProperties.$t = (path: string, vars?: Record<string, unknown>) => {
+        const translated = client.translate(path, vars)
+        if (fallbackResolver) {
+          return fallbackResolver(path, vars, translated)
+        }
+        return translated
+      }
     },
   }
 }
+

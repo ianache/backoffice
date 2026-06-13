@@ -1,0 +1,427 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Audit Log - Stitch Console</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-error": "#ffffff",
+                      "on-surface-variant": "#414754",
+                      "surface-container": "#eaeef3",
+                      "outline-variant": "#c1c6d6",
+                      "on-tertiary": "#ffffff",
+                      "inverse-on-surface": "#edf1f6",
+                      "tertiary": "#9e4300",
+                      "on-secondary-fixed": "#181c20",
+                      "on-primary-container": "#ffffff",
+                      "secondary-container": "#dde0e6",
+                      "on-background": "#181c20",
+                      "primary-fixed-dim": "#adc7ff",
+                      "on-tertiary-container": "#0e0200",
+                      "on-primary": "#ffffff",
+                      "on-surface": "#181c20",
+                      "outline": "#727785",
+                      "secondary-fixed-dim": "#c3c7cc",
+                      "background": "#f6faff",
+                      "on-primary-fixed": "#001a41",
+                      "surface-container-high": "#e5e8ee",
+                      "on-secondary-fixed-variant": "#43474c",
+                      "tertiary-fixed": "#ffdbcb",
+                      "on-tertiary-fixed": "#341100",
+                      "error": "#ba1a1a",
+                      "on-secondary-container": "#5f6368",
+                      "tertiary-fixed-dim": "#ffb691",
+                      "surface-container-low": "#f0f4f9",
+                      "secondary-fixed": "#dfe3e8",
+                      "surface-variant": "#dfe3e8",
+                      "surface-bright": "#f6faff",
+                      "inverse-primary": "#adc7ff",
+                      "on-primary-fixed-variant": "#004493",
+                      "on-secondary": "#ffffff",
+                      "surface-container-lowest": "#ffffff",
+                      "on-tertiary-fixed-variant": "#783100",
+                      "inverse-surface": "#2c3135",
+                      "tertiary-container": "#c55500",
+                      "primary-fixed": "#d8e2ff",
+                      "primary": "#005bbf",
+                      "primary-container": "#1a73e8",
+                      "error-container": "#ffdad6",
+                      "secondary": "#5b5f64",
+                      "on-error-container": "#93000a",
+                      "surface-tint": "#005bc0",
+                      "surface-container-highest": "#dfe3e8",
+                      "surface": "#f6faff",
+                      "surface-dim": "#d6dadf"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "md": "16px",
+                      "max-width": "1440px",
+                      "gutter": "24px",
+                      "xs": "4px",
+                      "xl": "32px",
+                      "sm": "8px",
+                      "base": "4px",
+                      "lg": "24px",
+                      "margin": "32px"
+              },
+              "fontFamily": {
+                      "headline-lg": ["Inter"],
+                      "title-lg": ["Inter"],
+                      "body-md": ["Inter"],
+                      "headline-md": ["Inter"],
+                      "label-lg": ["Inter"],
+                      "code": ["JetBrains Mono"],
+                      "title-md": ["Inter"],
+                      "label-md": ["Inter"],
+                      "body-lg": ["Inter"]
+              },
+              "fontSize": {
+                      "headline-lg": ["28px", {"lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                      "title-lg": ["18px", {"lineHeight": "24px", "fontWeight": "500"}],
+                      "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "headline-md": ["22px", {"lineHeight": "28px", "fontWeight": "600"}],
+                      "label-lg": ["12px", {"lineHeight": "16px", "letterSpacing": "0.5px", "fontWeight": "600"}],
+                      "code": ["13px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "title-md": ["16px", {"lineHeight": "24px", "fontWeight": "500"}],
+                      "label-md": ["11px", {"lineHeight": "16px", "fontWeight": "500"}],
+                      "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .timeline-line::before {
+            content: '';
+            position: absolute;
+            left: 20px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background-color: theme('colors.outline-variant');
+            z-index: 0;
+        }
+    </style>
+</head>
+<body class="bg-background font-body-md text-on-surface antialiased">
+<!-- Sidebar Navigation -->
+<aside class="fixed left-0 top-0 h-full w-64 bg-surface-container-low dark:bg-inverse-surface border-r border-outline-variant dark:border-outline flex flex-col py-lg px-md z-50">
+<div class="mb-xl px-sm">
+<h1 class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed-dim"><p data-pm-slice="0 0 []" class="">BackOffice CC</p></h1>
+<p class="font-label-lg text-label-lg text-on-surface-variant uppercase tracking-wider mt-xs">Enterprise Admin</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center px-sm py-md rounded-lg text-on-surface-variant hover:bg-secondary-container transition-all duration-200 group" href="#">
+<span class="material-symbols-outlined mr-md group-hover:text-primary" data-icon="dashboard">dashboard</span>
+<span class="font-title-md text-title-md">Dashboard</span>
+</a>
+<a class="flex items-center px-sm py-md rounded-lg text-on-surface-variant hover:bg-secondary-container transition-all duration-200 group" href="#">
+<span class="material-symbols-outlined mr-md group-hover:text-primary" data-icon="toggle_on">toggle_on</span>
+<span class="font-title-md text-title-md">Feature Flags</span>
+</a>
+<a class="flex items-center px-sm py-md rounded-lg text-on-surface-variant hover:bg-secondary-container transition-all duration-200 group" href="#">
+<span class="material-symbols-outlined mr-md group-hover:text-primary" data-icon="group">group</span>
+<span class="font-title-md text-title-md">Segments</span>
+</a>
+<a class="flex items-center px-sm py-md rounded-lg text-on-surface-variant hover:bg-secondary-container transition-all duration-200 group" href="#">
+<span class="material-symbols-outlined mr-md group-hover:text-primary" data-icon="cloud">cloud</span>
+<span class="font-title-md text-title-md">Environments</span>
+</a>
+<a class="flex items-center px-sm py-md rounded-lg text-primary font-bold border-r-4 border-primary bg-secondary-container group" href="#">
+<span class="material-symbols-outlined mr-md" data-icon="receipt_long">receipt_long</span>
+<span class="font-title-md text-title-md">Audit Log</span>
+</a>
+<a class="flex items-center px-sm py-md rounded-lg text-on-surface-variant hover:bg-secondary-container transition-all duration-200 group" href="#">
+<span class="material-symbols-outlined mr-md group-hover:text-primary" data-icon="settings">settings</span>
+<span class="font-title-md text-title-md">Settings</span>
+</a>
+</nav>
+<div class="mt-auto pt-lg border-t border-outline-variant">
+<div class="flex items-center px-sm">
+<img alt="User Profile" class="h-10 w-10 rounded-full bg-surface-container-high" data-alt="A professional headshot of a software engineer in a modern workspace. The person is smiling warmly, wearing a smart-casual navy sweater. The background is a brightly lit, contemporary office with soft-focus architectural elements and lush indoor plants, reinforcing a corporate yet approachable tech-industry vibe." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBugAhj1fFlUHMPEiDbrAj_Lz0S6SWrohQbLeO2wj8fyJbvSpCma8x0JOczTRzOUv3h3KEEUEjs5R_TQVH14oDz54ir9lp8Eh9MclUxwYnFdfVE8dzveg1UmE9X7qfugOB4yGHuN5q10k-EwuKHRnWyt218td47Esr9SjnjxhC6aety7qlGOvvg8RrDi5aAR4TzywgTp8MM5c5FStk9DIkAxcyLCrYZp-FnbetqhaNSAtLHwytID09I18GIEwAXaoT4pQwlpVuSPSk">
+<div class="ml-sm">
+<p class="text-sm font-bold text-on-surface">Alex Rivera</p>
+<p class="text-xs text-on-surface-variant">Admin</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Top Navigation Bar -->
+<header class="fixed top-0 right-0 w-[calc(100%-256px)] z-40 bg-surface border-b border-outline-variant shadow-sm flex justify-between items-center h-16 px-lg">
+<div class="flex items-center flex-1 max-w-2xl">
+<div class="relative w-full">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant" data-icon="search">search</span>
+<input class="w-full pl-10 pr-4 py-2 bg-surface-container-low border border-outline-variant rounded-lg focus:outline-none focus:border-primary text-sm transition-all" placeholder="Search audit logs..." type="text">
+</div>
+</div>
+<nav class="flex items-center space-x-lg ml-lg">
+<div class="flex items-center space-x-md text-label-lg font-label-lg uppercase tracking-wider">
+<a class="text-secondary hover:text-primary transition-colors" href="#">Dev</a>
+<a class="text-secondary hover:text-primary transition-colors" href="#">QA</a>
+<a class="text-primary border-b-2 border-primary pb-1" href="#">Prod</a>
+</div>
+<div class="h-6 w-[1px] bg-outline-variant"></div>
+<div class="flex items-center space-x-md">
+<button class="material-symbols-outlined text-secondary hover:text-primary transition-colors scale-95 active:opacity-80" data-icon="dark_mode">dark_mode</button><button class="material-symbols-outlined text-secondary hover:text-primary transition-colors scale-95 active:opacity-80" data-icon="notifications">notifications</button>
+<button class="material-symbols-outlined text-secondary hover:text-primary transition-colors scale-95 active:opacity-80" data-icon="help">help</button>
+</div>
+</nav>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-64 mt-16 p-lg max-w-max-width mx-auto">
+<!-- Header & Filters Section -->
+<section class="mb-lg">
+<div class="flex justify-between items-end mb-lg">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface">Audit Log</h2>
+<p class="text-on-surface-variant font-body-md mt-1">Full history of system changes and deployment activities.</p>
+</div>
+<div class="flex space-x-sm">
+<button class="flex items-center px-md py-sm bg-surface-container-low border border-outline-variant rounded-lg text-on-surface hover:bg-secondary-container transition-all">
+<span class="material-symbols-outlined text-[20px] mr-sm" data-icon="file_download">file_download</span>
+<span class="font-title-md text-sm">Export CSV</span>
+</button>
+</div>
+</div>
+<!-- Filter Bar -->
+<div class="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-5 gap-md p-md bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm">
+<div class="flex flex-col space-y-1">
+<label class="text-xs font-bold text-on-surface-variant uppercase">Environment</label>
+<select class="bg-surface border border-outline-variant rounded-lg px-sm py-2 text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none">
+<option>All Environments</option>
+<option>Development</option>
+<option>QA / Staging</option>
+<option>Production</option>
+</select>
+</div>
+<div class="flex flex-col space-y-1">
+<label class="text-xs font-bold text-on-surface-variant uppercase">Action Type</label>
+<select class="bg-surface border border-outline-variant rounded-lg px-sm py-2 text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none">
+<option>All Actions</option>
+<option>Created Flag</option>
+<option>Updated Flag</option>
+<option>Deleted Flag</option>
+<option>Updated Permissions</option>
+</select>
+</div>
+<div class="flex flex-col space-y-1">
+<label class="text-xs font-bold text-on-surface-variant uppercase">User</label>
+<select class="bg-surface border border-outline-variant rounded-lg px-sm py-2 text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none">
+<option>All Users</option>
+<option>Alex Rivera</option>
+<option>Jordan Smith</option>
+<option>System Bot</option>
+</select>
+</div>
+<div class="flex flex-col space-y-1">
+<label class="text-xs font-bold text-on-surface-variant uppercase">Date Range</label>
+<div class="flex items-center bg-surface border border-outline-variant rounded-lg px-sm py-2 text-sm cursor-pointer">
+<span class="material-symbols-outlined text-[18px] mr-sm text-outline" data-icon="calendar_today">calendar_today</span>
+<span class="">Last 30 Days</span>
+</div>
+</div>
+<div class="flex items-end">
+<button class="w-full h-10 flex items-center justify-center bg-primary text-on-primary font-bold rounded-lg hover:bg-primary-container transition-all">
+                        Apply Filters
+                    </button>
+</div>
+</div>
+</section>
+<!-- Timeline Section -->
+<section class="relative timeline-line ml-4">
+<!-- Date Divider -->
+<div class="relative z-10 mb-lg">
+<div class="inline-flex items-center bg-surface-container-high px-md py-1 rounded-full text-xs font-bold text-on-surface-variant uppercase tracking-wider border border-outline-variant">
+                    Today, Oct 24
+                </div>
+</div>
+<!-- Timeline Item 1 -->
+<div class="relative pl-12 mb-lg">
+<div class="absolute left-0 top-1 w-10 h-10 bg-primary-container rounded-full flex items-center justify-center ring-4 ring-background z-10">
+<span class="material-symbols-outlined text-on-primary-container" data-icon="published_with_changes">published_with_changes</span>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md shadow-sm hover:shadow-md transition-shadow group">
+<div class="flex flex-wrap items-start justify-between gap-md">
+<div class="flex items-start space-x-md">
+<img class="h-10 w-10 rounded-full" data-alt="A detailed, high-resolution portrait of a focused technologist in a sleek, minimalist studio. The lighting is crisp and cool, casting soft shadows that highlight professional determination. The color palette is modern, featuring muted grays and deep blues, aligning with an enterprise software aesthetic. The overall mood is sophisticated and clean." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCWfXYTmCtAk1wVZouYs5z37lOim8MiXsnADpF_eLzteo8PjyR_LPomKFKvC4-CHmbmps9igebmyS8mtsqCt50oHexFMOTW-VCzVGkpAD2NbM500wlTAG-mbPPDsKTKhPc5q89Wtljst87XpEH6wF0gz3FO9QVfDR0ZJdD2P_z3E8WKm06BAY-CYhWFwJwJJh0Sh66c7BI19Ecpzg5MW0IhIEKIswG3SYsgNJfK1JkG_gUbOQ1eM8Cuhq9pNobUY0GJAGbc_jmPTFs">
+<div>
+<p class="text-on-surface font-title-md">
+<span class="font-bold">Jordan Smith</span> updated the flag 
+                                    <a class="text-primary hover:underline font-code" href="#">v2_checkout_flow</a>
+</p>
+<div class="flex items-center mt-2 space-x-md text-sm">
+<div class="flex items-center text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px] mr-1" data-icon="schedule">schedule</span>
+                                        14:23 PM
+                                    </div>
+<div class="flex items-center px-2 py-0.5 rounded-full bg-error-container text-on-error-container text-[10px] font-black uppercase">
+<span class="w-1.5 h-1.5 bg-error rounded-full mr-1.5"></span>
+                                        Production
+                                    </div>
+<div class="text-on-surface-variant border-l border-outline-variant pl-md">
+                                        Action: Toggle Enabled
+                                    </div>
+</div>
+</div>
+</div>
+<button class="flex items-center px-md py-1.5 border border-primary text-primary font-bold text-sm rounded-lg hover:bg-primary-container hover:text-on-primary-container transition-all">
+                            View Diff
+                        </button>
+</div>
+</div>
+</div>
+<!-- Timeline Item 2 -->
+<div class="relative pl-12 mb-lg">
+<div class="absolute left-0 top-1 w-10 h-10 bg-secondary-container rounded-full flex items-center justify-center ring-4 ring-background z-10">
+<span class="material-symbols-outlined text-on-secondary-container" data-icon="add_circle">add_circle</span>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md shadow-sm group">
+<div class="flex flex-wrap items-start justify-between gap-md">
+<div class="flex items-start space-x-md">
+<img class="h-10 w-10 rounded-full" data-alt="A high-quality image of a diverse tech professional in a high-tech office environment. The scene is illuminated by soft, natural light coming through large windows, creating a bright and airy atmosphere. The palette is composed of clean whites, soft grays, and corporate blues, conveying a sense of transparency and reliability in a modern software context." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC3tHvFUupPCHX6HcuqZaNip3CUyzur1lreJmbSmHnJCMIsohe4so6VFb-WJh1P0hfhgd1JqQGnvnr1I6JHkEtMZzqg1CAXVBVTzBZaFnYEzPll4htzesP2d9Coy2Sgu0YUpkSoJvW3JvSwn2oYfiSctgSHwo2sWmy4q2682fKFIp_0lFIMk2T2yLi1aD_PT2aLrRK6u6spBTm6Ll8uNl43K8-KrKmwSVC-fRLELxzpv0NrcqcFqf_biPTzGwkMjsB5CHWU_lA_tmg">
+<div>
+<p class="text-on-surface font-title-md">
+<span class="font-bold">Alex Rivera</span> created a new segment 
+                                    <a class="text-primary hover:underline font-code" href="#">Enterprise_Users_NA</a>
+</p>
+<div class="flex items-center mt-2 space-x-md text-sm">
+<div class="flex items-center text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px] mr-1" data-icon="schedule">schedule</span>
+                                        09:12 AM
+                                    </div>
+<div class="flex items-center px-2 py-0.5 rounded-full bg-secondary-container text-on-secondary-container text-[10px] font-black uppercase">
+<span class="w-1.5 h-1.5 bg-secondary rounded-full mr-1.5"></span>
+                                        QA
+                                    </div>
+<div class="text-on-surface-variant border-l border-outline-variant pl-md">
+                                        Rules: Country = 'US', 'CA'
+                                    </div>
+</div>
+</div>
+</div>
+<button class="flex items-center px-md py-1.5 border border-outline text-on-surface-variant font-bold text-sm rounded-lg hover:bg-secondary-container transition-all">
+                            View Details
+                        </button>
+</div>
+</div>
+</div>
+<!-- Date Divider -->
+<div class="relative z-10 mb-lg mt-xl">
+<div class="inline-flex items-center bg-surface-container-high px-md py-1 rounded-full text-xs font-bold text-on-surface-variant uppercase tracking-wider border border-outline-variant">
+                    Yesterday, Oct 23
+                </div>
+</div>
+<!-- Timeline Item 3 (Compact/Grouped Example) -->
+<div class="relative pl-12 mb-lg">
+<div class="absolute left-0 top-1 w-10 h-10 bg-surface-container-highest rounded-full flex items-center justify-center ring-4 ring-background z-10">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="delete">delete</span>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md shadow-sm border-l-4 border-l-error">
+<div class="flex flex-wrap items-start justify-between gap-md">
+<div class="flex items-start space-x-md">
+<div class="w-10 h-10 bg-outline-variant rounded-full flex items-center justify-center text-on-surface-variant font-bold">
+                                SYS
+                            </div>
+<div>
+<p class="text-on-surface font-title-md">
+<span class="font-bold">System Bot</span> archived 12 expired flags
+                                </p>
+<div class="flex items-center mt-2 space-x-md text-sm">
+<div class="flex items-center text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px] mr-1" data-icon="schedule">schedule</span>
+                                        23:59 PM
+                                    </div>
+<div class="flex items-center px-2 py-0.5 rounded-full bg-outline-variant text-on-surface-variant text-[10px] font-black uppercase">
+<span class="w-1.5 h-1.5 bg-on-surface-variant rounded-full mr-1.5"></span>
+                                        Dev
+                                    </div>
+<div class="text-error font-bold flex items-center">
+<span class="material-symbols-outlined text-[16px] mr-1" data-icon="warning">warning</span>
+                                        Bulk Action
+                                    </div>
+</div>
+</div>
+</div>
+<button class="flex items-center px-md py-1.5 border border-outline text-on-surface-variant font-bold text-sm rounded-lg hover:bg-secondary-container transition-all">
+                            Log Details
+                        </button>
+</div>
+</div>
+</div>
+<!-- Skeleton Loading Pattern (Empty State Simulation) -->
+<div class="relative pl-12 opacity-40 select-none pointer-events-none">
+<div class="absolute left-0 top-1 w-10 h-10 bg-surface-container rounded-full flex items-center justify-center ring-4 ring-background z-10"></div>
+<div class="bg-surface-container-low border border-dashed border-outline-variant rounded-xl p-md h-24">
+<div class="flex space-x-md">
+<div class="w-10 h-10 bg-surface-container-highest rounded-full"></div>
+<div class="flex-1 space-y-3">
+<div class="h-4 bg-surface-container-highest rounded-full w-1/3"></div>
+<div class="h-3 bg-surface-container-highest rounded-full w-2/3"></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Pagination -->
+<div class="mt-xl flex items-center justify-between border-t border-outline-variant pt-lg">
+<p class="text-sm text-on-surface-variant">Showing 1 to 25 of 1,248 entries</p>
+<div class="flex space-x-sm">
+<button class="px-md py-sm border border-outline-variant rounded-lg text-sm font-bold text-on-surface hover:bg-surface-container-low disabled:opacity-50" disabled="">Previous</button>
+<div class="flex items-center space-x-1">
+<button class="w-10 h-10 bg-primary text-on-primary rounded-lg text-sm font-bold">1</button>
+<button class="w-10 h-10 hover:bg-surface-container-low rounded-lg text-sm font-bold">2</button>
+<button class="w-10 h-10 hover:bg-surface-container-low rounded-lg text-sm font-bold">3</button>
+<span class="px-2 text-on-surface-variant">...</span>
+<button class="w-10 h-10 hover:bg-surface-container-low rounded-lg text-sm font-bold">50</button>
+</div>
+<button class="px-md py-sm border border-outline-variant rounded-lg text-sm font-bold text-on-surface hover:bg-surface-container-low transition-all">Next</button>
+</div>
+</div>
+</main>
+<!-- Floating Action Button (Optional for Context) -->
+<button class="fixed bottom-lg right-lg w-14 h-14 bg-primary text-on-primary rounded-full shadow-lg flex items-center justify-center hover:scale-105 active:scale-95 transition-all z-50 group">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+<span class="absolute right-16 bg-inverse-surface text-inverse-on-surface px-md py-2 rounded-lg text-sm font-bold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">Quick Audit Note</span>
+</button>
+<script>
+        // Micro-interaction for hover effects on timeline cards
+        document.querySelectorAll('.bg-surface-container-lowest').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateX(4px)';
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateX(0px)';
+            });
+        });
+
+        // Simple mock for "View Diff" interaction
+        document.querySelectorAll('button').forEach(btn => {
+            if(btn.innerText.includes('View Diff')) {
+                btn.addEventListener('click', () => {
+                    console.log('Opening Diff Modal...');
+                    // In a real app, this would trigger a modal with code comparison
+                });
+            }
+        });
+    </script>
+
+
+
+
+</body></html>

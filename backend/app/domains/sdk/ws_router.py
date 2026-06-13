@@ -11,7 +11,9 @@ from fastapi import WebSocket
 from starlette.websockets import WebSocketDisconnect
 
 
-async def ws_flags_endpoint(websocket: WebSocket, tenant_id: str):
+async def ws_flags_endpoint(websocket: WebSocket, tenant_id: str = None):
+    if tenant_id is None:
+        tenant_id = websocket.path_params.get("tenant_id")
     await websocket.accept()
     manager = websocket.app.state.ws_manager  # Accessed at request time, NOT at import time
 

@@ -47,6 +47,7 @@ describe('FeatureFlagClient cache performance', () => {
     vi.stubGlobal(
       'fetch',
       vi.fn().mockResolvedValue({
+        ok: true,
         json: async () => BOOTSTRAP_FIXTURE,
       }),
     )

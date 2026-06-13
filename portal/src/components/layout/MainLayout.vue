@@ -164,6 +164,24 @@
           <span class="text-sm">Companies</span>
         </button>
 
+        <!-- Users / Access Management (served by mui-security remote) -->
+        <button
+          v-if="authStore.hasRole('PlatformAdmin') || authStore.hasRole('TenantOwner') || authStore.hasRole('TenantAdmin')"
+          @click="router.push('/users')"
+          :class="[
+            'w-full flex items-center gap-4 px-4 py-2 rounded-lg transition-all duration-200 text-left',
+            remoteStatuses['mui-security'] === 'error' ? 'opacity-50 cursor-not-allowed' : '',
+            isActive('/users')
+              ? 'bg-primary text-on-primary font-semibold'
+              : 'text-on-surface-variant hover:bg-surface-container-high'
+          ]"
+          :disabled="remoteStatuses['mui-security'] === 'error'"
+          title="Users"
+        >
+          <span class="material-symbols-outlined text-[22px]">manage_accounts</span>
+          <span class="text-sm">Users</span>
+        </button>
+
         <!-- WhiteLabels (placeholder) -->
         <button
           class="w-full flex items-center gap-4 px-4 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all duration-200 text-left cursor-not-allowed opacity-70"

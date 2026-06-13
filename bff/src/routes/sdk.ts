@@ -15,7 +15,9 @@ sdkRouter.use(
     // Express strips '/sdk' prefix. HTTP SDK calls rewrite to /api/v1/sdk.
     // WebSocket connections to /sdk/ws/flags/:tenant_id rewrite to /ws/flags/:tenant_id on backend.
     pathRewrite: (path) => {
-      if (path.startsWith('/ws/')) return path  // WS paths: /sdk/ws/... -> /ws/...
+      if (path.includes('/ws/')) {
+        return path.replace('/sdk/ws/', '/ws/')
+      }
       return `/api/v1/sdk${path}`               // HTTP paths: /sdk/... -> /api/v1/sdk/...
     },
   })

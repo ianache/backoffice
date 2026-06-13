@@ -54,6 +54,7 @@ describe('FeatureFlagClient', () => {
 
     beforeEach(() => {
       fetchMock = vi.fn().mockResolvedValue({
+        ok: true,
         json: async () => BOOTSTRAP_FIXTURE,
       })
       vi.stubGlobal('fetch', fetchMock)
@@ -73,6 +74,21 @@ describe('FeatureFlagClient', () => {
 
       expect(client.getCache()).toEqual(BOOTSTRAP_FIXTURE)
     })
+
+    it('throws on non-ok bootstrap response so consumers can fail open', async () => {
+      vi.stubGlobal(
+        'fetch',
+        vi.fn().mockResolvedValue({
+          ok: false,
+          status: 404,
+          json: async () => ({ detail: 'Not Found' }),
+        }),
+      )
+      const client = new FeatureFlagClient(OPTS)
+      await expect(client.initialize()).rejects.toThrow('bootstrap failed: HTTP 404')
+      // Cache must remain empty — an error body must never become the cache
+      expect(client.getCache()).toEqual({})
+    })
   })
 
   describe('evaluate()', () => {
@@ -80,6 +96,7 @@ describe('FeatureFlagClient', () => {
       vi.stubGlobal(
         'fetch',
         vi.fn().mockResolvedValue({
+        ok: true,
           json: async () => BOOTSTRAP_FIXTURE,
         }),
       )
@@ -101,6 +118,7 @@ describe('FeatureFlagClient', () => {
 
     it('returns false on cache-miss without throwing or calling fetch again', async () => {
       const fetchMock = vi.fn().mockResolvedValue({
+        ok: true,
         json: async () => BOOTSTRAP_FIXTURE,
       })
       vi.stubGlobal('fetch', fetchMock)
@@ -136,6 +154,7 @@ describe('FeatureFlagClient', () => {
   describe('evaluateRemote()', () => {
     it('posts to /sdk/evaluate and resolves the boolean result', async () => {
       const fetchMock = vi.fn().mockResolvedValue({
+        ok: true,
         json: async () => ({ flag_key: 'my_flag', result: true }),
       })
       vi.stubGlobal('fetch', fetchMock)
@@ -157,6 +176,7 @@ describe('FeatureFlagClient', () => {
       vi.stubGlobal(
         'fetch',
         vi.fn().mockResolvedValue({
+        ok: true,
           json: async () => ({ flag_key: 'my_flag', result: false }),
         }),
       )
@@ -173,6 +193,7 @@ describe('FeatureFlagClient', () => {
       vi.stubGlobal(
         'fetch',
         vi.fn().mockResolvedValue({
+        ok: true,
           json: async () => BOOTSTRAP_FIXTURE,
         }),
       )

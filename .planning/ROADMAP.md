@@ -206,3 +206,43 @@ Plans:
 - [ ] 15-02-PLAN.md — sdk-js + sdk-python AND-mode parity in local evaluators (TDD)
 - [ ] 15-03-PLAN.md — useRuleSimulator AND mode + RuleSimulator per-rule pass/fail UI + RuleBuilderView mode selector/persistence
 - [ ] 15-04-PLAN.md — /flags client-side filters (useFlagFilters composable + FlagsView filter bar) + visual checkpoint
+
+### Phase 16: MVP2 Auditoria (Audit Log Timeline + Diff Viewer)
+
+**Goal:** Implement the unified Audit Log per PRD_MVP3 §6 — an immutable `audit_logs` table (id, created_at, tenant_id, user_id/email, action_type, environment, target_type, target_id, payload_before/after JSON, client_ip, user_agent) populated by existing write paths (flags, segments, tenants, whitelabel, users), exposed via `GET /bff/audit-logs` (filters: environment, action_type, user_id, date range, pagination) and `GET /bff/audit-logs/{id}/diff`, with a frontend Activity Timeline view + "View Diff" modal highlighting JSON additions/removals/modifications (green/red/yellow) per the `audit-log_activity-timeline.html` mockup.
+**Requirements**: TBD — derive AUD-01..AUD-0x at plan time from PRD_MVP3 §6, §8.3, §9 (AUDIT_LOGS table)
+**Depends on:** Phase 15
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd:plan-phase 16 to break down)
+
+### Phase 17: Observabilidad SLA SLO
+
+**Goal:** Implement the Observability dashboard per PRD_MVP3 §4 — a `service_health_samples` table populated by a non-blocking Health Checker Engine polling internal components (FastAPI core, BFF, PostgreSQL, Keycloak, WebSocket gateway) every 15s, tracking SLIs (uptime, p95/p99 latency, error rate against the <1ms local / <50ms remote evaluation SLOs), exposed via `GET /bff/health/services` and `GET /bff/observability/metrics` (query params: tenant_id, range=24h/7d/30d), with a frontend dashboard showing current status, trends, and SLO breach indicators.
+**Requirements**: TBD — derive OBS-01..OBS-0x at plan time from PRD_MVP3 §4, §8.1, §9 (SERVICE_HEALTH_SAMPLES table)
+**Depends on:** Phase 16
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd:plan-phase 17 to break down)
+
+### Phase 18: Telemetry Ingestion SDK Eval Events
+
+**Goal:** Implement the SDK eval-events ingestion pipeline per PRD_MVP3 §5, §8.2 — `POST /api/v1/sdk/eval-events` accepts batched aggregated evaluation counts (tenant_id, product_id, environment, timestamp, evaluations[{flag_key, value, hits}]) and responds `202 Accepted` in <10ms via an async buffer/queue; a background aggregator consolidates raw events into `sdk_eval_events_aggregated` (hourly buckets per tenant/product/environment/flag_key/value) and prunes old detail rows. SDKs (sdk-js/sdk-python) batch every 60s or 100 events. Frontend surfaces per-flag hit statistics. Must not degrade or block flag evaluation if ingestion is down (resilience per §10.2).
+**Requirements**: TBD — derive TEL-01..TEL-0x at plan time from PRD_MVP3 §5, §8.2, §9 (SDK_EVAL_EVENTS_AGGREGATED table)
+**Depends on:** Phase 17
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd:plan-phase 18 to break down)
+
+### Phase 19: Redis PubSub WS Scaling and Webhook Alerts
+
+**Goal:** Implement distributed cache invalidation and proactive alerting per PRD_MVP3 §7, §8.1, §9 — when a flag changes, FastAPI publishes `{tenant_id, product_id, environment}` to a Redis Pub/Sub channel (`flag-updates`); every backend instance subscribed to that channel notifies its locally-connected SDK WebSocket clients (`{"event": "invalidate"}`) so they refetch bootstrap, enabling horizontal scaling of stateless FastAPI instances. Also implement `webhook_alert_configs` (tenant_id, url, secret_token, enabled_events, active) with CRUD via `POST/GET /bff/observability/webhooks`, and an Alert Manager that fires webhook (Slack/Teams) + email notifications on service degradation or SLO breaches detected by Phase 17's health checker.
+**Requirements**: TBD — derive RTS-01..RTS-0x at plan time from PRD_MVP3 §7, §8.1, §9 (WEBHOOK_ALERT_CONFIGS table)
+**Depends on:** Phase 18
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd:plan-phase 19 to break down)

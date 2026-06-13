@@ -27,7 +27,12 @@ if (import.meta.env.VITE_E2E_SKIP_AUTH !== 'true') {
 
 // Initialize backoffice dogfooding flags (fail-open: defaults true if SDK unavailable)
 if (authStore.isAuthenticated) {
-  useBoFlags().init({ sub: authStore.user?.email ?? '', roles: authStore.roles })
+  useBoFlags().init({
+    sub: authStore.user?.email ?? '',
+    roles: authStore.roles,
+    // Platform tenant for rule matching (e.g. bo.feature.create's tenant_id rule)
+    tenant_id: import.meta.env.VITE_BO_TENANT_ID ?? '',
+  })
     .catch(() => {}) // fail-open — UI visible even if SDK fails
 }
 

@@ -8,11 +8,11 @@ stopped_at: Completed 15-03-PLAN.md
 last_updated: "2026-06-12T13:44:03.731Z"
 last_activity: 2026-06-12
 progress:
-  total_phases: 16
-  completed_phases: 16
+  total_phases: 19
+  completed_phases: 15
   total_plans: 74
   completed_plans: 74
-  percent: 100
+  percent: 79
 ---
 
 # Project State
@@ -99,6 +99,8 @@ Last activity detail: 2026-06-12 — Completed 15-03-PLAN.md (Rule Simulator AND
 - Phase 14 added (2026-06-11): Flag Scope Targeting + List-Valued Rules — combobox producto/tenant/company según scope del flag (target persistido en backend, enforcement en SDK bootstrap/evaluación) + Rule values como lista separada por coma con match-any para atributos lista (ej. roles), con paridad de operador en backend/sdk-js/sdk-python/useRuleSimulator
 - Phase 15 added (2026-06-12): AND Rule Combination Semantics — multi-rule evaluation combina con AND (true solo si TODAS las reglas matchean, false en caso contrario) con paridad en los 4 evaluadores (backend, sdk-js, sdk-python, useRuleSimulator); OR y grupos de reglas diferidos a un release futuro
 - Phase 15 expanded (2026-06-12): Flags Page Filters — filtros en `/flags` por Status, Tags, Complexity, Environment y target de scope (Products, Tenants o Global)
+- Phase 16 added (2026-06-12): MVP2 Auditoria — scope set to PRD_MVP3.md §6 (Audit Log Timeline + Diff Viewer)
+- Phases 17-19 added (2026-06-12): PRD_MVP3.md scope split across phases — 17=Observabilidad/SLA-SLO (§4), 18=Telemetry Ingestion SDK Eval Events (§5, §8.2), 19=Redis PubSub WS Scaling + Webhook Alerts (§7, §8.1)
 
 ### Decisions
 

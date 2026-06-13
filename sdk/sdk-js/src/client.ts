@@ -44,6 +44,11 @@ export class FeatureFlagClient {
     const res = await fetch(url, {
       headers: { Authorization: `Bearer ${this.opts.sdkKey}` },
     })
+    if (!res.ok) {
+      // Without this, an error body becomes the cache and every evaluate()
+      // silently fails closed — consumers' fail-open handling never fires
+      throw new Error(`bootstrap failed: HTTP ${res.status}`)
+    }
     this.cache = await res.json()
 
     const wsBaseUrl = this.opts.apiBaseUrl.replace(/^http/, 'ws')

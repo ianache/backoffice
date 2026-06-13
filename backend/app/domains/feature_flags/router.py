@@ -270,6 +270,18 @@ async def get_flag_segments(
     return [SegmentResponse.model_validate(s) for s in segments]
 
 
+@router.delete("/{flag_id}/segments/{segment_id}", status_code=204)
+async def remove_segment_from_flag(
+    flag_id: int,
+    segment_id: int,
+    x_user_roles: str = Header(...),
+    db: AsyncSession = Depends(get_db),
+):
+    success = await service.remove_segment_from_flag(db, flag_id, segment_id)
+    if not success:
+        raise HTTPException(status_code=404, detail="Association not found")
+
+
 @router.post("/{flag_id}/products/{product_id}", status_code=200)
 async def add_product_to_flag(
     flag_id: int,

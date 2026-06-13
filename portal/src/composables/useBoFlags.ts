@@ -53,7 +53,9 @@ export function useBoFlags() {
         tenantId:    import.meta.env.VITE_BO_TENANT_ID ?? 'platform',
         productId:   'backoffice',
         environment: import.meta.env.VITE_BO_ENVIRONMENT ?? 'production',
-        apiBaseUrl:  (import.meta.env.VITE_BFF_URL ?? 'http://localhost:3000') + '/sdk',
+        // The SDK itself appends /sdk/* to apiBaseUrl — passing VITE_BFF_URL + '/sdk'
+        // here produced /sdk/sdk/bootstrap (404) and a silently broken cache
+        apiBaseUrl:  import.meta.env.VITE_BFF_URL ?? 'http://localhost:3000',
         sdkKey:      import.meta.env.VITE_BO_SDK_KEY ?? 'dev-sdk-secret-change-in-prod',
       })
 

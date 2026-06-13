@@ -26,6 +26,7 @@ const REMOTE_MANIFEST: RemoteManifest[] = [
   { name: 'mui-security', envVar: 'VITE_REMOTE_SECURITY', displayName: 'Access Management', pathPrefix: 'users' },
   { name: 'mui-tenants', envVar: 'VITE_REMOTE_TENANTS', displayName: 'Tenant Management', pathPrefix: 'tenants' },
   { name: 'mui-feature-flags', envVar: 'VITE_REMOTE_FEATURE_FLAGS', displayName: 'Feature Flags', pathPrefix: 'flags' },
+  { name: 'mui-labeling', envVar: 'VITE_REMOTE_LABELING', displayName: 'Labeling & Namespaces', pathPrefix: 'labeling' },
 ]
 
 export const remoteStatuses = reactive<Record<string, 'loaded' | 'error'>>({})
@@ -69,6 +70,9 @@ export async function loadMicroUIRoutes() {
       case 'mui-feature-flags':
         // @ts-ignore - Module Federation remote
         return import('mui-feature-flags/routes');
+      case 'mui-labeling':
+        // @ts-ignore - Module Federation remote
+        return import('mui-labeling/routes');
       default: throw new Error(`Unknown remote: ${name}`);
     }
   }

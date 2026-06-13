@@ -24,6 +24,10 @@ export default defineConfig(({ mode }) => {
     ? `${env.VITE_REMOTE_FEATURE_FLAGS}/assets/remoteEntry.js`
     : 'http://localhost:5178/assets/remoteEntry.js'
 
+  remotes['mui-labeling'] = env.VITE_REMOTE_LABELING
+    ? `${env.VITE_REMOTE_LABELING}/assets/remoteEntry.js`
+    : 'http://localhost:5179/assets/remoteEntry.js'
+
   console.log('--- Vite Config Remotes ---', remotes)
 
   return {

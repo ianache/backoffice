@@ -182,10 +182,19 @@
           <span class="text-sm">Users</span>
         </button>
 
-        <!-- WhiteLabels (placeholder) -->
+        <!-- Labeling & Namespaces (served by mui-labeling remote) -->
         <button
-          class="w-full flex items-center gap-4 px-4 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all duration-200 text-left cursor-not-allowed opacity-70"
-          disabled
+          v-if="authStore.hasRole('PlatformAdmin') || authStore.hasRole('TenantAdmin') || authStore.hasRole('TenantOwner') || authStore.hasRole('ProductManager') || authStore.hasRole('UXWriter')"
+          @click="router.push('/labeling')"
+          :class="[
+            'w-full flex items-center gap-4 px-4 py-2 rounded-lg transition-all duration-200 text-left',
+            remoteStatuses['mui-labeling'] === 'error' ? 'opacity-50 cursor-not-allowed' : '',
+            isActive('/labeling')
+              ? 'bg-primary text-on-primary font-semibold'
+              : 'text-on-surface-variant hover:bg-surface-container-high'
+          ]"
+          :disabled="remoteStatuses['mui-labeling'] === 'error'"
+          title="Labeling & Namespaces"
         >
           <span class="material-symbols-outlined text-[22px]">branding_watermark</span>
           <span class="text-sm">WhiteLabels</span>
@@ -299,6 +308,7 @@ const breadcrumbLabel = computed(() => {
   if (segment === 'users') return 'Access Management'
   if (segment === 'flags') return 'Feature Flags'
   if (segment === 'segments') return 'Segments'
+  if (segment === 'labeling') return 'Labeling & Namespaces'
   return segment.charAt(0).toUpperCase() + segment.slice(1)
 })
 

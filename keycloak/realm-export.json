@@ -98,6 +98,14 @@
         "composite": false,
         "clientRole": false,
         "containerId": "backoffice"
+      },
+      {
+        "id": "role-ux-writer",
+        "name": "UXWriter",
+        "description": "Can edit localized label translation values in active locales; read-only on namespace/key structure",
+        "composite": false,
+        "clientRole": false,
+        "containerId": "backoffice"
       }
     ]
   },

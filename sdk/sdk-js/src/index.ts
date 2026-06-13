@@ -27,3 +27,18 @@ export async function initialize(opts: InitOptions): Promise<FeatureFlagClient> 
   await client.initialize()
   return client
 }
+
+export { LabelClient, createLabelPlugin } from './labels'
+export type { LabelClientOptions, LabelNamespace, LabelBootstrapResponse, Locale } from './labels'
+
+import { LabelClient, type LabelClientOptions } from './labels'
+
+/**
+ * Convenience factory: creates a LabelClient, calls initialize(), and returns it.
+ * Equivalent to `const client = new LabelClient(opts); await client.initialize()`.
+ */
+export async function initializeLabels(opts: LabelClientOptions): Promise<LabelClient> {
+  const client = new LabelClient(opts)
+  await client.initialize()
+  return client
+}

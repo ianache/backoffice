@@ -118,6 +118,7 @@ Last activity detail: 2026-06-13 — Completed 20-02-PLAN.md (labels service lay
 - Phase 16 added (2026-06-12): MVP2 Auditoria — scope set to PRD_MVP3.md §6 (Audit Log Timeline + Diff Viewer)
 - Phases 17-19 added (2026-06-12): PRD_MVP3.md scope split across phases — 17=Observabilidad/SLA-SLO (§4), 18=Telemetry Ingestion SDK Eval Events (§5, §8.2), 19=Redis PubSub WS Scaling + Webhook Alerts (§7, §8.1)
 - Phase 20 added (2026-06-12): Localization White Label Engine — scope set to docs/white_labeling_engine_design.md (localized_labels DAG inheritance, BFF resolver+Redis cache, namespace lazy-loading, two-phase hydration, Vue/Flutter SDKs, WS/SSE hot-reload)
+- Phase 21 added (2026-06-13): Login Localization via Labeling SDK — apply LabelClient/$t to the portal login, including pre-auth context/locale resolution, eager hydration, missing-key reporting, safe fallback, and namespace hot reload
 
 ### Decisions
 

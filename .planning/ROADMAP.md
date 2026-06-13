@@ -268,3 +268,13 @@ Plans:
 - [x] 20-07-PLAN.md — mui-labeling scaffold + LabelingView grid + WorkspaceContextSelector (RF-01) + NamespaceSidebar (RF-02) + KeysMatrix (RF-03) (LBL-15)
 - [ ] 20-08-PLAN.md — TranslationDrawer (RF-04/RF-05) + AddKeyModal + ImportExportModal (RF-07) + DiagnosticsModal (RF-06) + dark mode (RF-08) (LBL-14, LBL-15)
 - [x] 20-09-PLAN.md — Backend RF-07 export endpoint: export_namespace_json/csv + GET /labels/export (LBL-14)
+
+### Phase 21: Login Localization via Labeling SDK
+
+**Goal:** Aplicar el Localization White Label Engine en la pagina de inicio/login del Portal: inicializar `LabelClient` antes de renderizar la experiencia de login, hidratar los namespaces eager requeridos mediante el SDK, reemplazar textos hardcodeados por `$t` con interpolacion y fallback seguro, reportar claves faltantes, respetar locale y contexto tenant/company/product disponibles antes de autenticacion, y recibir hot reload `INVALIDATE_NAMESPACE` sin degradar el acceso cuando labels, SDK, BFF o WebSocket no esten disponibles.
+**Requirements**: TBD - derive LOGIN-LBL-01..0x at plan time (SDK initialization before login render, login namespace/seed labels, `$t` integration, pre-auth context/locale resolution, missing-key reporting, fallback/resilience, WebSocket hot reload, tests)
+**Depends on:** Phase 20
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd-plan-phase 21 to break down)

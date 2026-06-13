@@ -4,6 +4,7 @@ from app.domains.audit.schemas import (
     AuditLogListResponse,
 )
 from app.domains.audit.service import compute_diff
+from app.domains.audit.router import router, _audit_tenant_filter
 
 
 def test_compute_diff_added_removed_modified():
@@ -51,3 +52,17 @@ def test_audit_log_list_response_constructs_with_empty_items():
 def test_audit_log_response_round_trip_excludes_payloads():
     assert "payload_before" not in AuditLogResponse.model_fields
     assert "payload_after" not in AuditLogResponse.model_fields
+
+
+def test_audit_tenant_filter_platform_admin_sees_all():
+    assert _audit_tenant_filter(["PlatformAdmin"], "t1") is None
+
+
+def test_audit_tenant_filter_tenant_admin_scoped():
+    assert _audit_tenant_filter(["TenantAdmin"], "t1") == "t1"
+
+
+def test_audit_router_has_only_get_routes():
+    assert len(router.routes) > 0
+    for r in router.routes:
+        assert r.methods == {'GET'}

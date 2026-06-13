@@ -256,7 +256,7 @@ Plans:
 **Goal:** Implement the multi-language White Labeling Engine end to end — a `localized_labels` table (tenant_id, company_id nullable, product_id nullable, namespace, locale, label_key, label_value, version) resolved via 3-level inheritance (Tenant → Company → Product, "override by proximity") with an in-memory cache; a `namespaces` table (eager/lazy strategy, admin-creatable) and `missing_label_reports` table; SDK two-phase hydration (`/labels/bootstrap` eager namespaces <100ms, `/labels/prefetch` lazy namespaces) plus hot-reload invalidation via the existing `ConnectionManager`/`/ws/flags/{tenant_id}` WebSocket (`INVALIDATE_NAMESPACE` broadcast); a new sdk-js `LabelClient` + `$t` Vue plugin (interpolation, missing-key reporting, reactive cache); a new Keycloak `UXWriter` role with a value-only label-edit endpoint and optimistic concurrency (409 + PRD §9.2 PI-02 message); audit logging for all namespace/label CRUD; RF-07 export (JSON + CSV) for the active Workspace Context; and a new admin micro-UI `mui-labeling` (port 5179) implementing RF-01..05 and RF-08 per `docs/prd_namespaces_keys_management.md` and the HTML prototype.
 **Requirements**: LBL-01 (localized_labels table), LBL-02 (namespaces table), LBL-03 (resolve_labels 3-level inheritance), LBL-04 (in-memory cache + invalidation), LBL-05 (SDK /labels/bootstrap), LBL-06 (SDK /labels/prefetch), LBL-07 (WS INVALIDATE_NAMESPACE broadcast), LBL-08 (sdk-js LabelClient + $t plugin), LBL-09 (namespace/key CRUD + role/scope auth), LBL-10 (UXWriter role + value-only PATCH), LBL-11 (optimistic concurrency 409 PI-02), LBL-12 (audit logging), LBL-13 (missing_label_reports + RF-06 diagnostics), LBL-14 (RF-07 export JSON/CSV), LBL-15 (mui-labeling admin UI RF-01..05,08), LBL-16 (seed common namespace for existing tenant/company)
 **Depends on:** Phase 19
-**Plans:** 2/9 plans executed
+**Plans:** 3/9 plans executed
 
 Plans:
 - [x] 20-01-PLAN.md — Backend labels domain models/schemas/migrations + g002 seed migration + UXWriter Keycloak role (LBL-01, LBL-02, LBL-16)
@@ -267,4 +267,4 @@ Plans:
 - [ ] 20-06-PLAN.md — sdk-js LabelClient + createLabelPlugin ($t) + reactive cache + WS hot-reload (LBL-08)
 - [ ] 20-07-PLAN.md — mui-labeling scaffold + LabelingView grid + WorkspaceContextSelector (RF-01) + NamespaceSidebar (RF-02) + KeysMatrix (RF-03) (LBL-15)
 - [ ] 20-08-PLAN.md — TranslationDrawer (RF-04/RF-05) + AddKeyModal + ImportExportModal (RF-07) + DiagnosticsModal (RF-06) + dark mode (RF-08) (LBL-14, LBL-15)
-- [ ] 20-09-PLAN.md — Backend RF-07 export endpoint: export_namespace_json/csv + GET /labels/export (LBL-14)
+- [x] 20-09-PLAN.md — Backend RF-07 export endpoint: export_namespace_json/csv + GET /labels/export (LBL-14)

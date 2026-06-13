@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: MVP2
-current_plan: 2
+current_plan: 3
 status: executing
-stopped_at: Completed 20-02-PLAN.md
-last_updated: "2026-06-13T19:58:38.374Z"
+stopped_at: Completed 20-09-PLAN.md
+last_updated: "2026-06-13T20:06:26.348Z"
 last_activity: 2026-06-13
 progress:
   total_phases: 14
   completed_phases: 10
   total_plans: 59
-  completed_plans: 52
+  completed_plans: 53
   percent: 71
 ---
 
@@ -27,13 +27,13 @@ See: .planning/PROJECT.md (updated 2026-06-07)
 ## Current Position
 
 Phase: 20 of 20 (Localization White Label Engine)
-**Current Plan:** 2
+**Current Plan:** 3
 **Total Plans in Phase:** 9
 **Status:** Ready to execute
 **Last Activity:** 2026-06-13
 Last activity detail: 2026-06-13 — Completed 20-02-PLAN.md (labels service layer: backend/app/domains/labels/service.py implementing resolve_labels() 3-level inheritance resolver (tenant/company/product override-by-proximity) with an in-memory cache + invalidate_namespace_cache(), full Namespace/LocalizedLabel CRUD with optimistic-concurrency 409s on update_label/update_label_value (PI-02 message), and missing-label report dedup/hit-counting with auto-cleanup on create_label() (RF-06); 11 async unit tests across test_labels_resolve.py and test_labels_service.py). LBL-03/LBL-04/LBL-13 complete (pending REQUIREMENTS.md traceability entries — see deferred-items.md).
 
-**Progress:** [█████████░] 88%
+**Progress:** [█████████░] 90%
 
 ## Performance Metrics
 
@@ -98,6 +98,7 @@ Last activity detail: 2026-06-13 — Completed 20-02-PLAN.md (labels service lay
 | Phase 16-mvp2-auditoria P05 | 8min | 2 tasks | 4 files |
 | Phase 20-localization-white-label-engine P01 | 15min | 3 tasks | 7 files |
 | Phase 20-localization-white-label-engine P02 | 20min | 2 tasks | 3 files |
+| Phase 20-localization-white-label-engine P09 | 12min | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -231,6 +232,9 @@ Recent decisions affecting v1.1:
 - [Phase 20-localization-white-label-engine]: [20-01]: Namespace.id is user-defined String(100) slug PK (mirrors Product.id), LocalizedLabel unique index covers tenant_id/company_id/product_id/namespace/locale/label_key, g002 seed targets real tenant id=5 with fallback, UXWriter realm role appended as last realm role entry
 - [Phase ?]: [20-02]: service.py written as single file containing both Task 1 (resolver/cache) and Task 2 (CRUD/missing-report) logic per plan's full code listing; commits split by test file rather than physical file diff
 - [Phase ?]: [20-02]: test_labels_service.py follows test_labels_resolve.py's async SQLite AsyncSession + autouse clear_cache() fixture conventions, not the no-DB MockFlag style used in test_feature_flags_domain.py
+- [Phase ?]: [20-09]: export_namespace_csv() level column reflects the most-specific level contributing the es_PE value (documented via code comment)
+- [Phase ?]: [20-09]: GET /labels/export inherits router-level verify_internal_secret dependency (X-Internal-Secret header), no new auth mechanism
+- [Phase ?]: [20-09]: Actual mounted path is /labels/export (router prefix is /labels, not /api/v1/labels despite main.py comment)
 
 ### Pending Todos
 
@@ -244,6 +248,6 @@ Recent decisions affecting v1.1:
 
 ## Session Continuity
 
-**Last session:** 2026-06-13T19:58:38.352Z
-**Stopped At:** Completed 20-02-PLAN.md
+**Last session:** 2026-06-13T20:06:26.323Z
+**Stopped At:** Completed 20-09-PLAN.md
 **Resume File:** None

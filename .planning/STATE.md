@@ -2,17 +2,17 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: MVP2
-current_plan: 1 of 4
-status: in_progress
-stopped_at: Completed 16-01-PLAN.md
-last_updated: "2026-06-13T04:16:01Z"
+current_plan: 3
+status: executing
+stopped_at: Completed 16-03-PLAN.md
+last_updated: "2026-06-13T04:24:25.534Z"
 last_activity: 2026-06-13
 progress:
-  total_phases: 20
-  completed_phases: 15
+  total_phases: 21
+  completed_phases: 16
   total_plans: 78
-  completed_plans: 75
-  percent: 76
+  completed_plans: 77
+  percent: 99
 ---
 
 # Project State
@@ -27,13 +27,13 @@ See: .planning/PROJECT.md (updated 2026-06-07)
 ## Current Position
 
 Phase: 16 of 20 (MVP2 Auditoria — Audit Log Timeline + Diff Viewer)
-**Current Plan:** 1 of 4
+**Current Plan:** 3
 **Total Plans in Phase:** 4
-**Status:** In progress
+**Status:** Ready to execute
 **Last Activity:** 2026-06-13
 Last activity detail: 2026-06-13 — Completed 16-01-PLAN.md (Audit log domain foundation: AuditLog ORM model + e001 migration with 3 indexes, write_audit_log/list_audit_logs/get_audit_log/compute_diff service, GET-only /audit-logs router with page/limit/COUNT(*) pagination and tenant scoping, BFF audit.ts proxy forwarding X-User-Email). AUD-01/AUD-02/AUD-03 complete.
 
-**Progress:** [█████████░] 96%
+**Progress:** [██████████] 99%
 
 ## Performance Metrics
 
@@ -90,6 +90,8 @@ Last activity detail: 2026-06-13 — Completed 16-01-PLAN.md (Audit log domain f
 | Phase 15-and-rule-combination-semantics P04 | 12min | 3 tasks | 3 files |
 | Phase 15-and-rule-combination-semantics P03 | 9min | 3 tasks | 5 files |
 | Phase 16-mvp2-auditoria P01 | 12min | 3 tasks | 10 files |
+| Phase 16-mvp2-auditoria P02 | 8min | 2 tasks | 3 files |
+| Phase 16 P03 | 8min | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -209,6 +211,11 @@ Recent decisions affecting v1.1:
 - [Phase 16-mvp2-auditoria]: [16-01]: AuditLogCreate is internal-only (no HTTP exposure) - write_audit_log() is the single insertion point called from other domains' service/router layers in Plans 16-02/16-03
 - [Phase 16-mvp2-auditoria]: [16-01]: e001 down_revision = 'd004' per plan; pre-existing multi-head condition in alembic/versions/ left untouched (out of scope)
 - [Phase 16-mvp2-auditoria]: [16-01]: bff audit.ts forwards X-User-Email in addition to Sub/Roles/Tenant-Id for future write-path use (Plans 16-02/16-03)
+- [Phase 16-mvp2-auditoria]: [16-02]: Flag audit writes use flag.tenant_id (own nullable field) not X-User-Tenant-Id header - matches audit_logs.tenant_id nullability for global-scope flags
+- [Phase 16-mvp2-auditoria]: [16-02]: update_segment/delete_segment fetch existing segment via get_segment() before mutation to capture non-trivial payload_before diff
+- [Phase 16-mvp2-auditoria]: [16-03]: users/service.py write_audit_log() calls use user_email=None for target user - Keycloak Admin API service layer has no FastAPI Request/Header context
+- [Phase 16-mvp2-auditoria]: [16-03]: tenants router update_tenant/delete_tenant accept extra pre-fetch select(Tenant) for before-snapshot, no service signature refactor
+- [Phase 16-mvp2-auditoria]: [16-03]: companies router gained x_user_sub/x_user_email Header(default='') params for audit actor attribution
 
 ### Pending Todos
 
@@ -222,6 +229,6 @@ Recent decisions affecting v1.1:
 
 ## Session Continuity
 
-**Last session:** 2026-06-13T04:16:01Z
-**Stopped At:** Completed 16-01-PLAN.md
+**Last session:** 2026-06-13T04:24:25.526Z
+**Stopped At:** Completed 16-03-PLAN.md
 **Resume File:** None

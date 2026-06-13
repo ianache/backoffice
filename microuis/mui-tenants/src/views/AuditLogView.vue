@@ -38,6 +38,7 @@ const ACTION_TYPES = [
 ]
 
 const showDiffModal = ref(false)
+const selectedEntry = ref<AuditLogEntry | null>(null)
 
 onMounted(() => {
   auditStore.fetchAuditLogs()
@@ -60,9 +61,10 @@ function goToPage(n: number) {
   auditStore.fetchAuditLogs({ ...lastFilters.value, page: n })
 }
 
-function openDiff(id: number) {
+function openDiff(entry: AuditLogEntry) {
+  selectedEntry.value = entry
   showDiffModal.value = true
-  auditStore.fetchDiff(id)
+  auditStore.fetchDiff(entry.id)
 }
 
 // --- Formatting helpers ---
@@ -272,7 +274,7 @@ const pageNumbers = computed(() => {
                 </div>
               </div>
               <button
-                @click="openDiff(entry.id)"
+                @click="openDiff(entry)"
                 class="flex items-center px-md py-1.5 border border-primary text-primary font-bold text-sm rounded-lg hover:bg-primary-container hover:text-on-primary-container transition-all shrink-0"
               >
                 View Diff
@@ -320,6 +322,7 @@ const pageNumbers = computed(() => {
     <DiffModal
       :show="showDiffModal"
       :diff="auditStore.diff"
+      :entry="selectedEntry"
       :is-loading="auditStore.isLoadingDiff"
       :error="auditStore.diffError"
       @close="showDiffModal = false"

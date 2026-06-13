@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import type { AuditLogDiff } from '../../services/audit'
+import type { AuditLogDiff, AuditLogEntry } from '../../services/audit'
 
 defineProps<{
   show: boolean
   diff: AuditLogDiff | null
+  entry: AuditLogEntry | null
   isLoading?: boolean
   error?: string | null
 }>()
@@ -32,33 +33,33 @@ function formatValue(v: unknown): string {
             <div v-if="isLoading" class="diff-loading">Loading diff…</div>
             <div v-else-if="error" class="diff-error">{{ error }}</div>
             <div v-else-if="diff">
-              <div class="diff-meta">
-                <span class="diff-meta-item"><strong>Action:</strong> {{ diff.action_type }}</span>
-                <span class="diff-meta-item"><strong>Target:</strong> {{ diff.target_type }} #{{ diff.target_id }}</span>
+              <div v-if="entry" class="diff-meta">
+                <span class="diff-meta-item"><strong>Action:</strong> {{ entry.action_type }}</span>
+                <span class="diff-meta-item"><strong>Target:</strong> {{ entry.target_type }} #{{ entry.target_id }}</span>
               </div>
 
-              <div v-if="Object.keys(diff.diff.added ?? {}).length" class="diff-section diff-added">
+              <div v-if="Object.keys(diff.added ?? {}).length" class="diff-section diff-added">
                 <h4>Added</h4>
                 <ul>
-                  <li v-for="(value, key) in diff.diff.added" :key="`added-${key}`">
+                  <li v-for="(value, key) in diff.added" :key="`added-${key}`">
                     <span class="diff-key">{{ key }}</span>: <span class="diff-value">{{ formatValue(value) }}</span>
                   </li>
                 </ul>
               </div>
 
-              <div v-if="Object.keys(diff.diff.removed ?? {}).length" class="diff-section diff-removed">
+              <div v-if="Object.keys(diff.removed ?? {}).length" class="diff-section diff-removed">
                 <h4>Removed</h4>
                 <ul>
-                  <li v-for="(value, key) in diff.diff.removed" :key="`removed-${key}`">
+                  <li v-for="(value, key) in diff.removed" :key="`removed-${key}`">
                     <span class="diff-key">{{ key }}</span>: <span class="diff-value">{{ formatValue(value) }}</span>
                   </li>
                 </ul>
               </div>
 
-              <div v-if="Object.keys(diff.diff.modified ?? {}).length" class="diff-section diff-modified">
+              <div v-if="Object.keys(diff.modified ?? {}).length" class="diff-section diff-modified">
                 <h4>Modified</h4>
                 <ul>
-                  <li v-for="(change, key) in diff.diff.modified" :key="`modified-${key}`">
+                  <li v-for="(change, key) in diff.modified" :key="`modified-${key}`">
                     <span class="diff-key">{{ key }}</span>:
                     <span class="diff-value-before">{{ formatValue(change.before) }}</span>
                     →
@@ -67,7 +68,7 @@ function formatValue(v: unknown): string {
                 </ul>
               </div>
 
-              <p v-if="!Object.keys(diff.diff.added ?? {}).length && !Object.keys(diff.diff.removed ?? {}).length && !Object.keys(diff.diff.modified ?? {}).length" class="diff-empty">
+              <p v-if="!Object.keys(diff.added ?? {}).length && !Object.keys(diff.removed ?? {}).length && !Object.keys(diff.modified ?? {}).length" class="diff-empty">
                 No field-level changes recorded for this entry.
               </p>
             </div>

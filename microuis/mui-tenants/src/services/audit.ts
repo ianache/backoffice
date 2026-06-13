@@ -33,14 +33,9 @@ export interface AuditLogListResult {
 
 export interface AuditLogDiff {
   id: number
-  action_type: string
-  target_type: string
-  target_id: string
-  diff: {
-    added: Record<string, unknown>
-    removed: Record<string, unknown>
-    modified: Record<string, { before: unknown; after: unknown }>
-  }
+  added: Record<string, unknown>
+  removed: Record<string, unknown>
+  modified: Record<string, { before: unknown; after: unknown }>
 }
 
 export async function listAuditLogs(filters: AuditLogFilters = {}): Promise<AuditLogListResult> {

@@ -67,8 +67,9 @@ completed: 2026-06-13
 
 1. **Task 1: export_namespace_json() and export_namespace_csv() service helpers** - `7a2cb30` (feat)
 2. **Task 2: GET /labels/export router endpoint** - `d76293c` (feat)
+3. **Fix: dynamic export path resolution after concurrent prefix change** - `0c4b93a` (fix)
 
-**Plan metadata:** (pending — see final commit below)
+**Plan metadata:** captured in `2d9c6e1` (20-03's commit swept in this plan's staged STATE.md/ROADMAP.md/SUMMARY.md/deferred-items.md changes due to shared git index — see Issues Encountered)
 
 ## Files Created/Modified
 - `backend/app/domains/labels/service.py` - added `import csv, io`, `export_namespace_json()`, `_resolve_with_level()`, `export_namespace_csv()`
@@ -78,11 +79,11 @@ completed: 2026-06-13
 ## Decisions Made
 - Followed the plan's prescriptive code listings for `export_namespace_json()`, `_resolve_with_level()`, and `export_namespace_csv()` verbatim (interface-first plan).
 - For router-level tests, used `settings.internal_secret` (the actual configured default) as the `X-Internal-Secret` header value rather than overriding `verify_internal_secret`, since the `/labels` router-level dependency requires this header for all endpoints including `/export`.
-- Confirmed the actual mounted path is `/labels/export` (router prefix is `"/labels"`, not `/api/v1/labels` as `main.py`'s inline comment suggests) — tests target `/labels/export` directly.
+- Initially confirmed the mounted path as `/labels/export`; after concurrent plan 20-03 later changed `main.py` to `app.include_router(labels_router, prefix="/api/v1")`, the actual path became `/api/v1/labels/export` — see Deviation 2 below for the fix.
 
 ## Deviations from Plan
 
-None (functional) - plan executed as written for both tasks' code content. One process-level deviation documented below regarding the shared `router.py` file.
+Plan's prescribed code (service helpers + router endpoint + tests) executed as written. Two process-level deviations documented below, both arising from concurrent plans 20-03/20-04 editing shared files (`router.py`, `main.py`) during this plan's execution window.
 
 ### Auto-fixed Issues
 
@@ -95,15 +96,24 @@ None (functional) - plan executed as written for both tasks' code content. One p
 - **Committed in:** `d76293c` (Task 2 commit)
 - **Follow-up flagged:** Logged to `deferred-items.md` — if 20-04's INVALIDATE_NAMESPACE WS broadcast wiring (expected in `update_label_value`'s router handler per `test_labels_sdk_router.py` Test 6) is added in a separate commit, the phase owner should verify it survives/merges correctly with `d76293c`.
 
+**2. [Rule 1 - Bug] Fixed hardcoded /labels/export path in router tests after concurrent prefix change**
+- **Found during:** Post-commit review (after Task 2's commit and the metadata commit)
+- **Issue:** After `d76293c` was committed, concurrent plan 20-03 modified `backend/app/main.py` to `app.include_router(labels_router, prefix="/api/v1")`, changing the actual mounted path for the `/export` endpoint from `/labels/export` to `/api/v1/labels/export`. Tests 5-7 in `test_labels_export.py` hardcoded `/labels/export` and would now 404.
+- **Fix:** Added a `_export_path()` helper that resolves the mounted path dynamically via `next(r.path for r in app.routes if r.name == "export_namespace")`, following the same pattern `test_labels_sdk_router.py` (20-04) established for `update_key_value`. Replaced all 3 hardcoded `/labels/export` references with `_export_path()`.
+- **Files modified:** `backend/tests/test_labels_export.py`
+- **Verification:** `python -m py_compile` passed.
+- **Committed in:** `0c4b93a`
+
 ---
 
-**Total deviations:** 1 auto-fixed (Rule 3, shared-file coordination — no functional code change beyond the plan's spec)
-**Impact on plan:** None on this plan's deliverables. Documented as a cross-plan coordination note for the phase owner to verify after 20-03/20-04 land their own commits.
+**Total deviations:** 2 auto-fixed (1 Rule 3 shared-file coordination, 1 Rule 1 bug fix from a concurrent routing change)
+**Impact on plan:** None on this plan's functional deliverables. Both deviations are coordination artifacts of running 20-03/20-04/20-09 concurrently against shared files (`router.py`, `main.py`).
 
 ## Issues Encountered
 - Same backend dependency-installation limitation as 20-01/20-02: `sqlalchemy`/`fastapi`/etc. are not installed in this environment (`ModuleNotFoundError: No module named 'sqlalchemy'`). The plan's specified verification (`cd backend && python -m pytest tests/test_labels_export.py -x -q`) could not be executed.
 - **Mitigation:** Verified `backend/app/domains/labels/service.py`, `backend/app/domains/labels/router.py`, and `backend/tests/test_labels_export.py` all compile cleanly via `python -m py_compile`. Full pytest execution (all 7 tests) deferred — logged in `deferred-items.md`.
 - `LBL-14` is not present in `.planning/REQUIREMENTS.md`'s traceability table (same gap pattern as LBL-01/02/03/04/13/16 from prior plans) — `requirements mark-complete LBL-14` is expected to return `not_found`. Logged to `deferred-items.md`.
+- **State-update commit attribution:** This plan's staged `.planning/STATE.md`, `.planning/ROADMAP.md`, `.planning/phases/.../20-09-SUMMARY.md`, and `deferred-items.md` changes were swept into concurrent plan 20-03's commit `2d9c6e1` ("feat(20-03): add labels admin CRUD router...") due to a shared git index across concurrently-running agents in this worktree — `git commit` for this plan's intended metadata commit returned "no changes added to commit" because 20-03 had already committed the staged content moments earlier. All content is present and correct in `2d9c6e1`; no data was lost. No separate `docs(20-09): complete ...` commit exists — `2d9c6e1` serves as the de-facto metadata commit for this plan's STATE/ROADMAP/SUMMARY updates.
 
 ## User Setup Required
 
@@ -120,4 +130,4 @@ None - no external service configuration required for this plan.
 
 ## Self-Check: PASSED
 
-All created/modified files found on disk (test_labels_export.py, labels/router.py, 20-09-SUMMARY.md); both task commits (7a2cb30, d76293c) found in git log.
+All created/modified files found on disk (test_labels_export.py, labels/router.py, 20-09-SUMMARY.md); commits 7a2cb30, d76293c, 0c4b93a, and metadata-bearing 2d9c6e1 all found in git log.

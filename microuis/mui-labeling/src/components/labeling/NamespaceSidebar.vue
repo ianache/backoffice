@@ -1,7 +1,7 @@
 <template>
-  <section class="col-span-3 border-r border-outline-variant bg-surface-container-lowest flex flex-col overflow-hidden">
-    <div class="p-md border-b border-outline-variant flex items-center justify-between">
-      <h3 class="font-title-lg text-on-surface flex items-center gap-xs">
+  <section class="col-span-3 border-r border-outline-variant dark:border-slate-800 bg-surface-container-lowest dark:bg-slate-900/60 flex flex-col overflow-hidden">
+    <div class="p-md border-b border-outline-variant dark:border-slate-800 flex items-center justify-between">
+      <h3 class="font-title-lg text-on-surface dark:text-slate-200 flex items-center gap-xs">
         <span class="material-symbols-outlined text-primary">folder_open</span>
         <span>Namespaces</span>
       </h3>
@@ -23,29 +23,29 @@
         :class="[
           'flex justify-between items-center p-md cursor-pointer transition-all rounded-lg border',
           state.activeNamespace === ns.id
-            ? 'bg-primary/10 border-primary/20 text-primary'
-            : 'bg-surface-container-lowest border-outline-variant hover:bg-surface-container-low text-on-surface',
+            ? 'bg-primary/10 border-primary/20 text-primary dark:bg-slate-800 dark:border-slate-700 dark:text-primary-fixed-dim'
+            : 'bg-surface-container-lowest border-outline-variant hover:bg-surface-container-low text-on-surface dark:bg-slate-900/40 dark:border-slate-800 dark:text-slate-300 dark:hover:bg-slate-800',
         ]"
       >
         <div class="flex flex-col gap-xs overflow-hidden">
           <span class="font-bold text-sm truncate">{{ ns.id }}</span>
-          <span class="text-[10px] text-on-surface-variant uppercase tracking-wider">
+          <span class="text-[10px] text-on-surface-variant dark:text-slate-400 uppercase tracking-wider">
             {{ ns.strategy === 'eager' ? 'CRITICAL / EAGER' : 'LAZY LOADING' }}
           </span>
         </div>
       </div>
-      <div v-if="!loading && namespaces.length === 0" class="p-md text-xs text-on-surface-variant italic text-center">
+      <div v-if="!loading && namespaces.length === 0" class="p-md text-xs text-on-surface-variant dark:text-slate-400 italic text-center">
         No hay namespaces. Crea el primero.
       </div>
     </div>
 
     <!-- Card Informativo al Pie -->
-    <div class="p-md bg-surface-container-low border-t border-outline-variant">
+    <div class="p-md bg-surface-container-low dark:bg-slate-900 border-t border-outline-variant dark:border-slate-800">
       <div class="flex items-start gap-sm">
         <span class="material-symbols-outlined text-primary mt-0.5">info</span>
         <div>
-          <h4 class="text-xs font-bold text-on-surface">Estrategia de Hydration</h4>
-          <p class="text-[11px] text-on-surface-variant leading-relaxed mt-1">
+          <h4 class="text-xs font-bold text-on-surface dark:text-slate-200">Estrategia de Hydration</h4>
+          <p class="text-[11px] text-on-surface-variant dark:text-slate-400 leading-relaxed mt-1">
             Namespaces <b>Eager</b> se cargan en el bootstrap principal. Los <b>Lazy</b> se descargan bajo demanda (prefetching).
           </p>
         </div>
@@ -55,46 +55,46 @@
     <!-- MODAL: Add Namespace -->
     <div v-if="showAddModal" class="fixed inset-0 z-[60] flex items-center justify-center">
       <div class="absolute inset-0 bg-on-background/50 backdrop-blur-sm" @click="closeAddModal"></div>
-      <div class="relative bg-surface w-[480px] rounded-xl shadow-2xl p-lg flex flex-col gap-md border border-outline-variant text-on-surface">
-        <div class="flex items-center justify-between border-b border-outline-variant pb-sm">
+      <div class="relative bg-surface dark:bg-slate-900 w-[480px] rounded-xl shadow-2xl p-lg flex flex-col gap-md border border-outline-variant dark:border-slate-800 text-on-surface dark:text-slate-200">
+        <div class="flex items-center justify-between border-b border-outline-variant dark:border-slate-800 pb-sm">
           <h3 class="font-headline-md">Crear Nuevo Namespace</h3>
-          <button @click="closeAddModal" class="p-1 hover:bg-surface-container-high rounded-full">
+          <button @click="closeAddModal" class="p-1 hover:bg-surface-container-high dark:hover:bg-slate-800 rounded-full">
             <span class="material-symbols-outlined">close</span>
           </button>
         </div>
         <div class="space-y-sm">
           <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant">Identificador (ID)</label>
+            <label class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant dark:text-slate-400">Identificador (ID)</label>
             <input
               v-model="newNamespace.id"
               type="text"
-              class="w-full bg-surface-container border border-outline-variant rounded-lg p-md font-body-md text-sm mt-1 focus:ring-primary focus:border-primary text-on-surface"
+              class="w-full bg-surface-container dark:bg-slate-800 border border-outline-variant dark:border-slate-700 rounded-lg p-md font-body-md text-sm mt-1 focus:ring-primary focus:border-primary text-on-surface dark:text-slate-200"
               placeholder="ej: page_dashboard_profile"
             />
             <p v-if="idError" class="text-[11px] text-error mt-1">{{ idError }}</p>
           </div>
           <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant">Estrategia de Carga</label>
+            <label class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant dark:text-slate-400">Estrategia de Carga</label>
             <select
               v-model="newNamespace.strategy"
-              class="w-full bg-surface-container border border-outline-variant rounded-lg p-md font-body-md text-sm mt-1 focus:ring-primary focus:border-primary text-on-surface"
+              class="w-full bg-surface-container dark:bg-slate-800 border border-outline-variant dark:border-slate-700 rounded-lg p-md font-body-md text-sm mt-1 focus:ring-primary focus:border-primary text-on-surface dark:text-slate-200"
             >
               <option value="lazy">Lazy Loading (Carga diferida bajo demanda)</option>
               <option value="eager">Eager Loading (Carga crítica al iniciar)</option>
             </select>
           </div>
           <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant">Descripción</label>
+            <label class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant dark:text-slate-400">Descripción</label>
             <textarea
               v-model="newNamespace.description"
               rows="2"
-              class="w-full bg-surface-container border border-outline-variant rounded-lg p-md font-body-md text-sm mt-1 focus:ring-primary focus:border-primary text-on-surface"
+              class="w-full bg-surface-container dark:bg-slate-800 border border-outline-variant dark:border-slate-700 rounded-lg p-md font-body-md text-sm mt-1 focus:ring-primary focus:border-primary text-on-surface dark:text-slate-200"
               placeholder="Describe brevemente el alcance de este namespace..."
             ></textarea>
           </div>
         </div>
-        <div class="flex justify-end gap-md pt-sm border-t border-outline-variant">
-          <button @click="closeAddModal" class="px-md py-sm border border-outline rounded-lg text-sm hover:bg-surface-container-high transition-colors">
+        <div class="flex justify-end gap-md pt-sm border-t border-outline-variant dark:border-slate-800">
+          <button @click="closeAddModal" class="px-md py-sm border border-outline dark:border-slate-700 rounded-lg text-sm hover:bg-surface-container-high dark:hover:bg-slate-800 transition-colors">
             Cancelar
           </button>
           <button @click="saveNamespace" :disabled="saving" class="px-md py-sm bg-primary text-on-primary hover:bg-primary-container rounded-lg text-sm transition-colors disabled:opacity-50">

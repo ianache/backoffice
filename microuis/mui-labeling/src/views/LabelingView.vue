@@ -20,6 +20,20 @@
           />
         </div>
         <button
+          @click="state.showDiagnostics = true"
+          class="flex items-center gap-xs px-md py-1.5 bg-error/10 hover:bg-error/20 border border-error/20 text-error rounded-lg font-title-md text-sm transition-all"
+        >
+          <span class="material-symbols-outlined text-sm">warning</span>
+          <span>Diagnóstico</span>
+        </button>
+        <button
+          @click="state.showImportExport = true"
+          class="flex items-center gap-xs px-md py-1.5 border border-outline dark:border-slate-700 text-on-surface dark:text-slate-200 rounded-lg font-title-md text-sm hover:bg-surface-container-high dark:hover:bg-slate-800 transition-colors"
+        >
+          <span class="material-symbols-outlined text-sm">swap_vertical_circle</span>
+          <span>Export</span>
+        </button>
+        <button
           @click="toggleDarkMode"
           class="material-symbols-outlined text-on-surface-variant dark:text-slate-400 hover:text-primary transition-colors"
           title="Toggle Theme"
@@ -41,6 +55,8 @@
 
     <!-- Modals -->
     <AddKeyModal v-if="state.showAddKeyModal" />
+    <ImportExportModal v-if="state.showImportExport" />
+    <DiagnosticsModal v-if="state.showDiagnostics" />
   </div>
 </template>
 
@@ -51,12 +67,14 @@ import NamespaceSidebar from '../components/labeling/NamespaceSidebar.vue'
 import KeysMatrix from '../components/labeling/KeysMatrix.vue'
 import TranslationDrawer from '../components/labeling/TranslationDrawer.vue'
 import AddKeyModal from '../components/labeling/AddKeyModal.vue'
+import ImportExportModal from '../components/labeling/ImportExportModal.vue'
+import DiagnosticsModal from '../components/labeling/DiagnosticsModal.vue'
 import { useLabelingState } from '../composables/useLabelingState'
 
 const state = useLabelingState()
 const isDark = ref(false)
 
-const DARK_MODE_KEY = 'mui-labeling-dark-mode'
+const DARK_MODE_KEY = 'mui-labeling-theme'
 
 onMounted(() => {
   const stored = localStorage.getItem(DARK_MODE_KEY)

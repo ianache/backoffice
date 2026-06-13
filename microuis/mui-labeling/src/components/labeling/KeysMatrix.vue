@@ -1,10 +1,10 @@
 <template>
-  <section class="col-span-6 flex flex-col overflow-hidden bg-background">
+  <section class="col-span-6 flex flex-col overflow-hidden bg-background dark:bg-slate-950">
     <!-- Info del Namespace Seleccionado -->
-    <div class="p-md border-b border-outline-variant bg-surface-container-lowest flex items-center justify-between">
+    <div class="p-md border-b border-outline-variant dark:border-slate-800 bg-surface-container-lowest dark:bg-slate-900/40 flex items-center justify-between">
       <div>
         <div class="flex items-center gap-sm">
-          <h2 id="activeNamespaceTitle" class="font-headline-md text-on-surface">
+          <h2 id="activeNamespaceTitle" class="font-headline-md text-on-surface dark:text-slate-200">
             {{ activeNamespaceMeta?.id ?? state.activeNamespace ?? '—' }}
           </h2>
           <span
@@ -15,7 +15,7 @@
             {{ activeNamespaceMeta.strategy === 'eager' ? 'CRITICAL / EAGER' : 'LAZY LOADING' }}
           </span>
         </div>
-        <p id="activeNamespaceDesc" class="text-xs text-on-surface-variant mt-1">
+        <p id="activeNamespaceDesc" class="text-xs text-on-surface-variant dark:text-slate-400 mt-1">
           {{ activeNamespaceMeta?.description ?? '' }}
         </p>
       </div>
@@ -29,7 +29,7 @@
     </div>
 
     <!-- Filters & Search Interna -->
-    <div class="px-md py-sm bg-surface-container-low border-b border-outline-variant flex items-center justify-between gap-sm">
+    <div class="px-md py-sm bg-surface-container-low dark:bg-slate-900/80 border-b border-outline-variant dark:border-slate-800 flex items-center justify-between gap-sm">
       <div class="flex gap-xs" id="tableFilters">
         <button
           v-for="f in filters"
@@ -38,31 +38,31 @@
           :class="[
             'px-sm py-1 rounded font-title-md text-xs transition-colors',
             activeFilter === f.value
-              ? 'bg-surface border border-outline-variant text-primary shadow-sm'
-              : 'bg-transparent text-on-surface-variant hover:text-on-surface',
+              ? 'bg-surface dark:bg-slate-800 border border-outline-variant dark:border-slate-700 text-primary dark:text-primary-fixed-dim shadow-sm'
+              : 'bg-transparent text-on-surface-variant dark:text-slate-400 hover:text-on-surface dark:hover:text-slate-200',
           ]"
           :data-filter="f.value"
         >
           {{ f.label }}
         </button>
       </div>
-      <span id="keysCount" class="text-xs text-on-surface-variant">Total: {{ filteredKeys.length }} claves</span>
+      <span id="keysCount" class="text-xs text-on-surface-variant dark:text-slate-400">Total: {{ filteredKeys.length }} claves</span>
     </div>
 
     <!-- Table Matrix container -->
     <div class="flex-1 overflow-auto custom-scrollbar">
       <table class="w-full text-left border-collapse">
         <thead>
-          <tr class="text-on-surface-variant font-label-md uppercase tracking-wider border-b border-outline-variant bg-surface-container-low/50 text-[11px]">
+          <tr class="text-on-surface-variant dark:text-slate-400 font-label-md uppercase tracking-wider border-b border-outline-variant dark:border-slate-800 bg-surface-container-low/50 dark:bg-slate-900/30 text-[11px]">
             <th class="px-md py-3 w-1/3">Clave Técnica (`label_key`)</th>
             <th class="px-md py-3">es_PE</th>
             <th class="px-md py-3">en_US</th>
             <th class="px-md py-3 text-right">Estado</th>
           </tr>
         </thead>
-        <tbody id="keysTableBody" class="divide-y divide-outline-variant">
+        <tbody id="keysTableBody" class="divide-y divide-outline-variant dark:divide-slate-800">
           <tr v-if="filteredKeys.length === 0">
-            <td colspan="4" class="p-lg text-center text-on-surface-variant italic">
+            <td colspan="4" class="p-lg text-center text-on-surface-variant dark:text-slate-400 italic">
               No se encontraron claves para el filtro/búsqueda activo.
             </td>
           </tr>
@@ -71,34 +71,34 @@
             :key="row.label_key"
             @click="selectKey(row)"
             :class="[
-              'cursor-pointer transition-colors border-b border-outline-variant',
+              'cursor-pointer transition-colors border-b border-outline-variant dark:border-slate-800',
               state.selectedKey?.label_key === row.label_key
-                ? 'bg-primary-container/10'
-                : 'hover:bg-surface-container-low',
+                ? 'bg-primary-container/10 dark:bg-slate-900'
+                : 'hover:bg-surface-container-low dark:hover:bg-slate-900/40',
             ]"
           >
-            <td class="px-md py-3 font-mono font-bold text-sm text-on-surface">
+            <td class="px-md py-3 font-mono font-bold text-sm text-on-surface dark:text-slate-200">
               <div class="flex items-center gap-xs">
                 {{ row.label_key }}
                 <span
                   v-if="row.label_type"
-                  class="px-1.5 py-0.2 bg-amber-100 text-amber-800 rounded text-[9px] font-bold"
+                  class="px-1.5 py-0.2 bg-amber-100 text-amber-800 dark:bg-amber-950/20 dark:text-amber-400 rounded text-[9px] font-bold"
                   :title="row.label_type"
                 >
                   {{ row.label_type }}
                 </span>
               </div>
             </td>
-            <td class="px-md py-3 text-xs text-on-surface-variant truncate max-w-[150px]" :title="row.es_PE">
+            <td class="px-md py-3 text-xs text-on-surface-variant dark:text-slate-400 truncate max-w-[150px]" :title="row.es_PE">
               <span v-if="row.es_PE">{{ row.es_PE }}</span>
-              <span v-else class="text-red-500 font-bold italic">Missing</span>
+              <span v-else class="text-red-500 dark:text-red-400 font-bold italic">Missing</span>
             </td>
-            <td class="px-md py-3 text-xs text-on-surface-variant truncate max-w-[150px]" :title="row.en_US">
+            <td class="px-md py-3 text-xs text-on-surface-variant dark:text-slate-400 truncate max-w-[150px]" :title="row.en_US">
               <span v-if="row.en_US">{{ row.en_US }}</span>
-              <span v-else class="text-red-500 font-bold italic">Missing</span>
+              <span v-else class="text-red-500 dark:text-red-400 font-bold italic">Missing</span>
             </td>
             <td class="px-md py-3 text-right">
-              <span class="px-2 py-0.5 bg-slate-100 text-slate-600 rounded-full text-[9px] font-bold uppercase">
+              <span class="px-2 py-0.5 bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400 rounded-full text-[9px] font-bold uppercase">
                 {{ row.params.length > 0 ? row.params.join(', ') : '—' }}
               </span>
             </td>

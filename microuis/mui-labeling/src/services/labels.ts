@@ -143,3 +143,16 @@ export async function listMissingLabels(tenantId: string): Promise<MissingLabelR
   const { data } = await api.get('/labels/missing', { params: { tenant_id: tenantId } })
   return data
 }
+
+// Export (RF-07 — export-only)
+
+export async function exportNamespace(
+  format: 'json' | 'csv',
+  filters: KeysFilter & { namespace: string }
+): Promise<Blob> {
+  const { data } = await api.get('/labels/export', {
+    params: { ...filters, format },
+    responseType: 'blob',
+  })
+  return data
+}

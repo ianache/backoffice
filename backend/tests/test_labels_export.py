@@ -8,11 +8,18 @@ import io
 
 import pytest
 import pytest_asyncio
+from fastapi.testclient import TestClient
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 
 from app.database import Base
+from app.config import settings
+from app.dependencies import get_db
 from app.domains.labels.models import Namespace, LocalizedLabel
 from app.domains.labels import service
+from app.main import app
+
+
+INTERNAL_HEADERS = {"X-Internal-Secret": settings.internal_secret}
 
 
 @pytest_asyncio.fixture
@@ -27,6 +34,18 @@ async def db_session():
         yield session
 
     await engine.dispose()
+
+
+@pytest.fixture
+def client(db_session):
+    """TestClient with get_db overridden to the in-memory SQLite session."""
+    async def _override_get_db():
+        yield db_session
+
+    app.dependency_overrides[get_db] = _override_get_db
+    with TestClient(app) as c:
+        yield c
+    app.dependency_overrides.pop(get_db, None)
 
 
 @pytest.fixture(autouse=True)
@@ -196,3 +215,73 @@ async def test_export_namespace_csv_level_column(db_session: AsyncSession):
 
     cancelar_row = next(r for r in data_rows if r[1] == "btn_cancelar")
     assert cancelar_row[4] == "tenant"
+
+
+# ---------------------------------------------------------------------------
+# Test 5: GET /labels/export?format=json
+# ---------------------------------------------------------------------------
+
+@pytest.mark.asyncio
+async def test_export_endpoint_json(db_session: AsyncSession, client):
+    await _seed_common_namespace(db_session)
+
+    resp = client.get(
+        "/labels/export",
+        params={"tenant_id": "T", "namespace": "common", "format": "json"},
+        headers=INTERNAL_HEADERS,
+    )
+
+    assert resp.status_code == 200
+    assert resp.headers["content-type"].startswith("application/json")
+    body = resp.json()
+    assert body == {
+        "common": {
+            "btn_aceptar": {"es_PE": "Aceptar", "en_US": "Accept"},
+            "btn_cancelar": {"es_PE": "Cancelar", "en_US": "Cancel"},
+        }
+    }
+
+
+# ---------------------------------------------------------------------------
+# Test 6: GET /labels/export?format=csv
+# ---------------------------------------------------------------------------
+
+@pytest.mark.asyncio
+async def test_export_endpoint_csv(db_session: AsyncSession, client):
+    await _seed_common_namespace(db_session)
+
+    resp = client.get(
+        "/labels/export",
+        params={"tenant_id": "T", "namespace": "common", "format": "csv"},
+        headers=INTERNAL_HEADERS,
+    )
+
+    assert resp.status_code == 200
+    assert resp.headers["content-type"].startswith("text/csv")
+    assert resp.headers["content-disposition"] == 'attachment; filename="common_T.csv"'
+
+    lines = resp.text.splitlines()
+    assert lines[0] == "namespace,label_key,es_PE,en_US,level"
+
+    reader = csv.reader(io.StringIO(resp.text))
+    rows = list(reader)
+    data_rows = rows[1:]
+    aceptar_row = next(r for r in data_rows if r[1] == "btn_aceptar")
+    assert aceptar_row == ["common", "btn_aceptar", "Aceptar", "Accept", "tenant"]
+
+
+# ---------------------------------------------------------------------------
+# Test 7: GET /labels/export?format=xml -> 422
+# ---------------------------------------------------------------------------
+
+@pytest.mark.asyncio
+async def test_export_endpoint_invalid_format(db_session: AsyncSession, client):
+    await _seed_common_namespace(db_session)
+
+    resp = client.get(
+        "/labels/export",
+        params={"tenant_id": "T", "namespace": "common", "format": "xml"},
+        headers=INTERNAL_HEADERS,
+    )
+
+    assert resp.status_code == 422

@@ -212,7 +212,7 @@ Plans:
 **Goal:** Implement the unified Audit Log per PRD_MVP3 §6 — an immutable `audit_logs` table (id, created_at, tenant_id, user_id/email, action_type, environment, target_type, target_id, payload_before/after JSON, client_ip, user_agent) populated by existing write paths (flags, segments, tenants, whitelabel, users), exposed via `GET /bff/audit-logs` (filters: environment, action_type, user_id, date range, pagination) and `GET /bff/audit-logs/{id}/diff`, with a frontend Activity Timeline view + "View Diff" modal highlighting JSON additions/removals/modifications (green/red/yellow) per the `audit-log_activity-timeline.html` mockup.
 **Requirements**: AUD-01, AUD-02, AUD-03, AUD-04, AUD-05, AUD-06 (assigned at plan time — registration gap vs REQUIREMENTS.md noted in phase deferred-items.md, same as Phases 14/15)
 **Depends on:** Phase 15
-**Plans:** 5 plans
+**Plans:** 5/5 plans complete
 
 Plans:
 - [ ] 16-01-PLAN.md — `audit` domain: AuditLog model/schemas/e001 migration, write_audit_log/list_audit_logs/compute_diff service, GET /audit-logs + GET /audit-logs/{id}/diff router, BFF audit.ts proxy (TDD)

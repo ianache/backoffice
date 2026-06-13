@@ -25,3 +25,10 @@ execution, confirming the same gap. AUD-06 (Activity Timeline + Diff Viewer fron
 functionally complete per 16-04-SUMMARY.md — Phase 16 MVP2 Auditoria is now fully delivered
 end-to-end; only the REQUIREMENTS.md traceability entries (AUD-01 through AUD-06) remain to be
 added in a dedicated requirements-sync pass.
+
+**16-05 update:** `requirements mark-complete AUD-03 AUD-06` also returned `not_found` during
+16-05 execution (gap-closure plan), confirming the same pre-existing condition. AUD-03 (frontend
+consumption of the diff endpoint) and AUD-06 (Diff Viewer blocking gap) are now functionally
+complete per 16-05-SUMMARY.md — Phase 16 MVP2 Auditoria is fully delivered end-to-end with no
+remaining blocking gaps per 16-VERIFICATION.md. The REQUIREMENTS.md traceability entries
+(AUD-01 through AUD-06) still remain to be added in a dedicated requirements-sync pass.

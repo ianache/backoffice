@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: MVP2
-current_plan: 4
-status: executing
-stopped_at: Completed 16-04-PLAN.md
-last_updated: "2026-06-13T04:30:34.307Z"
+current_plan: 5
+status: verifying
+stopped_at: Completed 16-05-PLAN.md
+last_updated: "2026-06-13T04:49:49.967Z"
 last_activity: 2026-06-13
 progress:
   total_phases: 21
   completed_phases: 17
-  total_plans: 78
-  completed_plans: 78
+  total_plans: 79
+  completed_plans: 79
   percent: 100
 ---
 
@@ -27,11 +27,11 @@ See: .planning/PROJECT.md (updated 2026-06-07)
 ## Current Position
 
 Phase: 16 of 20 (MVP2 Auditoria — Audit Log Timeline + Diff Viewer)
-**Current Plan:** 4
-**Total Plans in Phase:** 4
-**Status:** Ready to execute
+**Current Plan:** 5
+**Total Plans in Phase:** 5
+**Status:** Phase complete — ready for verification
 **Last Activity:** 2026-06-13
-Last activity detail: 2026-06-13 — Completed 16-03-PLAN.md (users/tenants/companies write-path audit instrumentation: create_user/update_user/set_enabled/reset_mfa write audit_logs rows target_type=USER alongside user_events; create_tenant/update_tenant/delete_tenant write target_type=TENANT rows with whitelabel fields; create_company/update_company write target_type=COMPANY rows; bff companies.ts forwards X-User-Email; environment defaults to 'production'). AUD-05 complete (REQUIREMENTS.md registration gap logged in deferred-items.md).
+Last activity detail: 2026-06-13 — Completed 16-05-PLAN.md (gap-closure: fixed Diff Viewer runtime TypeError by aligning AuditLogDiff frontend type and DiffModal.vue to the backend's flat {id, added, removed, modified} AuditLogDiffResponse shape; DiffModal now derives Action/Target meta from a new entry prop sourced from the timeline; bff tenants.ts forwards X-User-Email so TENANT-target audit_logs rows carry user_email). AUD-03 and AUD-06 complete — closes the sole blocking gap from 16-VERIFICATION.md.
 
 **Progress:** [██████████] 100%
 
@@ -93,6 +93,7 @@ Last activity detail: 2026-06-13 — Completed 16-03-PLAN.md (users/tenants/comp
 | Phase 16-mvp2-auditoria P02 | 8min | 2 tasks | 3 files |
 | Phase 16 P03 | 8min | 2 tasks | 5 files |
 | Phase 16-mvp2-auditoria P04 | 10min | 3 tasks | 6 files |
+| Phase 16-mvp2-auditoria P05 | 8min | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -220,6 +221,9 @@ Recent decisions affecting v1.1:
 - [Phase 16-mvp2-auditoria]: [16-04]: Environment badges colored via mockup convention - production=error-container, staging=tertiary-container, development=secondary-container
 - [Phase 16-mvp2-auditoria]: [16-04]: Pagination reuses lastFilters ref (set only by Apply Filters) so page navigation doesn't reset filter form fields
 - [Phase 16-mvp2-auditoria]: [16-04]: User filter is a plain text input bound to user_id (Keycloak sub) - no user-picker dropdown for MVP per CONTEXT.md
+- [Phase 16-mvp2-auditoria]: [16-05]: AuditLogDiff interface flattened to {id, added, removed, modified} to match real backend AuditLogDiffResponse - no .diff nesting
+- [Phase 16-mvp2-auditoria]: [16-05]: DiffModal derives Action/Target meta from a new entry: AuditLogEntry | null prop sourced from the timeline, not from the diff response
+- [Phase 16-mvp2-auditoria]: [16-05]: bff tenants.ts proxyReq forwards X-User-Email (mirroring companies.ts/flags.ts) without X-User-Tenant-Id - tenants endpoints are PlatformAdmin-only
 
 ### Pending Todos
 
@@ -233,6 +237,6 @@ Recent decisions affecting v1.1:
 
 ## Session Continuity
 
-**Last session:** 2026-06-13T04:30:28.142Z
-**Stopped At:** Completed 16-04-PLAN.md
+**Last session:** 2026-06-13T04:49:49.956Z
+**Stopped At:** Completed 16-05-PLAN.md
 **Resume File:** None

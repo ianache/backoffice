@@ -8,6 +8,7 @@ import { flagsRouter } from './routes/flags.js'
 import { sdkRouter } from './routes/sdk.js'
 import { productsRouter } from './routes/products.js'
 import { companiesRouter } from './routes/companies.js'
+import { auditRouter } from './routes/audit.js'
 
 const app = express()
 
@@ -49,6 +50,10 @@ app.use('/products', productsRouter)
 // Companies catalog: proxied to backend /api/v1/companies/*, role + tenant isolation enforced backend-side
 // NOTE: express.json() is intentionally NOT applied here; the proxy streams the raw body
 app.use('/companies', companiesRouter)
+
+// Audit log timeline: proxied to backend /audit-logs/*, read-only (no PATCH/DELETE — PRD §10.2)
+// NOTE: express.json() is intentionally NOT applied here; the proxy streams the raw body
+app.use('/audit-logs', auditRouter)
 
 app.listen(config.port, () => {
   console.log(`BFF running on http://localhost:${config.port}`)

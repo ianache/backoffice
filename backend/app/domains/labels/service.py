@@ -1,0 +1,295 @@
+import json
+from datetime import datetime
+from typing import Optional
+from sqlalchemy import select, delete as sa_delete
+from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi import HTTPException
+
+from .models import Namespace, LocalizedLabel, MissingLabelReport
+from .schemas import (
+    NamespaceCreate, NamespaceUpdate, LabelCreate, LabelUpdate, LabelValueUpdate,
+    MissingLabelReportCreate,
+)
+
+# ---------------------------------------------------------------------------
+# In-memory cache for resolved label sets.
+# Redis upgrade path: replace this dict's get/set/del operations with redis
+# calls — public function signatures (resolve_labels, invalidate_namespace_cache)
+# stay the same. No Redis client exists in this codebase (Pitfall 1).
+# ---------------------------------------------------------------------------
+_label_cache: dict[str, dict[str, str]] = {}
+
+
+def _cache_key(tenant_id: str, company_id: Optional[str], product_id: Optional[str], namespace: str, locale: str) -> str:
+    return f"{tenant_id}:{company_id or ''}:{product_id or ''}:{namespace}:{locale}"
+
+
+async def _fetch_labels(db: AsyncSession, tenant_id: str, company_id: Optional[str], product_id: Optional[str], namespace: str, locale: str) -> dict[str, str]:
+    stmt = select(LocalizedLabel).where(
+        LocalizedLabel.tenant_id == tenant_id,
+        LocalizedLabel.company_id == company_id,
+        LocalizedLabel.product_id == product_id,
+        LocalizedLabel.namespace == namespace,
+        LocalizedLabel.locale == locale,
+    )
+    result = await db.execute(stmt)
+    rows = result.scalars().all()
+    return {row.label_key: row.label_value for row in rows}
+
+
+async def resolve_labels(db: AsyncSession, tenant_id: str, company_id: Optional[str], product_id: Optional[str], namespace: str, locale: str) -> dict[str, str]:
+    """Override-by-proximity: Tenant -> Company -> Product. Results cached in-memory."""
+    key = _cache_key(tenant_id, company_id, product_id, namespace, locale)
+    if key in _label_cache:
+        return _label_cache[key]
+
+    tenant_labels = await _fetch_labels(db, tenant_id, None, None, namespace, locale)
+    company_labels = await _fetch_labels(db, tenant_id, company_id, None, namespace, locale) if company_id else {}
+    product_labels = await _fetch_labels(db, tenant_id, company_id, product_id, namespace, locale) if (company_id and product_id) else {}
+
+    resolved = {**tenant_labels, **company_labels, **product_labels}
+    _label_cache[key] = resolved
+    return resolved
+
+
+def invalidate_namespace_cache(tenant_id: str, namespace: Optional[str] = None) -> None:
+    """Drop cached resolved sets for a tenant. namespace=None clears all namespaces for that tenant.
+    Called after any CREATE/UPDATE/DELETE on localized_labels (LBL-04, LBL-07)."""
+    prefix = f"{tenant_id}:"
+    keys_to_remove = [
+        k for k in _label_cache
+        if k.startswith(prefix) and (namespace is None or k.split(':')[3] == namespace)
+    ]
+    for k in keys_to_remove:
+        del _label_cache[k]
+
+
+def clear_cache() -> None:
+    """Test helper — clears the entire module-level cache."""
+    _label_cache.clear()
+
+
+# ---------------------------------------------------------------------------
+# Namespace CRUD
+# ---------------------------------------------------------------------------
+
+async def list_namespaces(db: AsyncSession) -> list[Namespace]:
+    result = await db.execute(select(Namespace).order_by(Namespace.id))
+    return list(result.scalars().all())
+
+
+async def get_namespace(db: AsyncSession, namespace_id: str) -> Optional[Namespace]:
+    return await db.get(Namespace, namespace_id)
+
+
+async def create_namespace(db: AsyncSession, payload: NamespaceCreate) -> Namespace:
+    ns = Namespace(id=payload.id, strategy=payload.strategy, description=payload.description)
+    db.add(ns)
+    await db.commit()
+    await db.refresh(ns)
+    return ns
+
+
+async def update_namespace(db: AsyncSession, namespace_id: str, payload: NamespaceUpdate) -> Optional[Namespace]:
+    ns = await db.get(Namespace, namespace_id)
+    if ns is None:
+        return None
+    update_data = payload.model_dump(exclude_unset=True)
+    for field, value in update_data.items():
+        setattr(ns, field, value)
+    await db.commit()
+    await db.refresh(ns)
+    return ns
+
+
+async def delete_namespace(db: AsyncSession, namespace_id: str) -> bool:
+    ns = await db.get(Namespace, namespace_id)
+    if ns is None:
+        return False
+    await db.delete(ns)
+    await db.commit()
+    return True
+
+
+# ---------------------------------------------------------------------------
+# LocalizedLabel CRUD
+# ---------------------------------------------------------------------------
+
+async def list_labels(db: AsyncSession, *, tenant_id: str, company_id: Optional[str] = None, product_id: Optional[str] = None, namespace: Optional[str] = None) -> list[LocalizedLabel]:
+    stmt = select(LocalizedLabel).where(LocalizedLabel.tenant_id == tenant_id)
+    if namespace is not None:
+        stmt = stmt.where(LocalizedLabel.namespace == namespace)
+    # company_id/product_id filters are additive (not exclusive) — admin UI lists
+    # ALL rows visible to the active workspace context (tenant + company + product level)
+    if company_id is not None or product_id is not None:
+        from sqlalchemy import or_, and_
+        conditions = [and_(LocalizedLabel.company_id.is_(None), LocalizedLabel.product_id.is_(None))]
+        if company_id is not None:
+            conditions.append(and_(LocalizedLabel.company_id == company_id, LocalizedLabel.product_id.is_(None)))
+        if product_id is not None:
+            conditions.append(and_(LocalizedLabel.company_id == company_id, LocalizedLabel.product_id == product_id))
+        stmt = stmt.where(or_(*conditions))
+    result = await db.execute(stmt.order_by(LocalizedLabel.label_key, LocalizedLabel.locale))
+    return list(result.scalars().all())
+
+
+async def get_label(db: AsyncSession, label_id: int) -> Optional[LocalizedLabel]:
+    return await db.get(LocalizedLabel, label_id)
+
+
+async def create_label(db: AsyncSession, payload: LabelCreate) -> list[LocalizedLabel]:
+    """Creates one LocalizedLabel row per locale in payload.values. Invalidates
+    cache and clears any matching MissingLabelReport (PRD RF-06: alerts clean up
+    automatically when the key is added)."""
+    params_json = json.dumps(payload.params)
+    created: list[LocalizedLabel] = []
+    for locale, value in payload.values.items():
+        row = LocalizedLabel(
+            tenant_id=payload.tenant_id,
+            company_id=payload.company_id,
+            product_id=payload.product_id,
+            namespace=payload.namespace,
+            locale=locale,
+            label_key=payload.label_key,
+            label_value=value,
+            label_type=payload.label_type,
+            params=params_json,
+            description=payload.description,
+            version=1,
+        )
+        db.add(row)
+        created.append(row)
+    await db.commit()
+    for row in created:
+        await db.refresh(row)
+
+    invalidate_namespace_cache(payload.tenant_id, payload.namespace)
+
+    # Clear matching missing-label reports for this key (any locale)
+    await db.execute(sa_delete(MissingLabelReport).where(
+        MissingLabelReport.tenant_id == payload.tenant_id,
+        MissingLabelReport.namespace == payload.namespace,
+        MissingLabelReport.label_key == payload.label_key,
+    ))
+    await db.commit()
+
+    return created
+
+
+async def update_label(db: AsyncSession, label_id: int, payload: LabelUpdate) -> LocalizedLabel:
+    """Full structure edit (PlatformAdmin/TenantAdmin/ProductManager only). Optimistic
+    concurrency: raises 409 if payload.version != label.version (PRD §9.2 PI-02)."""
+    label = await db.get(LocalizedLabel, label_id)
+    if label is None:
+        raise HTTPException(status_code=404, detail="Label not found")
+    if label.version != payload.version:
+        raise HTTPException(
+            status_code=409,
+            detail="La clave ha sido modificada por otro usuario. Por favor, recargue el editor para no perder los cambios.",
+        )
+    if payload.label_type is not None:
+        label.label_type = payload.label_type
+    if payload.params is not None:
+        label.params = json.dumps(payload.params)
+    if payload.description is not None:
+        label.description = payload.description
+    if payload.values is not None and label.locale in payload.values:
+        label.label_value = payload.values[label.locale]
+    label.version += 1
+    await db.commit()
+    await db.refresh(label)
+    invalidate_namespace_cache(label.tenant_id, label.namespace)
+    return label
+
+
+async def update_label_value(db: AsyncSession, label_id: int, payload: LabelValueUpdate) -> LocalizedLabel:
+    """Narrow value-only edit — UXWriter-allowed (Pitfall 3). Same optimistic
+    concurrency check as update_label()."""
+    label = await db.get(LocalizedLabel, label_id)
+    if label is None:
+        raise HTTPException(status_code=404, detail="Label not found")
+    if label.locale != payload.locale:
+        raise HTTPException(status_code=422, detail="locale mismatch for this label row")
+    if label.version != payload.version:
+        raise HTTPException(
+            status_code=409,
+            detail="La clave ha sido modificada por otro usuario. Por favor, recargue el editor para no perder los cambios.",
+        )
+    label.label_value = payload.label_value
+    label.version += 1
+    await db.commit()
+    await db.refresh(label)
+    invalidate_namespace_cache(label.tenant_id, label.namespace)
+    return label
+
+
+async def delete_label(db: AsyncSession, label_id: int) -> bool:
+    label = await db.get(LocalizedLabel, label_id)
+    if label is None:
+        return False
+    tenant_id, namespace = label.tenant_id, label.namespace
+    await db.delete(label)
+    await db.commit()
+    invalidate_namespace_cache(tenant_id, namespace)
+    return True
+
+
+async def delete_label_override(db: AsyncSession, *, tenant_id: str, company_id: Optional[str], product_id: Optional[str], namespace: str, locale: str, label_key: str) -> bool:
+    """RF-05 'Restaurar' action — deletes the override row at the active context
+    level (company or product), forcing inheritance from the level above."""
+    stmt = select(LocalizedLabel).where(
+        LocalizedLabel.tenant_id == tenant_id,
+        LocalizedLabel.company_id == company_id,
+        LocalizedLabel.product_id == product_id,
+        LocalizedLabel.namespace == namespace,
+        LocalizedLabel.locale == locale,
+        LocalizedLabel.label_key == label_key,
+    )
+    result = await db.execute(stmt)
+    label = result.scalar_one_or_none()
+    if label is None:
+        return False
+    await db.delete(label)
+    await db.commit()
+    invalidate_namespace_cache(tenant_id, namespace)
+    return True
+
+
+# ---------------------------------------------------------------------------
+# Missing label reports (RF-06 diagnostics)
+# ---------------------------------------------------------------------------
+
+async def report_missing_label(db: AsyncSession, payload: MissingLabelReportCreate) -> MissingLabelReport:
+    """Dedup via SELECT-then-UPDATE/INSERT on (tenant_id, namespace, label_key, locale).
+    Increments hits and last_reported_at on repeat reports (Open Question 2)."""
+    stmt = select(MissingLabelReport).where(
+        MissingLabelReport.tenant_id == payload.tenant_id,
+        MissingLabelReport.namespace == payload.namespace,
+        MissingLabelReport.label_key == payload.label_key,
+        MissingLabelReport.locale == payload.locale,
+    )
+    result = await db.execute(stmt)
+    report = result.scalar_one_or_none()
+    if report is None:
+        report = MissingLabelReport(
+            tenant_id=payload.tenant_id,
+            company_id=payload.company_id,
+            product_id=payload.product_id,
+            namespace=payload.namespace,
+            label_key=payload.label_key,
+            locale=payload.locale,
+            hits=1,
+        )
+        db.add(report)
+    else:
+        report.hits += 1
+        report.last_reported_at = datetime.utcnow()
+    await db.commit()
+    await db.refresh(report)
+    return report
+
+
+async def list_missing_label_reports(db: AsyncSession, *, tenant_id: str) -> list[MissingLabelReport]:
+    stmt = select(MissingLabelReport).where(MissingLabelReport.tenant_id == tenant_id).order_by(MissingLabelReport.hits.desc())
+    result = await db.execute(stmt)
+    return list(result.scalars().all())

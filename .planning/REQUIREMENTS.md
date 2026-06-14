@@ -149,6 +149,22 @@ Exclusiones explÃ­citas para prevenir scope creep.
 
 ---
 
+---
+
+## Phase 17 Requirements
+
+Derived at plan time from PRD_MVP3 4, 8.1, 9, 10.2 (Observabilidad / SLA-SLO). Supersedes the older REQUIREMENTS.md "Out of Scope: mui-observability (deferred to v1.2)" note per CONTEXT.md D-03.
+
+- [ ] **OBS-01**: `service_health_samples` table (id, checked_at, service_name, status, latency_ms, details TEXT) created via Alembic migration h001
+- [ ] **OBS-02**: Health Checker Engine non-blocking background task polls 5 components every 15s (FastAPI core, BFF, MySQL, Keycloak, WebSocket Gateway)
+- [ ] **OBS-03**: `GET /observability/health/services` returns current UP/DEGRADED/DOWN + latency for all 5 components
+- [ ] **OBS-04**: `GET /observability/metrics?range=24h|7d|30d&tenant_id=` returns per-service uptime %, p95/p99 latency, error rate (tenant_id accepted-not-filtered per D-05)
+- [ ] **OBS-05**: Status thresholds flat across all 5 components: UP <100ms, DEGRADED >=100ms, DOWN on connection failure/timeout
+- [ ] **OBS-06**: Health-check failures never block flag evaluation or app startup (PRD 10.2)
+- [ ] **OBS-07**: New federated remote `mui-observability` (port 5180) registered in Shell REMOTE_MANIFEST + portal vite.config.ts
+- [ ] **OBS-08**: Dashboard status cards, latency trend chart, uptime % summary, gated PlatformAdmin (full) / TenantOwner+TenantAdmin (read-only)
+- [ ] **OBS-09**: Retention/pruning of `service_health_samples` (delete rows older than 30 days, opportunistically inside the polling loop)
+
 ## Phase 20 Requirements
 
 - [x] **LBL-01**: `localized_labels` stores localized labels by tenant/company/product, namespace, locale, and key
@@ -255,6 +271,15 @@ QuÃ© fases cubren quÃ© requerimientos. Actualizado durante creaciÃ³n del r
 | LBL-14 | Phase 20 | Complete |
 | LBL-15 | Phase 20 | Complete |
 | LBL-16 | Phase 20 | Complete |
+| OBS-01 | Phase 17 | Pending |
+| OBS-02 | Phase 17 | Pending |
+| OBS-03 | Phase 17 | Pending |
+| OBS-04 | Phase 17 | Pending |
+| OBS-05 | Phase 17 | Pending |
+| OBS-06 | Phase 17 | Pending |
+| OBS-07 | Phase 17 | Pending |
+| OBS-08 | Phase 17 | Pending |
+| OBS-09 | Phase 17 | Pending |
 
 **Coverage v1.1:**
 - v1.1 requirements: 45 total

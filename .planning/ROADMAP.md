@@ -157,79 +157,19 @@ Phases execute in numeric order: 7 → 8 → 9 → 10 → 11
 ### Phase 12: Dogfooding Feature Flags
 
 **Goal**: La plataforma consume sus propios feature flags (producto id `backoffice`) para controlar su UI: `bo.feature` muestra/oculta la opción de menú "Feature Flags" en el Shell; `bo.feature.create` muestra/oculta el botón "Create Flag" de la página /flags y la acción "Clone" en la tabla de flags; `bo.feature.update` muestra/oculta el ícono de edición (lápiz) en la tabla de flags. La evaluación usa el SDK propio (`@backoffice/sdk-js` de la Fase 11) o el endpoint de bootstrap del BFF, con fail-safe: si el flag no existe o la evaluación falla, la UI se comporta según un default seguro documentado.
-**Requirements**: TBD (derive at plan time: DOGF-01 menu gating, DOGF-02 create/clone gating, DOGF-03 edit gating)
-**Depends on:** Phase 11
-**Plans:** 3 plans
-
-Plans:
-- [x] 12-01-PLAN.md — useBoFlags composable + SDK workspace dep + Module Federation expose + env vars + Shell init
-- [x] 12-02-PLAN.md — UI gating: MainLayout nav + FlagsView Create + FlagTable Edit/Clone with v-if bindings
-- [x] 12-03-PLAN.md — Unit tests for fail-open behavior + planning docs update
-
-### Phase 13: Simulator Test Contexts
-
-**Goal**: El "Test Context" del Live Simulator en el Rule Builder deja de ser efímero: (1) al editarlo se puede **guardar en base de datos asociado al flag/regla** como ejemplo de prueba persistente, recuperado automáticamente al reabrir el editor (sirve para futuros ajustes de la regla); (2) un **Toggle "usar mi contexto real"** reemplaza el ejemplo por los valores reales de las propiedades del usuario logeado (sub, roles, tenant_id, etc.) para validar la regla contra el caso real, no solo contra ejemplos sintéticos. Aplica tanto al Rule Builder de flags como a la edición de segmentos rule-based (RuleSimulator es compartido).
-**Requirements**: SIM-01, SIM-02, SIM-03, SIM-04
-**Depends on:** Phase 12
-**Plans:** 4/4 plans complete
-
-Plans:
-- [ ] 13-01-PLAN.md — Backend: Alembic migration d002 (test_context column on feature_flags + segments) + schema/service changes
-- [ ] 13-02-PLAN.md — Shell: useUserContext composable (sub/email/roles/tenant_id/product_id) exposed via Module Federation
-- [ ] 13-03-PLAN.md — RuleSimulator.vue: mode/testContext props, save-test-context emit, real-context toggle
-- [ ] 13-04-PLAN.md — Wire RuleBuilderView.vue + SegmentForm.vue/SegmentsView.vue to persist and recover test_context
-
-### Phase 14: Flag Scope Targeting + List-Valued Rules
-
-**Goal**: Los feature flags con scope no-global apuntan a una entidad concreta y las reglas soportan listas de valores: (1) **Scope targeting** — al crear/editar un feature flag, cuando el `scope` seleccionado sea `product`, `tenant` o `company`, el formulario muestra un combobox para elegir el producto/tenant/company específico al que aplica el flag; la selección se **almacena en backend** (target del scope) y el **SDK** (bootstrap + evaluación local sdk-js/sdk-python + `POST /sdk/evaluate`) activa o desactiva el flag según el scope+target definidos — un flag scoped a `product=X` no se activa para `product=Y`. (2) **List-valued rule values** — en el editor de Rules del Rule Builder, cuando el `attribute` del contexto sea una lista (ej. `roles`), el `value` de la Rule acepta una **lista de valores separados por coma** (ej. `PlatformAdmin, TenantOwner`) que hace match si **cualquiera** de los valores aplica — evitando crear una regla por cada valor específico. El operador de evaluación correspondiente debe existir con paridad en backend OPERATORS, sdk-js evaluator, sdk-python evaluator y useRuleSimulator.ts.
-**Requirements**: TBD (derive at plan time: TGT-01 combobox por scope, TGT-02 persistencia del target, TGT-03 enforcement en SDK/bootstrap/evaluate, LST-01 value como lista separada por coma con match any, LST-02 paridad del operador en los 4 evaluadores)
-**Depends on:** Phase 13
-**Plans:** 6/6 plans complete
-
-Plans:
-- [ ] 14-01-PLAN.md — Companies backend domain (models/schemas/service/router) + Alembic d003 + BFF /companies proxy
-- [ ] 14-02-PLAN.md — Backend flag target validation (FlagCreate/FlagUpdate) + bootstrap per-scope dispatch + /sdk/evaluate fix
-- [ ] 14-03-PLAN.md — anyOf operator in backend/sdk-js/sdk-python + SDK company-scope guard in local evaluators
-- [ ] 14-04-PLAN.md — anyOf UI: useRuleSimulator parity + RuleCard comma-input/mini-chips + RuleSimulator Matched Rule chips
-- [ ] 14-05-PLAN.md — FlagForm scope-target comboboxes (tenants/products/companies lookups, validation, mutual exclusivity)
-- [ ] 14-06-PLAN.md — Companies UI in mui-tenants (/companies view+table+drawer+store+service) + Shell nav button
-
-### Phase 15: AND Rule Combination Semantics + Flags Page Filters
-
-**Goal:** (1) Multi-rule evaluation combines with AND — a flag whose rules combine with AND evaluates true only when ALL individual rules match, false otherwise, with parity across the 4 evaluators (backend, sdk-js, sdk-python, useRuleSimulator) — implemented as opt-in flag-level `rule_combination_mode` ('first_match' legacy default | 'and'); segment conditions keep OR semantics; OR operator and rule groups deferred to a future release. (2) The `/flags` page gains client-side filters: Status, Tags, Complexity (stored `complex` boolean), Environment, and scope target (Products / Tenants / Companies / Global).
-**Requirements**: AND-01, AND-02, FLT-01, FLT-02, FLT-03, FLT-04, FLT-05 (assigned at plan time — registration gap vs REQUIREMENTS.md noted in phase deferred-items.md, same as Phase 14)
-**Depends on:** Phase 14
-**Plans:** 4/4 plans complete
-
-Plans:
-- [ ] 15-01-PLAN.md — Backend AND mode: d004 migration + rule_combination_mode column/schemas + evaluate_flag AND branch + bootstrap field
-- [ ] 15-02-PLAN.md — sdk-js + sdk-python AND-mode parity in local evaluators (TDD)
-- [ ] 15-03-PLAN.md — useRuleSimulator AND mode + RuleSimulator per-rule pass/fail UI + RuleBuilderView mode selector/persistence
-- [ ] 15-04-PLAN.md — /flags client-side filters (useFlagFilters composable + FlagsView filter bar) + visual checkpoint
-
-### Phase 16: MVP2 Auditoria (Audit Log Timeline + Diff Viewer)
-
-**Goal:** Implement the unified Audit Log per PRD_MVP3 §6 — an immutable `audit_logs` table (id, created_at, tenant_id, user_id/email, action_type, environment, target_type, target_id, payload_before/after JSON, client_ip, user_agent) populated by existing write paths (flags, segments, tenants, whitelabel, users), exposed via `GET /bff/audit-logs` (filters: environment, action_type, user_id, date range, pagination) and `GET /bff/audit-logs/{id}/diff`, with a frontend Activity Timeline view + "View Diff" modal highlighting JSON additions/removals/modifications (green/red/yellow) per the `audit-log_activity-timeline.html` mockup.
-**Requirements**: AUD-01, AUD-02, AUD-03, AUD-04, AUD-05, AUD-06 (assigned at plan time — registration gap vs REQUIREMENTS.md noted in phase deferred-items.md, same as Phases 14/15)
-**Depends on:** Phase 15
-**Plans:** 5/5 plans complete
-
-Plans:
-- [ ] 16-01-PLAN.md — `audit` domain: AuditLog model/schemas/e001 migration, write_audit_log/list_audit_logs/compute_diff service, GET /audit-logs + GET /audit-logs/{id}/diff router, BFF audit.ts proxy (TDD)
-- [ ] 16-02-PLAN.md — Instrument feature_flags + segments write paths (create/update/enable/disable/delete) to emit audit_logs entries, BFF flags.ts X-User-Email
-- [ ] 16-03-PLAN.md — Instrument users/tenants/companies write paths (create/update/enable/disable/reset-mfa/delete) to emit audit_logs entries, BFF companies.ts X-User-Email
-- [ ] 16-04-PLAN.md — Frontend Activity Timeline (AuditLogView.vue) + color-coded DiffModal in mui-tenants, /audit-log route, MainLayout sidebar wiring
-- [ ] 16-05-PLAN.md — Gap closure: align AuditLogDiff type/DiffModal.vue to flat backend diff shape (AUD-03/AUD-06) + bff tenants.ts X-User-Email forwarding
-
-### Phase 17: Observabilidad SLA SLO
-
-**Goal:** Implement the Observability dashboard per PRD_MVP3 §4 — a `service_health_samples` table populated by a non-blocking Health Checker Engine polling internal components (FastAPI core, BFF, PostgreSQL, Keycloak, WebSocket gateway) every 15s, tracking SLIs (uptime, p95/p99 latency, error rate against the <1ms local / <50ms remote evaluation SLOs), exposed via `GET /bff/health/services` and `GET /bff/observability/metrics` (query params: tenant_id, range=24h/7d/30d), with a frontend dashboard showing current status, trends, and SLO breach indicators.
-**Requirements**: TBD — derive OBS-01..OBS-0x at plan time from PRD_MVP3 §4, §8.1, §9 (SERVICE_HEALTH_SAMPLES table)
+**Requirements**: OBS-01, OBS-02, OBS-03, OBS-04, OBS-05, OBS-06, OBS-07, OBS-08, OBS-09
 **Depends on:** Phase 16
-**Plans:** 0 plans
+**Plans:** 4 plans
 
 Plans:
-- [ ] TBD (run /gsd:plan-phase 17 to break down)
+**Wave 1**
+- [ ] 17-01-PLAN.md  Backend observability domain: ServiceHealthSample model + h001 migration + service layer + Health Checker Engine + lifespan wiring + bff_internal_url config + Wave 0 domain tests
+**Wave 2** *(depends on 17-01)*
+- [ ] 17-02-PLAN.md  Backend router (GET /observability/health/services + /metrics) + main.py registration + BFF observability proxy + ASGI integration tests
+**Wave 3** *(depends on 17-02)*
+- [ ] 17-03-PLAN.md  mui-observability scaffold (port 5180) + StatusCard/UptimeSummary/RangeSelector/LatencyTrendChart components + vitest specs
+**Wave 4** *(depends on 17-03)*
+- [ ] 17-04-PLAN.md  ObservabilityView composition + data fetch/auto-refresh + Shell registration (vite.config/REMOTE_MANIFEST/.env/MainLayout nav) + build smoke + human verify
 
 ### Phase 18: Telemetry Ingestion SDK Eval Events
 

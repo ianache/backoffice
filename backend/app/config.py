@@ -16,6 +16,9 @@ class Settings(BaseSettings):
     # SDK shared secret — SDK clients pass as Authorization: Bearer <sdk_key>
     sdk_secret_key: str = "dev-sdk-secret-change-in-prod"
 
+    # BFF internal health-check target (Health Checker Engine, Phase 17)
+    bff_internal_url: str = "http://localhost:3000"
+
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
 settings = Settings()

@@ -1,3 +1,5 @@
+import asyncio
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from app.domains.tenants.router import router as tenants_router
 from app.domains.users.router import router as users_router
@@ -10,8 +12,23 @@ from app.ws.connection_manager import ConnectionManager
 from app.domains.sdk.router import router as sdk_router
 from app.domains.sdk.ws_router import ws_flags_endpoint
 from app.domains.labels.router import router as labels_router
+from app.domains.observability.health_checker import health_checker_loop
 
-app = FastAPI(title="BackOffice Backend", version="1.0.0")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup
+    task = asyncio.create_task(health_checker_loop(app))
+    yield
+    # Shutdown
+    task.cancel()
+    try:
+        await task
+    except asyncio.CancelledError:
+        pass
+
+
+app = FastAPI(title="BackOffice Backend", version="1.0.0", lifespan=lifespan)
 
 # ConnectionManager MUST be initialized before any router that accesses app.state.ws_manager
 app.state.ws_manager = ConnectionManager()

@@ -10,6 +10,7 @@ import { sdkRouter } from './routes/sdk.js'
 import { productsRouter } from './routes/products.js'
 import { companiesRouter } from './routes/companies.js'
 import { auditRouter } from './routes/audit.js'
+import { observabilityRouter } from './routes/observability.js'
 
 const app = express()
 
@@ -59,6 +60,10 @@ app.use('/companies', companiesRouter)
 // Audit log timeline: proxied to backend /audit-logs/*, read-only (no PATCH/DELETE — PRD §10.2)
 // NOTE: express.json() is intentionally NOT applied here; the proxy streams the raw body
 app.use('/audit-logs', auditRouter)
+
+// Observability metrics and health: proxied to backend /observability/*, gated to PlatformAdmin/TenantOwner/TenantAdmin
+// NOTE: express.json() is intentionally NOT applied here; the proxy streams the raw body
+app.use('/observability', observabilityRouter)
 
 app.listen(config.port, () => {
   console.log(`BFF running on http://localhost:${config.port}`)

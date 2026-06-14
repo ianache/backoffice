@@ -1,4 +1,5 @@
 import asyncio
+import sys
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from app.domains.tenants.router import router as tenants_router
@@ -13,19 +14,25 @@ from app.domains.sdk.router import router as sdk_router
 from app.domains.sdk.ws_router import ws_flags_endpoint
 from app.domains.labels.router import router as labels_router
 from app.domains.observability.health_checker import health_checker_loop
+from app.domains.observability.router import router as observability_router
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup
-    task = asyncio.create_task(health_checker_loop(app))
+    # Do not run health checker loop in test environments to avoid DB connection and HTTP timeouts blocking pytest
+    if "pytest" not in sys.modules:
+        task = asyncio.create_task(health_checker_loop(app))
+    else:
+        task = None
     yield
     # Shutdown
-    task.cancel()
-    try:
-        await task
-    except asyncio.CancelledError:
-        pass
+    if task:
+        task.cancel()
+        try:
+            await task
+        except asyncio.CancelledError:
+            pass
 
 
 app = FastAPI(title="BackOffice Backend", version="1.0.0", lifespan=lifespan)
@@ -40,6 +47,7 @@ app.include_router(segments_router)
 app.include_router(products_router)
 app.include_router(companies_router)
 app.include_router(audit_router)
+app.include_router(observability_router)
 app.include_router(sdk_router)          # /api/v1/sdk/bootstrap, /evaluate, /eval-events
 app.include_router(labels_router, prefix="/api/v1")  # /api/v1/labels/namespaces, /keys, /missing
 app.add_websocket_route("/ws/flags/{tenant_id}", ws_flags_endpoint)

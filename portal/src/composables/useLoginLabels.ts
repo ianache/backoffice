@@ -21,6 +21,15 @@ export const CATALOG_FALLBACK: Record<Locale, Record<string, string>> = {
     error_invalid_credentials: "Correo o contrasena invalidos.",
     error_authentication_failed: "No se pudo completar la autenticacion. Intenta nuevamente.",
     error_generic: "El inicio de sesion fallo. Intenta nuevamente o contacta a soporte.",
+    mm_companies: "Compañías",
+    mm_logaudits: "Logs de Auditoría",
+    mm_platform_settings: "Configuración de Plataforma",
+    mm_products: "Productos",
+    mm_segments: "Segmentos",
+    mm_tenants: "Tenants",
+    mm_users: "Usuarios",
+    mm_whitelabels: "Marca Blanca",
+    mm_feature_flags: "Feature Flags",
   },
   en_US: {
     brand_tagline: "Control Center & Multi-tenant Administration",
@@ -39,6 +48,15 @@ export const CATALOG_FALLBACK: Record<Locale, Record<string, string>> = {
     error_invalid_credentials: "Invalid email or password.",
     error_authentication_failed: "Authentication could not be completed. Please try again.",
     error_generic: "Sign-in failed. Please try again or contact support.",
+    mm_companies: "Companies",
+    mm_logaudits: "Audit Log",
+    mm_platform_settings: "Platform Settings",
+    mm_products: "Products",
+    mm_segments: "Segments",
+    mm_tenants: "Tenants",
+    mm_users: "Users",
+    mm_whitelabels: "White Labels",
+    mm_feature_flags: "Feature Flags",
   }
 }
 
@@ -65,7 +83,7 @@ localeRef.value = detectLoginLocale(typeof navigator !== 'undefined' ? navigator
 function fallbackResolver(path: string, variables: Record<string, unknown> | undefined, translated: string): string {
   if (translated && translated.startsWith('[sys.')) {
     const [ns, key] = path.split('.')
-    if (ns === 'login' && CATALOG_FALLBACK[localeRef.value]?.[key]) {
+    if ((ns === 'login' || ns === 'main_menu') && CATALOG_FALLBACK[localeRef.value]?.[key]) {
       const fallbackTemplate = CATALOG_FALLBACK[localeRef.value][key]
       if (!variables) return fallbackTemplate
       return Object.entries(variables).reduce(
@@ -106,6 +124,7 @@ export function useLoginLabels() {
     initPromise = (async () => {
       try {
         await c.initialize()
+        await c.prefetch(['main_menu'])
         initialized.value = true
       } catch (e) {
         console.warn('[login-labels] SDK init failed, using fallbacks', e)

@@ -1,16 +1,18 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 
 // Mock the @backoffice/sdk-js package
-const { MockLabelClient, mockInitialize, mockTranslate, mockDestroy } = vi.hoisted(() => {
+const { MockLabelClient, mockInitialize, mockTranslate, mockDestroy, mockPrefetch } = vi.hoisted(() => {
   const mockInitialize = vi.fn()
   const mockTranslate = vi.fn()
   const mockDestroy = vi.fn()
+  const mockPrefetch = vi.fn()
 
   const MockLabelClient = vi.fn().mockImplementation((opts) => ({
     opts,
     initialize: mockInitialize,
     translate: mockTranslate,
     destroy: mockDestroy,
+    prefetch: mockPrefetch,
   }))
 
   return {
@@ -18,6 +20,7 @@ const { MockLabelClient, mockInitialize, mockTranslate, mockDestroy } = vi.hoist
     mockInitialize,
     mockTranslate,
     mockDestroy,
+    mockPrefetch,
   }
 })
 
@@ -49,6 +52,8 @@ describe('useLoginLabels', () => {
     mockInitialize.mockReset()
     mockTranslate.mockReset()
     mockDestroy.mockReset()
+    mockPrefetch.mockReset()
+    mockPrefetch.mockResolvedValue(undefined)
   })
 
   afterEach(() => {

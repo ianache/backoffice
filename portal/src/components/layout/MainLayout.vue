@@ -105,10 +105,10 @@
               : 'text-on-surface-variant hover:bg-surface-container-high'
           ]"
           :disabled="remoteStatuses['mui-tenants'] === 'error'"
-          title="Tenants"
+          :title="$t('main_menu.mm_tenants')"
         >
           <span class="material-symbols-outlined text-[22px]">corporate_fare</span>
-          <span class="text-sm">Tenants</span>
+          <span class="text-sm">{{ $t('main_menu.mm_tenants') }}</span>
         </button>
 
         <!-- Stub Domain — Testing for Phase 9 -->
@@ -140,10 +140,10 @@
               : 'text-on-surface-variant hover:bg-surface-container-high'
           ]"
           :disabled="remoteStatuses['mui-tenants'] === 'error'"
-          title="Products"
+          :title="$t('main_menu.mm_products')"
         >
           <span class="material-symbols-outlined text-[22px]">inventory_2</span>
-          <span class="text-sm">Products</span>
+          <span class="text-sm">{{ $t('main_menu.mm_products') }}</span>
         </button>
 
         <!-- Companies (served by mui-tenants remote) -->
@@ -158,10 +158,10 @@
               : 'text-on-surface-variant hover:bg-surface-container-high'
           ]"
           :disabled="remoteStatuses['mui-tenants'] === 'error'"
-          title="Companies"
+          :title="$t('main_menu.mm_companies')"
         >
           <span class="material-symbols-outlined text-[22px]">apartment</span>
-          <span class="text-sm">Companies</span>
+          <span class="text-sm">{{ $t('main_menu.mm_companies') }}</span>
         </button>
 
         <!-- Users / Access Management (served by mui-security remote) -->
@@ -176,10 +176,10 @@
               : 'text-on-surface-variant hover:bg-surface-container-high'
           ]"
           :disabled="remoteStatuses['mui-security'] === 'error'"
-          title="Users"
+          :title="$t('main_menu.mm_users')"
         >
           <span class="material-symbols-outlined text-[22px]">manage_accounts</span>
-          <span class="text-sm">Users</span>
+          <span class="text-sm">{{ $t('main_menu.mm_users') }}</span>
         </button>
 
         <!-- Labeling & Namespaces (served by mui-labeling remote) -->
@@ -194,10 +194,10 @@
               : 'text-on-surface-variant hover:bg-surface-container-high'
           ]"
           :disabled="remoteStatuses['mui-labeling'] === 'error'"
-          title="Labeling & Namespaces"
+          :title="$t('main_menu.mm_whitelabels')"
         >
           <span class="material-symbols-outlined text-[22px]">branding_watermark</span>
-          <span class="text-sm">WhiteLabels</span>
+          <span class="text-sm">{{ $t('main_menu.mm_whitelabels') }}</span>
         </button>
 
         <!-- Feature Flags (gated by bo.feature dogfooding flag) -->
@@ -212,10 +212,10 @@
               : 'text-on-surface-variant hover:bg-surface-container-high'
           ]"
           :disabled="remoteStatuses['mui-feature-flags'] === 'error'"
-          title="Feature Flags"
+          :title="$t('main_menu.mm_feature_flags')"
         >
           <span class="material-symbols-outlined text-[22px]">toggle_on</span>
-          <span class="text-sm">Feature Flags</span>
+          <span class="text-sm">{{ $t('main_menu.mm_feature_flags') }}</span>
         </button>
 
         <!-- Segments (gated by bo.feature — part of Feature Flags domain) -->
@@ -230,10 +230,10 @@
               : 'text-on-surface-variant hover:bg-surface-container-high'
           ]"
           :disabled="remoteStatuses['mui-feature-flags'] === 'error'"
-          title="Segments"
+          :title="$t('main_menu.mm_segments')"
         >
           <span class="material-symbols-outlined text-[22px]">group</span>
-          <span class="text-sm">Segments</span>
+          <span class="text-sm">{{ $t('main_menu.mm_segments') }}</span>
         </button>
 
         <!-- Audit Log (served by mui-tenants remote) -->
@@ -248,19 +248,20 @@
               : 'text-on-surface-variant hover:bg-surface-container-high'
           ]"
           :disabled="remoteStatuses['mui-tenants'] === 'error'"
-          title="Audit Log"
+          :title="$t('main_menu.mm_logaudits')"
         >
           <span class="material-symbols-outlined text-[22px]">history_edu</span>
-          <span class="text-sm">Audit Log</span>
+          <span class="text-sm">{{ $t('main_menu.mm_logaudits') }}</span>
         </button>
 
         <!-- Platform Settings (placeholder) -->
         <button
           class="w-full flex items-center gap-4 px-4 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all duration-200 text-left cursor-not-allowed opacity-70"
           disabled
+          :title="$t('main_menu.mm_platform_settings')"
         >
           <span class="material-symbols-outlined text-[22px]">settings</span>
-          <span class="text-sm">Platform Settings</span>
+          <span class="text-sm">{{ $t('main_menu.mm_platform_settings') }}</span>
         </button>
       </nav>
 

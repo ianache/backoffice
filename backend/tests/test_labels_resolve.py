@@ -220,3 +220,28 @@ async def test_cache_invalidation(db_session: AsyncSession):
     )
 
     assert second == {"accept": "Aceptar (changed)"}
+
+
+# ---------------------------------------------------------------------------
+# Tenant-level product override (without company)
+# ---------------------------------------------------------------------------
+
+@pytest.mark.asyncio
+async def test_resolve_labels_tenant_product_override_no_company(db_session: AsyncSession):
+    await _add_namespace(db_session)
+    await _add_label(
+        db_session, tenant_id="T", company_id=None, product_id=None,
+        namespace="common", locale="es_PE", label_key="accept", label_value="Aceptar",
+    )
+    await _add_label(
+        db_session, tenant_id="T", company_id=None, product_id="P",
+        namespace="common", locale="es_PE", label_key="accept", label_value="Aceptar (Tenant Product)",
+    )
+
+    resolved = await service.resolve_labels(
+        db_session, tenant_id="T", company_id=None, product_id="P",
+        namespace="common", locale="es_PE",
+    )
+
+    assert resolved == {"accept": "Aceptar (Tenant Product)"}
+

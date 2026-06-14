@@ -46,10 +46,11 @@ async def resolve_labels(db: AsyncSession, tenant_id: str, company_id: Optional[
         return _label_cache[key]
 
     tenant_labels = await _fetch_labels(db, tenant_id, None, None, namespace, locale)
+    tenant_product_labels = await _fetch_labels(db, tenant_id, None, product_id, namespace, locale) if product_id else {}
     company_labels = await _fetch_labels(db, tenant_id, company_id, None, namespace, locale) if company_id else {}
     product_labels = await _fetch_labels(db, tenant_id, company_id, product_id, namespace, locale) if (company_id and product_id) else {}
 
-    resolved = {**tenant_labels, **company_labels, **product_labels}
+    resolved = {**tenant_labels, **tenant_product_labels, **company_labels, **product_labels}
     _label_cache[key] = resolved
     return resolved
 
@@ -189,15 +190,54 @@ async def update_label(db: AsyncSession, label_id: int, payload: LabelUpdate) ->
             status_code=409,
             detail="La clave ha sido modificada por otro usuario. Por favor, recargue el editor para no perder los cambios.",
         )
-    if payload.label_type is not None:
-        label.label_type = payload.label_type
-    if payload.params is not None:
-        label.params = json.dumps(payload.params)
-    if payload.description is not None:
-        label.description = payload.description
-    if payload.values is not None and label.locale in payload.values:
-        label.label_value = payload.values[label.locale]
-    label.version += 1
+
+    # Fetch all sibling locales for this key at the exact same context level
+    stmt = select(LocalizedLabel).where(
+        LocalizedLabel.tenant_id == label.tenant_id,
+        LocalizedLabel.company_id == label.company_id,
+        LocalizedLabel.product_id == label.product_id,
+        LocalizedLabel.namespace == label.namespace,
+        LocalizedLabel.label_key == label.label_key,
+    )
+    res = await db.execute(stmt)
+    siblings = res.scalars().all()
+    sibling_by_locale = {s.locale: s for s in siblings}
+
+    new_version = label.version + 1
+
+    # Update/create locales in payload.values
+    if payload.values is not None:
+        for loc, val in payload.values.items():
+            if loc in sibling_by_locale:
+                sibling_by_locale[loc].label_value = val
+                sibling_by_locale[loc].version = new_version
+            else:
+                # Create missing locale row
+                new_row = LocalizedLabel(
+                    tenant_id=label.tenant_id,
+                    company_id=label.company_id,
+                    product_id=label.product_id,
+                    namespace=label.namespace,
+                    locale=loc,
+                    label_key=label.label_key,
+                    label_value=val,
+                    label_type=payload.label_type or label.label_type,
+                    params=json.dumps(payload.params) if payload.params is not None else label.params,
+                    description=payload.description or label.description,
+                    version=new_version,
+                )
+                db.add(new_row)
+
+    # Update common structural attributes on all existing siblings
+    for s in siblings:
+        s.version = new_version
+        if payload.label_type is not None:
+            s.label_type = payload.label_type
+        if payload.params is not None:
+            s.params = json.dumps(payload.params)
+        if payload.description is not None:
+            s.description = payload.description
+
     await db.commit()
     await db.refresh(label)
     invalidate_namespace_cache(label.tenant_id, label.namespace)
@@ -314,12 +354,15 @@ async def _resolve_with_level(db: AsyncSession, *, tenant_id: str, company_id: O
     """Like resolve_labels() but also returns which level ('tenant'|'company'|'product')
     contributed each key's value — used for the CSV 'level' column."""
     tenant_labels = await _fetch_labels(db, tenant_id, None, None, namespace, locale)
+    tenant_product_labels = await _fetch_labels(db, tenant_id, None, product_id, namespace, locale) if product_id else {}
     company_labels = await _fetch_labels(db, tenant_id, company_id, None, namespace, locale) if company_id else {}
     product_labels = await _fetch_labels(db, tenant_id, company_id, product_id, namespace, locale) if (company_id and product_id) else {}
 
     result: dict[str, tuple[str, str]] = {}
     for k, v in tenant_labels.items():
         result[k] = (v, 'tenant')
+    for k, v in tenant_product_labels.items():
+        result[k] = (v, 'product')
     for k, v in company_labels.items():
         result[k] = (v, 'company')
     for k, v in product_labels.items():

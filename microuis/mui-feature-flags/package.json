@@ -5,6 +5,7 @@
   "scripts": {
     "build": "vite build",
     "build:watch": "vite build --watch",
+    "prepreview": "node ../../scripts/free-preview-port.mjs 5178",
     "preview": "vite preview --port 5178",
     "test": "vitest run"
   },

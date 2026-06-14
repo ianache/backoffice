@@ -161,8 +161,9 @@ async def test_create_label_writes_audit_log(db_session, client):
     assert entry.target_type == "LOCALIZED_LABEL"
     import json as _json
     payload_after = _json.loads(entry.payload_after)
-    assert isinstance(payload_after, list)
-    assert payload_after[0]["label_key"] == "accept"
+    assert isinstance(payload_after, dict)
+    assert len(payload_after["labels"]) == 2
+    assert payload_after["labels"][0]["label_key"] == "accept"
 
 
 # ---------------------------------------------------------------------------

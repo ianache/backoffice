@@ -118,15 +118,37 @@ class FlagResponse(BaseModel):
             if not values.get('rule_combination_mode'):
                 values['rule_combination_mode'] = 'first_match'
             return values
-        # Handle ORM object
+        # Handle ORM object without in-place mutation of session attached state
         obj = values
         rules_raw = getattr(obj, 'rules', None)
         tags_raw = getattr(obj, 'tags', None)
-        obj.rules = json.loads(rules_raw) if rules_raw else []
-        obj.tags = json.loads(tags_raw) if tags_raw else []
-        if not getattr(obj, 'rule_combination_mode', None):
-            obj.rule_combination_mode = 'first_match'
-        return obj
+        
+        rules = json.loads(rules_raw) if isinstance(rules_raw, str) and rules_raw else (rules_raw if isinstance(rules_raw, list) else [])
+        tags = json.loads(tags_raw) if isinstance(tags_raw, str) and tags_raw else (tags_raw if isinstance(tags_raw, list) else [])
+        rule_combination_mode = getattr(obj, 'rule_combination_mode', None) or 'first_match'
+        
+        return {
+            "id": obj.id,
+            "name": obj.name,
+            "description": obj.description,
+            "scope": obj.scope,
+            "tenant_id": obj.tenant_id,
+            "product_id": obj.product_id,
+            "company_id": obj.company_id,
+            "enabled": bool(obj.enabled),
+            "default_val": bool(obj.default_val),
+            "complex": bool(obj.complex),
+            "ttl": obj.ttl,
+            "environment": obj.environment,
+            "rollout": obj.rollout,
+            "rules": rules,
+            "tags": tags,
+            "test_context": obj.test_context,
+            "rule_combination_mode": rule_combination_mode,
+            "created_by": obj.created_by,
+            "created_at": obj.created_at,
+            "updated_at": obj.updated_at,
+        }
 
 
 class SegmentCreate(BaseModel):
@@ -167,11 +189,27 @@ class SegmentResponse(BaseModel):
             if not values.get('type'):
                 values['type'] = 'manual'
             return values
-        # ORM object path
+        # ORM object path without in-place mutation
         obj = values
-        obj.members = json.loads(obj.members) if getattr(obj, 'members', None) else []
+        members_raw = getattr(obj, 'members', None)
+        members = json.loads(members_raw) if isinstance(members_raw, str) and members_raw else (members_raw if isinstance(members_raw, list) else [])
+        
         raw_conditions = getattr(obj, 'conditions', None)
-        obj.conditions = json.loads(raw_conditions) if raw_conditions else []
-        if not getattr(obj, 'type', None):
-            obj.type = 'manual'
-        return obj
+        conditions = json.loads(raw_conditions) if isinstance(raw_conditions, str) and raw_conditions else (raw_conditions if isinstance(raw_conditions, list) else [])
+        
+        segment_type = getattr(obj, 'type', None) or 'manual'
+        flag_count = getattr(obj, 'flag_count', 0)
+        
+        return {
+            "id": obj.id,
+            "name": obj.name,
+            "description": obj.description,
+            "tenant_id": obj.tenant_id,
+            "members": members,
+            "type": segment_type,
+            "conditions": conditions,
+            "test_context": obj.test_context,
+            "flag_count": flag_count,
+            "created_at": obj.created_at,
+            "updated_at": obj.updated_at,
+        }

@@ -194,6 +194,10 @@ async def create_key(
     roles = [r.strip() for r in x_user_roles.split(',') if r.strip()]
     _require_structure_role(roles, "create label keys")
     rows = await service.create_label(db, payload)
+    created_labels = [
+        LocalizedLabelResponse.model_validate(row).model_dump(mode='json')
+        for row in rows
+    ]
     client_ip, user_agent = _audit_request_meta(request)
     await audit_service.write_audit_log(db, AuditLogCreate(
         tenant_id=payload.tenant_id,
@@ -203,14 +207,14 @@ async def create_key(
         target_type="LOCALIZED_LABEL",
         target_id=payload.label_key,
         payload_before=None,
-        payload_after=[LocalizedLabelResponse.model_validate(r).model_dump(mode='json') for r in rows],
+        payload_after={"labels": created_labels},
         client_ip=client_ip,
         user_agent=user_agent,
     ))
     ws_manager = getattr(request.app.state, "ws_manager", None)
     if ws_manager is not None:
         await ws_manager.broadcast(payload.tenant_id, {"type": "INVALIDATE_NAMESPACE", "namespace": payload.namespace})
-    return [LocalizedLabelResponse.model_validate(r) for r in rows]
+    return created_labels
 
 
 @router.patch("/keys/{label_id}", response_model=LocalizedLabelResponse)

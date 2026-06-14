@@ -1,0 +1,1366 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Stitch Console | Labeling, Namespaces &amp; Keys Management</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap"
+        rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet">
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "error-container": "#ffdad6",
+                        "error": "#ba1a1a",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-fixed": "#181c20",
+                        "surface-container-low": "#f0f4f9",
+                        "on-secondary-container": "#5f6368",
+                        "on-tertiary": "#ffffff",
+                        "on-surface-variant": "#414754",
+                        "on-secondary-fixed-variant": "#43474c",
+                        "on-secondary": "#ffffff",
+                        "primary": "#005bbf",
+                        "on-primary": "#ffffff",
+                        "primary-container": "#1a73e8",
+                        "on-primary-container": "#ffffff",
+                        "inverse-surface": "#2c3135",
+                        "primary-fixed-dim": "#adc7ff",
+                        "on-error": "#ffffff",
+                        "secondary-fixed-dim": "#c3c7cc",
+                        "surface-variant": "#dfe3e8",
+                        "surface-container-highest": "#dfe3e8",
+                        "on-error-container": "#93000a",
+                        "on-primary-fixed-variant": "#004493",
+                        "tertiary-fixed-dim": "#ffb691",
+                        "surface-tint": "#005bc0",
+                        "tertiary": "#9e4300",
+                        "on-primary-fixed": "#001a41",
+                        "outline-variant": "#c1c6d6",
+                        "tertiary-fixed": "#ffdbcb",
+                        "surface-bright": "#f6faff",
+                        "surface-container-high": "#e5e8ee",
+                        "on-tertiary-fixed": "#341100",
+                        "inverse-primary": "#adc7ff",
+                        "background": "#f6faff",
+                        "surface": "#f6faff",
+                        "inverse-on-surface": "#edf1f6",
+                        "surface-container": "#eaeef3",
+                        "on-background": "#181c20",
+                        "surface-dim": "#d6dadf",
+                        "secondary-fixed": "#dfe3e8",
+                        "primary-fixed": "#d8e2ff",
+                        "outline": "#727785",
+                        "secondary-container": "#dde0e6",
+                        "on-tertiary-fixed-variant": "#783100",
+                        "on-tertiary-container": "#0e0200",
+                        "tertiary-container": "#c55500",
+                        "secondary": "#5b5f64",
+                        "on-surface": "#181c20"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "base": "4px",
+                        "sm": "8px",
+                        "gutter": "24px",
+                        "xl": "32px",
+                        "xs": "4px",
+                        "margin": "32px",
+                        "lg": "24px",
+                        "md": "16px",
+                        "max-width": "1440px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Inter"],
+                        "title-md": ["Inter"],
+                        "title-lg": ["Inter"],
+                        "label-md": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "label-lg": ["Inter"],
+                        "code": ["JetBrains Mono"],
+                        "body-md": ["Inter"],
+                        "body-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["22px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "title-md": ["16px", { "lineHeight": "24px", "fontWeight": "500" }],
+                        "title-lg": ["18px", { "lineHeight": "24px", "fontWeight": "500" }],
+                        "label-md": ["11px", { "lineHeight": "16px", "fontWeight": "500" }],
+                        "headline-lg": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "label-lg": ["12px", { "lineHeight": "16px", "letterSpacing": "0.5px", "fontWeight": "600" }],
+                        "code": ["13px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+            display: inline-block;
+        }
+
+        body {
+            background-color: #f6faff;
+        }
+
+        .sidebar-active {
+            background-color: #dde0e6;
+            color: #005bbf;
+            font-weight: 700;
+            border-radius: 0.5rem;
+        }
+
+        .dark .sidebar-active {
+            background-color: #2c3135;
+            color: #adc7ff;
+        }
+
+        .tab-active {
+            border-bottom: 2px solid #005bbf;
+            color: #005bbf;
+        }
+
+        .glass-panel {
+            backdrop-filter: blur(8px);
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #dfe3e8;
+            border-radius: 10px;
+        }
+
+        .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #414754;
+        }
+
+        .transition-drawer {
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Hierarchy connector lines in resolution tree */
+        .tree-line::before {
+            content: '';
+            position: absolute;
+            left: -16px;
+            top: -12px;
+            bottom: 12px;
+            width: 2px;
+            background: #c1c6d6;
+        }
+        .tree-line::after {
+            content: '';
+            position: absolute;
+            left: -16px;
+            top: 12px;
+            width: 12px;
+            height: 2px;
+            background: #c1c6d6;
+        }
+        .dark .tree-line::before, .dark .tree-line::after {
+            background: #414754;
+        }
+    </style>
+</head>
+
+<body class="font-body-md text-on-surface bg-background dark:bg-inverse-surface dark:text-inverse-on-surface overflow-hidden h-screen flex">
+    <!-- Sidebar -->
+    <aside
+        class="w-64 h-screen fixed left-0 top-0 bg-surface-container-low dark:bg-slate-900 border-r border-outline-variant dark:border-slate-800 flex flex-col p-md gap-sm z-50">
+        <div class="flex flex-col mb-lg px-sm">
+            <h1 class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed-dim">
+                BackOffice CC
+            </h1>
+            <p class="text-on-surface-variant dark:text-slate-400 font-label-md">Enterprise Admin</p>
+        </div>
+        <nav class="flex-1 space-y-1">
+            <a class="flex items-center gap-md px-md py-sm text-on-surface-variant dark:text-slate-300 hover:bg-surface-container-highest dark:hover:bg-slate-800 transition-colors rounded-lg"
+                href="#">
+                <span class="material-symbols-outlined">corporate_fare</span>
+                <span class="font-body-md">Tenants</span>
+            </a>
+            <a class="flex items-center gap-md px-md py-sm text-on-surface-variant dark:text-slate-300 hover:bg-surface-container-highest dark:hover:bg-slate-800 transition-colors rounded-lg"
+                href="#">
+                <span class="material-symbols-outlined">inventory_2</span>
+                <span class="font-body-md">Products</span>
+            </a>
+            <a class="flex items-center gap-md px-md py-sm text-on-surface-variant dark:text-slate-300 hover:bg-surface-container-highest dark:hover:bg-slate-800 transition-colors rounded-lg"
+                href="#">
+                <span class="material-symbols-outlined">branding_watermark</span>
+                <span class="font-body-md">WhiteLabels</span>
+            </a>
+            <a class="flex items-center gap-md px-md py-sm text-on-surface-variant dark:text-slate-300 hover:bg-surface-container-highest dark:hover:bg-slate-800 transition-colors rounded-lg"
+                href="#">
+                <span class="material-symbols-outlined">toggle_on</span>
+                <span class="font-body-md">Feature Flags</span>
+            </a>
+            <a class="sidebar-active flex items-center gap-md px-md py-sm transition-colors" href="#">
+                <span class="material-symbols-outlined">translate</span>
+                <span class="font-body-md">Labeling &amp; Locales</span>
+            </a>
+            <a class="flex items-center gap-md px-md py-sm text-on-surface-variant dark:text-slate-300 hover:bg-surface-container-highest dark:hover:bg-slate-800 transition-colors rounded-lg"
+                href="#">
+                <span class="material-symbols-outlined">history</span>
+                <span class="font-body-md">Audit Log</span>
+            </a>
+            <a class="flex items-center gap-md px-md py-sm text-on-surface-variant dark:text-slate-300 hover:bg-surface-container-highest dark:hover:bg-slate-800 transition-colors rounded-lg"
+                href="#">
+                <span class="material-symbols-outlined">settings_applications</span>
+                <span class="font-body-md">Platform Settings</span>
+            </a>
+        </nav>
+        <div class="mt-auto border-t border-outline-variant dark:border-slate-800 pt-md">
+            <a class="flex items-center gap-md px-md py-sm text-on-surface-variant dark:text-slate-300 hover:bg-surface-container-highest dark:hover:bg-slate-800 transition-colors rounded-lg"
+                href="#">
+                <span class="material-symbols-outlined">description</span>
+                <span class="font-body-md">Docs</span>
+            </a>
+            <div class="flex items-center gap-md px-md py-sm mt-sm">
+                <div class="h-8 w-8 rounded-full bg-primary-fixed text-on-primary-fixed flex items-center justify-center font-bold">
+                    JD
+                </div>
+                <div class="flex-1 overflow-hidden">
+                    <p class="font-label-lg truncate dark:text-slate-200">John Doe</p>
+                    <p class="text-[10px] text-on-surface-variant dark:text-slate-400 truncate">j.doe@stitch.io</p>
+                </div>
+                <span class="material-symbols-outlined text-on-surface-variant dark:text-slate-400 cursor-pointer">logout</span>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content Container -->
+    <main class="flex-1 ml-64 h-screen flex flex-col overflow-hidden bg-background dark:bg-slate-950">
+        <!-- Top App Bar -->
+        <header
+            class="w-full h-16 bg-surface-bright dark:bg-slate-900 border-b border-outline-variant dark:border-slate-800 shadow-sm z-40 flex items-center justify-between px-lg">
+            <div class="flex items-center gap-sm text-on-surface-variant dark:text-slate-400">
+                <span class="font-label-md">Section:</span>
+                <span class="font-title-md text-on-surface dark:text-slate-200 font-bold">Localization Engine</span>
+                <span class="material-symbols-outlined text-outline">chevron_right</span>
+                <span class="font-title-md text-primary dark:text-primary-fixed-dim font-bold">Namespaces &amp; Keys</span>
+            </div>
+            <div class="flex items-center gap-lg">
+                <div class="relative group">
+                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline"
+                        data-icon="search">search</span>
+                    <input
+                        id="globalSearch"
+                        class="pl-10 pr-4 py-1.5 bg-surface-container dark:bg-slate-800 border border-outline-variant dark:border-slate-700 rounded-full text-body-md focus:ring-2 focus:ring-primary outline-none transition-all w-64 dark:text-slate-200"
+                        placeholder="Search key or text..." type="text">
+                </div>
+                <div class="flex items-center gap-md">
+                    <button
+                        id="themeToggleBtn"
+                        class="material-symbols-outlined text-on-surface-variant dark:text-slate-400 hover:text-primary transition-colors"
+                        title="Toggle Theme">
+                        <span class="material-symbols-outlined">dark_mode</span>
+                    </button>
+                    <button
+                        class="material-symbols-outlined text-on-surface-variant dark:text-slate-400 hover:text-primary transition-colors relative">
+                        <span class="material-symbols-outlined">notifications</span>
+                        <span class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
+                    </button>
+                    <button
+                        class="material-symbols-outlined text-on-surface-variant dark:text-slate-400 hover:text-primary transition-colors">
+                        <span class="material-symbols-outlined">help</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Page Sub-Header / Workspace Context -->
+        <section class="bg-surface-container-low dark:bg-slate-900 border-b border-outline-variant dark:border-slate-800 px-lg py-md flex flex-wrap items-center justify-between gap-md">
+            <!-- Selector de Contexto (RF-01) -->
+            <div class="flex flex-wrap items-center gap-md">
+                <div class="flex items-center gap-xs">
+                    <span class="material-symbols-outlined text-primary dark:text-primary-fixed-dim">layers</span>
+                    <span class="font-label-lg uppercase tracking-wider text-on-surface-variant dark:text-slate-400">Contexto de Resolución:</span>
+                </div>
+                <!-- Tenant Selector -->
+                <div class="flex flex-col">
+                    <label class="text-[10px] text-on-surface-variant dark:text-slate-400 uppercase font-bold">Tenant</label>
+                    <select id="tenantSelect" class="bg-surface dark:bg-slate-800 border border-outline-variant dark:border-slate-700 rounded px-sm py-1 font-body-md text-sm text-on-surface dark:text-slate-200 focus:ring-primary focus:border-primary">
+                        <option value="corp_acme" selected>Acme Global (corp_acme)</option>
+                        <option value="corp_intercorp">Intercorp (corp_intercorp)</option>
+                    </select>
+                </div>
+                <span class="text-on-surface-variant dark:text-slate-600 mt-3 font-black">/</span>
+                <!-- Company Selector -->
+                <div class="flex flex-col">
+                    <label class="text-[10px] text-on-surface-variant dark:text-slate-400 uppercase font-bold">Company (Override N2)</label>
+                    <select id="companySelect" class="bg-surface dark:bg-slate-800 border border-outline-variant dark:border-slate-700 rounded px-sm py-1 font-body-md text-sm text-on-surface dark:text-slate-200 focus:ring-primary focus:border-primary">
+                        <option value="none" selected>Ninguno (Global Tenant)</option>
+                        <option value="comp_subway">Subway (comp_subway)</option>
+                        <option value="comp_interbank">Interbank (comp_interbank)</option>
+                    </select>
+                </div>
+                <span class="text-on-surface-variant dark:text-slate-600 mt-3 font-black">/</span>
+                <!-- Product Selector -->
+                <div class="flex flex-col">
+                    <label class="text-[10px] text-on-surface-variant dark:text-slate-400 uppercase font-bold">Product (Override N3)</label>
+                    <select id="productSelect" class="bg-surface dark:bg-slate-800 border border-outline-variant dark:border-slate-700 rounded px-sm py-1 font-body-md text-sm text-on-surface dark:text-slate-200 focus:ring-primary focus:border-primary">
+                        <option value="none" selected>Ninguno (Global Company/Tenant)</option>
+                        <option value="prod_banking_app">Banca Móvil App (prod_banking_app)</option>
+                        <option value="prod_portal_web">Web Portal (prod_portal_web)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Acciones Rápidas -->
+            <div class="flex items-center gap-sm">
+                <button onclick="openDiagnosticsModal()" class="flex items-center gap-xs px-md py-1.5 bg-error/10 hover:bg-error/20 border border-error/20 text-error rounded-lg font-title-md text-sm transition-all">
+                    <span class="material-symbols-outlined text-sm">warning</span>
+                    <span>Diagnostic Alert (3 Faltan)</span>
+                </button>
+                <button onclick="openImportExportModal()" class="flex items-center gap-xs px-md py-1.5 border border-outline text-on-surface dark:text-slate-200 rounded-lg font-title-md text-sm hover:bg-surface-container-high transition-colors">
+                    <span class="material-symbols-outlined text-sm">swap_vertical_circle</span>
+                    <span>Import/Export</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- Page Layout Main Content (3 Columns Grid - RF-08) -->
+        <div class="flex-1 grid grid-cols-12 overflow-hidden">
+            <!-- COL 1: Namespaces Sidebar (col-span-3) -->
+            <section class="col-span-3 border-r border-outline-variant dark:border-slate-800 bg-surface-container-lowest dark:bg-slate-900/60 flex flex-col overflow-hidden">
+                <div class="p-md border-b border-outline-variant dark:border-slate-800 flex items-center justify-between">
+                    <h3 class="font-title-lg text-on-surface dark:text-slate-200 flex items-center gap-xs">
+                        <span class="material-symbols-outlined text-primary">folder_open</span>
+                        <span>Namespaces</span>
+                    </h3>
+                    <button onclick="openAddNamespaceModal()" class="flex items-center gap-xs px-sm py-1 bg-primary text-on-primary hover:bg-primary-container rounded font-title-md text-xs transition-colors shadow">
+                        <span class="material-symbols-outlined text-xs">add</span>
+                        <span>Namespace</span>
+                    </button>
+                </div>
+                <!-- Lista de namespaces -->
+                <div id="namespacesList" class="flex-1 overflow-y-auto custom-scrollbar p-sm space-y-1">
+                    <!-- Dinámico -->
+                </div>
+                <!-- Card Informativo al Pie -->
+                <div class="p-md bg-surface-container-low dark:bg-slate-900 border-t border-outline-variant dark:border-slate-800">
+                    <div class="flex items-start gap-sm">
+                        <span class="material-symbols-outlined text-primary mt-0.5">info</span>
+                        <div>
+                            <h4 class="text-xs font-bold text-on-surface dark:text-slate-200">Estrategia de Hydration</h4>
+                            <p class="text-[11px] text-on-surface-variant dark:text-slate-400 leading-relaxed mt-1">
+                                Namespaces <b>Eager</b> se cargan en el bootstrap principal. Los <b>Lazy</b> se descargan bajo demanda (prefetching).
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- COL 2: Keys Matrix Table (col-span-6) -->
+            <section class="col-span-6 flex flex-col overflow-hidden bg-background dark:bg-slate-950">
+                <!-- Info del Namespace Seleccionado -->
+                <div class="p-md border-b border-outline-variant dark:border-slate-800 bg-surface-container-lowest dark:bg-slate-900/40 flex items-center justify-between">
+                    <div>
+                        <div class="flex items-center gap-sm">
+                            <h2 id="activeNamespaceTitle" class="font-headline-md text-on-surface dark:text-slate-200">form_registration</h2>
+                            <span id="activeNamespaceBadge" class="px-2 py-0.5 bg-primary/10 text-primary border border-primary/20 rounded-full font-label-md text-[10px]">LAZY LOADING</span>
+                        </div>
+                        <p id="activeNamespaceDesc" class="text-xs text-on-surface-variant dark:text-slate-400 mt-1">Placeholders, labels y mensajes de validación para el onboarding.</p>
+                    </div>
+                    <button onclick="openAddKeyModal()" class="flex items-center gap-xs bg-primary text-on-primary px-md py-1.5 rounded-lg font-title-md text-sm hover:shadow-lg transition-all active:scale-[0.98]">
+                        <span class="material-symbols-outlined text-sm">add_circle</span>
+                        <span>Agregar Clave</span>
+                    </button>
+                </div>
+
+                <!-- Filters & Search Interna -->
+                <div class="px-md py-sm bg-surface-container-low dark:bg-slate-900/80 border-b border-outline-variant dark:border-slate-800 flex items-center justify-between gap-sm">
+                    <div class="flex gap-xs" id="tableFilters">
+                        <button onclick="setFilter('all')" class="filter-tab px-sm py-1 bg-surface dark:bg-slate-800 border border-outline-variant dark:border-slate-700 text-primary dark:text-primary-fixed-dim rounded font-title-md text-xs shadow-sm" data-filter="all">Todas</button>
+                        <button onclick="setFilter('overridden')" class="filter-tab px-sm py-1 bg-transparent text-on-surface-variant dark:text-slate-400 hover:text-on-surface rounded font-title-md text-xs" data-filter="overridden">Sobrescritas</button>
+                        <button onclick="setFilter('missing')" class="filter-tab px-sm py-1 bg-transparent text-on-surface-variant dark:text-slate-400 hover:text-on-surface rounded font-title-md text-xs" data-filter="missing">Falta traducción</button>
+                    </div>
+                    <span id="keysCount" class="text-xs text-on-surface-variant dark:text-slate-400">Total: 4 claves</span>
+                </div>
+
+                <!-- Table Matrix container -->
+                <div class="flex-1 overflow-auto custom-scrollbar">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="text-on-surface-variant dark:text-slate-400 font-label-lg uppercase tracking-wider border-b border-outline-variant dark:border-slate-800 bg-surface-container-low/50 dark:bg-slate-900/30 text-[11px]">
+                                <th class="px-md py-3 w-1/3">Clave Técnica (`label_key`)</th>
+                                <th class="px-md py-3">es_PE</th>
+                                <th class="px-md py-3">en_US</th>
+                                <th class="px-md py-3 text-right">Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody id="keysTableBody" class="divide-y divide-outline-variant dark:divide-slate-800">
+                            <!-- Dinámico -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- COL 3: Details & Translation Drawer (col-span-3) -->
+            <section class="col-span-3 border-l border-outline-variant dark:border-slate-800 bg-surface-container-lowest dark:bg-slate-900 flex flex-col overflow-hidden">
+                <div class="p-md border-b border-outline-variant dark:border-slate-800 flex items-center justify-between">
+                    <h3 class="font-title-lg text-on-surface dark:text-slate-200 flex items-center gap-xs">
+                        <span class="material-symbols-outlined text-primary">edit_note</span>
+                        <span>Traducción &amp; Cascadas</span>
+                    </h3>
+                </div>
+
+                <!-- Panel Body -->
+                <div id="drawerBody" class="flex-1 overflow-y-auto custom-scrollbar p-md space-y-lg">
+                    <!-- Al no haber seleccionada ninguna clave -->
+                    <div id="drawerEmptyState" class="flex flex-col items-center justify-center h-full text-center p-md opacity-60">
+                        <span class="material-symbols-outlined text-[48px] text-on-surface-variant">toc</span>
+                        <p class="font-title-md mt-sm text-on-surface-variant">Selecciona una clave de la matriz para editar y evaluar sus cascadas jerárquicas.</p>
+                    </div>
+
+                    <!-- Editor de Clave -->
+                    <div id="drawerEditForm" class="hidden space-y-md">
+                        <!-- Technical Name & Tag -->
+                        <div>
+                            <div class="flex justify-between items-start">
+                                <span id="drawerKeyComponent" class="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 border border-outline-variant dark:border-slate-700 text-on-surface-variant dark:text-slate-300 rounded font-label-md text-[10px] uppercase">LABEL</span>
+                                <span class="text-[10px] font-code bg-surface-container dark:bg-slate-800 px-sm py-0.5 rounded dark:text-slate-300">ID: localized_labels</span>
+                            </div>
+                            <h4 id="drawerKeyTitle" class="font-headline-md text-primary dark:text-primary-fixed-dim mt-sm break-all font-bold">lbl_document_id</h4>
+                            <p id="drawerKeyDesc" class="text-xs text-on-surface-variant dark:text-slate-400 mt-1">Placeholder del input principal de registro.</p>
+                        </div>
+
+                        <!-- Variables (opcional) -->
+                        <div id="drawerKeyParamsContainer" class="p-sm bg-primary-container/10 border-l-2 border-primary rounded text-xs dark:text-slate-300 hidden">
+                            <span class="font-bold flex items-center gap-xs">
+                                <span class="material-symbols-outlined text-sm">settings_input_composite</span>
+                                Variables esperadas:
+                            </span>
+                            <code id="drawerKeyParams" class="font-code text-primary bg-white/60 dark:bg-slate-850 px-xs py-0.5 rounded mt-1 inline-block"></code>
+                        </div>
+
+                        <!-- Inputs por Locale -->
+                        <div class="space-y-md border-t border-outline-variant dark:border-slate-800 pt-md">
+                            <h5 class="font-title-md text-on-surface dark:text-slate-200">Traducciones en Locales Activos:</h5>
+                            <!-- es_PE -->
+                            <div class="space-y-xs">
+                                <div class="flex justify-between items-center">
+                                    <label class="font-label-lg text-on-surface-variant uppercase tracking-wider text-[10px]">es_PE (Spanish - PE)</label>
+                                    <span id="esBadge" class="text-[10px] text-green-600 dark:text-green-400 font-bold uppercase">Heredado</span>
+                                </div>
+                                <textarea id="inputEsPE" rows="2" class="w-full bg-surface dark:bg-slate-800 border border-outline-variant dark:border-slate-700 rounded-lg p-md font-body-md text-sm text-on-surface dark:text-slate-200 focus:ring-primary focus:border-primary focus:outline-none"></textarea>
+                            </div>
+                            <!-- en_US -->
+                            <div class="space-y-xs">
+                                <div class="flex justify-between items-center">
+                                    <label class="font-label-lg text-on-surface-variant uppercase tracking-wider text-[10px]">en_US (English - US)</label>
+                                    <span id="enBadge" class="text-[10px] text-green-600 dark:text-green-400 font-bold uppercase">Heredado</span>
+                                </div>
+                                <textarea id="inputEnUS" rows="2" class="w-full bg-surface dark:bg-slate-800 border border-outline-variant dark:border-slate-700 rounded-lg p-md font-body-md text-sm text-on-surface dark:text-slate-200 focus:ring-primary focus:border-primary focus:outline-none"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Árbol de Resolución / Cascada Jerárquica (RF-05) -->
+                        <div class="border-t border-outline-variant dark:border-slate-800 pt-md space-y-md">
+                            <div class="flex justify-between items-center">
+                                <h5 class="font-title-md text-on-surface dark:text-slate-200">Árbol de Resolución (Cascada)</h5>
+                                <span class="material-symbols-outlined text-on-surface-variant cursor-pointer" title="Resolución basada en la cercanía al Producto">help_outline</span>
+                            </div>
+                            <div class="space-y-sm text-xs relative pl-md">
+                                <!-- Nivel 1: Tenant -->
+                                <div class="relative flex items-center justify-between py-1 bg-surface-container-low dark:bg-slate-800 rounded px-sm">
+                                    <span class="font-bold">Nivel 1: Tenant (corp_acme)</span>
+                                    <span id="resolValTenant" class="text-[11px] text-on-surface-variant dark:text-slate-400 truncate max-w-[120px]">Documento</span>
+                                </div>
+                                <!-- Nivel 2: Company -->
+                                <div class="tree-line relative flex items-center justify-between py-1 bg-surface-container-low dark:bg-slate-800 rounded px-sm">
+                                    <span class="font-bold flex items-center gap-xs">
+                                        <span>Nivel 2: Company</span>
+                                        <span id="resolCompanyBadge" class="text-[9px] bg-slate-100 text-slate-500 rounded px-xs">No select</span>
+                                    </span>
+                                    <span id="resolValCompany" class="text-[11px] text-on-surface-variant dark:text-slate-400 italic">Hereda de Tenant</span>
+                                </div>
+                                <!-- Nivel 3: Product -->
+                                <div class="tree-line relative flex items-center justify-between py-1 bg-surface-container-low dark:bg-slate-800 rounded px-sm">
+                                    <span class="font-bold flex items-center gap-xs">
+                                        <span>Nivel 3: Product</span>
+                                        <span id="resolProductBadge" class="text-[9px] bg-slate-100 text-slate-500 rounded px-xs">No select</span>
+                                    </span>
+                                    <span id="resolValProduct" class="text-[11px] text-on-surface-variant dark:text-slate-400 italic">Hereda de Company</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Botones de Acción -->
+                        <div class="border-t border-outline-variant dark:border-slate-800 pt-md flex flex-col gap-sm">
+                            <button id="saveKeyBtn" onclick="saveKeyChanges()" class="w-full py-2 bg-primary hover:bg-primary-container text-on-primary font-title-md rounded-lg shadow transition-all flex items-center justify-center gap-xs">
+                                <span class="material-symbols-outlined text-sm">save</span>
+                                <span>Guardar Cambios</span>
+                            </button>
+                            <button id="restoreBtn" onclick="restoreInheritedValue()" class="w-full py-2 border border-outline text-on-surface dark:text-slate-200 hover:bg-surface-container-high font-title-md rounded-lg transition-colors text-xs flex items-center justify-center gap-xs">
+                                <span class="material-symbols-outlined text-sm">undo</span>
+                                <span>Eliminar Override y Heredar</span>
+                            </button>
+                            <button onclick="deleteKey()" class="w-full py-2 bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-950/20 dark:text-red-400 font-title-md rounded-lg transition-colors text-xs flex items-center justify-center gap-xs">
+                                <span class="material-symbols-outlined text-sm">delete</span>
+                                <span>Eliminar Clave de Namespace</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- MODAL: Add Namespace -->
+    <div id="addNamespaceModal" class="fixed inset-0 z-[60] flex items-center justify-center invisible">
+        <div class="absolute inset-0 bg-on-background/50 backdrop-blur-sm opacity-0 transition-opacity duration-200" onclick="closeModal('addNamespaceModal')"></div>
+        <div class="relative bg-white dark:bg-slate-900 w-[480px] rounded-xl shadow-2xl p-lg flex flex-col gap-md border border-outline-variant dark:border-slate-800 scale-95 opacity-0 transition-all duration-200 modal-content text-on-surface dark:text-slate-200">
+            <div class="flex items-center justify-between border-b border-outline-variant dark:border-slate-800 pb-sm">
+                <h3 class="font-headline-md">Crear Nuevo Namespace</h3>
+                <button onclick="closeModal('addNamespaceModal')" class="p-1 hover:bg-surface-container-high rounded-full"><span class="material-symbols-outlined">close</span></button>
+            </div>
+            <div class="space-y-sm">
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant dark:text-slate-400">Identificador (ID)</label>
+                    <input id="nsIdInput" type="text" class="w-full bg-surface-container dark:bg-slate-800 border border-outline-variant dark:border-slate-700 rounded-lg p-md font-body-md text-sm mt-1 focus:ring-primary focus:border-primary text-on-surface dark:text-slate-200" placeholder="ej: page_dashboard_profile">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant dark:text-slate-400">Estrategia de Carga</label>
+                    <select id="nsStrategyInput" class="w-full bg-surface-container dark:bg-slate-800 border border-outline-variant dark:border-slate-700 rounded-lg p-md font-body-md text-sm mt-1 focus:ring-primary focus:border-primary text-on-surface dark:text-slate-200">
+                        <option value="LAZY LOADING">Lazy Loading (Carga diferida bajo demanda)</option>
+                        <option value="CRITICAL / EAGER">Eager Loading (Carga crítica al iniciar)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant dark:text-slate-400">Descripción</label>
+                    <textarea id="nsDescInput" rows="2" class="w-full bg-surface-container dark:bg-slate-800 border border-outline-variant dark:border-slate-700 rounded-lg p-md font-body-md text-sm mt-1 focus:ring-primary focus:border-primary text-on-surface dark:text-slate-200" placeholder="Describe brevemente el alcance de este namespace..."></textarea>
+                </div>
+            </div>
+            <div class="flex justify-end gap-md pt-sm border-t border-outline-variant dark:border-slate-800">
+                <button onclick="closeModal('addNamespaceModal')" class="px-md py-sm border border-outline rounded-lg text-sm hover:bg-surface-container-high transition-colors">Cancelar</button>
+                <button onclick="saveNamespace()" class="px-md py-sm bg-primary text-on-primary hover:bg-primary-container rounded-lg text-sm transition-colors">Crear Namespace</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Add Key -->
+    <div id="addKeyModal" class="fixed inset-0 z-[60] flex items-center justify-center invisible">
+        <div class="absolute inset-0 bg-on-background/50 backdrop-blur-sm opacity-0 transition-opacity duration-200" onclick="closeModal('addKeyModal')"></div>
+        <div class="relative bg-white dark:bg-slate-900 w-[500px] rounded-xl shadow-2xl p-lg flex flex-col gap-md border border-outline-variant dark:border-slate-800 scale-95 opacity-0 transition-all duration-200 modal-content text-on-surface dark:text-slate-200">
+            <div class="flex items-center justify-between border-b border-outline-variant dark:border-slate-800 pb-sm">
+                <h3 class="font-headline-md">Agregar Clave al Namespace</h3>
+                <button onclick="closeModal('addKeyModal')" class="p-1 hover:bg-surface-container-high rounded-full"><span class="material-symbols-outlined">close</span></button>
+            </div>
+            <div class="space-y-sm">
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant dark:text-slate-400">Nombre de Clave (`label_key`)</label>
+                    <input id="keyNameInput" type="text" class="w-full bg-surface-container dark:bg-slate-800 border border-outline-variant dark:border-slate-700 rounded-lg p-md font-body-md text-sm mt-1 focus:ring-primary focus:border-primary text-on-surface dark:text-slate-200" placeholder="ej: lbl_submit_button">
+                </div>
+                <div class="grid grid-cols-2 gap-sm">
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant dark:text-slate-400">Tipo de Componente</label>
+                        <select id="keyTypeInput" class="w-full bg-surface-container dark:bg-slate-800 border border-outline-variant dark:border-slate-700 rounded-lg p-md font-body-md text-sm mt-1 focus:ring-primary focus:border-primary text-on-surface dark:text-slate-200">
+                            <option value="LABEL">Label</option>
+                            <option value="PLACEHOLDER">Placeholder</option>
+                            <option value="VALIDATION">Validation Message</option>
+                            <option value="TOOLTIP">Tooltip</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant dark:text-slate-400">Variables (opcional)</label>
+                        <input id="keyParamsInput" type="text" class="w-full bg-surface-container dark:bg-slate-800 border border-outline-variant dark:border-slate-700 rounded-lg p-md font-body-md text-sm mt-1 focus:ring-primary focus:border-primary text-on-surface dark:text-slate-200" placeholder="ej: {min}, {username}">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant dark:text-slate-400">Descripción del Contexto</label>
+                    <input id="keyDescInput" type="text" class="w-full bg-surface-container dark:bg-slate-800 border border-outline-variant dark:border-slate-700 rounded-lg p-md font-body-md text-sm mt-1 focus:ring-primary focus:border-primary text-on-surface dark:text-slate-200" placeholder="ej: Botón principal de login en pantalla inicio.">
+                </div>
+                <div class="grid grid-cols-2 gap-sm border-t border-outline-variant dark:border-slate-800 pt-md">
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant dark:text-slate-400">es_PE (Valor)</label>
+                        <textarea id="keyEsInput" rows="2" class="w-full bg-surface-container dark:bg-slate-800 border border-outline-variant dark:border-slate-700 rounded-lg p-md font-body-md text-sm mt-1 focus:ring-primary focus:border-primary text-on-surface dark:text-slate-200" placeholder="Valor en Español..."></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant dark:text-slate-400">en_US (Valor)</label>
+                        <textarea id="keyEnInput" rows="2" class="w-full bg-surface-container dark:bg-slate-800 border border-outline-variant dark:border-slate-700 rounded-lg p-md font-body-md text-sm mt-1 focus:ring-primary focus:border-primary text-on-surface dark:text-slate-200" placeholder="Valor en Inglés..."></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="flex justify-end gap-md pt-sm border-t border-outline-variant dark:border-slate-800">
+                <button onclick="closeModal('addKeyModal')" class="px-md py-sm border border-outline rounded-lg text-sm hover:bg-surface-container-high transition-colors">Cancelar</button>
+                <button onclick="saveKey()" class="px-md py-sm bg-primary text-on-primary hover:bg-primary-container rounded-lg text-sm transition-colors">Añadir Clave</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Import / Export -->
+    <div id="importExportModal" class="fixed inset-0 z-[60] flex items-center justify-center invisible">
+        <div class="absolute inset-0 bg-on-background/50 backdrop-blur-sm opacity-0 transition-opacity duration-200" onclick="closeModal('importExportModal')"></div>
+        <div class="relative bg-white dark:bg-slate-900 w-[520px] rounded-xl shadow-2xl p-lg flex flex-col gap-md border border-outline-variant dark:border-slate-800 scale-95 opacity-0 transition-all duration-200 modal-content text-on-surface dark:text-slate-200">
+            <div class="flex items-center justify-between border-b border-outline-variant dark:border-slate-800 pb-sm">
+                <h3 class="font-headline-md">Importador / Exportador</h3>
+                <button onclick="closeModal('importExportModal')" class="p-1 hover:bg-surface-container-high rounded-full"><span class="material-symbols-outlined">close</span></button>
+            </div>
+            <!-- Tabs Internas -->
+            <div class="flex border-b border-outline-variant dark:border-slate-800">
+                <button class="flex-1 py-2 font-title-md border-b-2 border-primary text-primary" id="btnTabImport" onclick="switchIE('import')">Importar JSON/CSV</button>
+                <button class="flex-1 py-2 font-title-md text-on-surface-variant dark:text-slate-400 hover:text-on-surface" id="btnTabExport" onclick="switchIE('export')">Exportar Namespace</button>
+            </div>
+            <!-- Contenido Importar -->
+            <div id="ieImportContent" class="space-y-md py-md">
+                <p class="text-xs text-on-surface-variant dark:text-slate-400">Sube un archivo de traducción de etiquetas. El sistema evaluará conflictos y presentará un resumen antes de la inyección.</p>
+                <div class="h-32 border-2 border-dashed border-outline-variant dark:border-slate-700 rounded-lg flex flex-col items-center justify-center hover:bg-surface-container dark:hover:bg-slate-800 cursor-pointer transition-colors group">
+                    <span class="material-symbols-outlined text-outline mb-xs">upload_file</span>
+                    <span class="text-xs text-on-surface font-bold">Arrastra un archivo JSON o CSV</span>
+                    <span class="text-[10px] text-on-surface-variant dark:text-slate-400 mt-1">Soporta formatos UTF-8 (Máx 4MB)</span>
+                </div>
+                <div class="flex justify-between items-center bg-primary-container/10 p-sm border-l-2 border-primary rounded text-xs dark:text-slate-300">
+                    <span>Estrategia de conflicto:</span>
+                    <select class="bg-white dark:bg-slate-800 border border-outline-variant dark:border-slate-700 rounded px-sm py-0.5 text-xs">
+                        <option>Sobrescribir existentes (Overwrite)</option>
+                        <option>Mantener existentes (Skip)</option>
+                    </select>
+                </div>
+            </div>
+            <!-- Contenido Exportar -->
+            <div id="ieExportContent" class="space-y-md py-md hidden">
+                <p class="text-xs text-on-surface-variant dark:text-slate-400">Descarga las claves y traducciones asociadas al namespace seleccionado en tu contexto activo.</p>
+                <div class="grid grid-cols-2 gap-sm">
+                    <button class="p-md border border-outline-variant dark:border-slate-700 rounded-lg hover:border-primary flex flex-col items-center gap-xs bg-surface-container-low dark:bg-slate-800 transition-colors">
+                        <span class="material-symbols-outlined text-primary text-3xl">data_object</span>
+                        <span class="font-bold text-sm">Formato JSON</span>
+                        <span class="text-[10px] text-on-surface-variant dark:text-slate-400">Ideal para bootstrapping en SDK</span>
+                    </button>
+                    <button class="p-md border border-outline-variant dark:border-slate-700 rounded-lg hover:border-primary flex flex-col items-center gap-xs bg-surface-container-low dark:bg-slate-800 transition-colors">
+                        <span class="material-symbols-outlined text-green-600 text-3xl">table_chart</span>
+                        <span class="font-bold text-sm">Formato CSV</span>
+                        <span class="text-[10px] text-on-surface-variant dark:text-slate-400">Ideal para agencias de traducción</span>
+                    </button>
+                </div>
+            </div>
+            <div class="flex justify-end gap-md pt-sm border-t border-outline-variant dark:border-slate-800">
+                <button onclick="closeModal('importExportModal')" class="px-md py-sm border border-outline rounded-lg text-sm hover:bg-surface-container-high transition-colors">Cerrar</button>
+                <button onclick="triggerImport()" id="btnActionIE" class="px-md py-sm bg-primary text-on-primary hover:bg-primary-container rounded-lg text-sm transition-colors">Analizar Archivo</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Diagnostics & Missing Keys -->
+    <div id="diagnosticsModal" class="fixed inset-0 z-[60] flex items-center justify-center invisible">
+        <div class="absolute inset-0 bg-on-background/50 backdrop-blur-sm opacity-0 transition-opacity duration-200" onclick="closeModal('diagnosticsModal')"></div>
+        <div class="relative bg-white dark:bg-slate-900 w-[600px] rounded-xl shadow-2xl p-lg flex flex-col gap-md border border-outline-variant dark:border-slate-800 scale-95 opacity-0 transition-all duration-200 modal-content text-on-surface dark:text-slate-200">
+            <div class="flex items-center justify-between border-b border-outline-variant dark:border-slate-800 pb-sm">
+                <div class="flex items-center gap-sm">
+                    <span class="material-symbols-outlined text-error">warning</span>
+                    <h3 class="font-headline-md">Missing Keys Diagnostic Panel</h3>
+                </div>
+                <button onclick="closeModal('diagnosticsModal')" class="p-1 hover:bg-surface-container-high rounded-full"><span class="material-symbols-outlined">close</span></button>
+            </div>
+            <p class="text-xs text-on-surface-variant dark:text-slate-400">Estas claves técnicas han sido solicitadas por los SDKs clientes en producción o staging, pero no existen traducciones registradas en el namespace correspondiente de la base de datos.</p>
+            <!-- Missing Keys List Table -->
+            <div class="overflow-x-auto border border-outline-variant dark:border-slate-800 rounded-lg max-h-64 custom-scrollbar">
+                <table class="w-full text-left text-xs">
+                    <thead>
+                        <tr class="bg-surface-container-low dark:bg-slate-800 text-on-surface-variant dark:text-slate-400 uppercase tracking-wider font-bold">
+                            <th class="p-sm">Namespace</th>
+                            <th class="p-sm">Clave Faltante</th>
+                            <th class="p-sm">Hits</th>
+                            <th class="p-sm">Último Reporte</th>
+                            <th class="p-sm text-right">Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-outline-variant dark:divide-slate-800">
+                        <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40">
+                            <td class="p-sm font-code">form_registration</td>
+                            <td class="p-sm font-code font-bold text-red-600">lbl_terms</td>
+                            <td class="p-sm">241</td>
+                            <td class="p-sm">Hace 2m</td>
+                            <td class="p-sm text-right">
+                                <button onclick="quickCreateMissing('form_registration', 'lbl_terms')" class="px-sm py-0.5 bg-primary text-on-primary rounded font-bold text-[10px]">CREAR</button>
+                            </td>
+                        </tr>
+                        <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40">
+                            <td class="p-sm font-code">common</td>
+                            <td class="p-sm font-code font-bold text-red-600">btn_back_home</td>
+                            <td class="p-sm">189</td>
+                            <td class="p-sm">Hace 15m</td>
+                            <td class="p-sm text-right">
+                                <button onclick="quickCreateMissing('common', 'btn_back_home')" class="px-sm py-0.5 bg-primary text-on-primary rounded font-bold text-[10px]">CREAR</button>
+                            </td>
+                        </tr>
+                        <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40">
+                            <td class="p-sm font-code">page_dashboard</td>
+                            <td class="p-sm font-code font-bold text-red-600">lbl_announcement_promo</td>
+                            <td class="p-sm">54</td>
+                            <td class="p-sm">Hace 1h</td>
+                            <td class="p-sm text-right">
+                                <button onclick="quickCreateMissing('page_dashboard', 'lbl_announcement_promo')" class="px-sm py-0.5 bg-primary text-on-primary rounded font-bold text-[10px]">CREAR</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="flex justify-between items-center text-[10px] text-on-surface-variant">
+                <span>* Las alertas se limpian automáticamente cuando la clave se añade a la base de datos.</span>
+                <button class="text-primary hover:underline">Limpiar Diagnósticos</button>
+            </div>
+            <div class="flex justify-end pt-sm border-t border-outline-variant dark:border-slate-800">
+                <button onclick="closeModal('diagnosticsModal')" class="px-md py-sm bg-primary text-on-primary hover:bg-primary-container rounded-lg text-sm transition-colors">Listo</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="fixed bottom-md right-md bg-inverse-surface text-inverse-on-surface dark:bg-slate-800 dark:text-slate-100 px-lg py-md rounded-xl shadow-2xl flex items-center gap-sm transform translate-y-20 opacity-0 transition-all duration-300 z-[70] max-w-sm">
+        <span class="material-symbols-outlined text-green-500" id="toastIcon">check_circle</span>
+        <span class="text-sm font-title-md" id="toastMessage">Guardado con éxito</span>
+    </div>
+
+    <script>
+        // --- ESTADO LOCAL MOCKUP ---
+        const namespaces = [
+            { id: "common", strategy: "CRITICAL / EAGER", desc: "Textos transversales del sistema cargados al iniciar la app.", keysCount: 45, translatedPct: 100 },
+            { id: "page_dashboard", strategy: "LAZY LOADING", desc: "Etiquetas específicas del panel principal.", keysCount: 22, translatedPct: 95 },
+            { id: "form_registration", strategy: "LAZY LOADING", desc: "Placeholders, labels y mensajes de validación para el onboarding.", keysCount: 4, translatedPct: 80 }
+        ];
+
+        const initialKeys = [
+            {
+                namespace: "form_registration",
+                key: "lbl_document_id",
+                type: "LABEL",
+                params: "",
+                desc: "Label indicador para ingresar el documento nacional.",
+                translations: {
+                    tenant: { es_PE: "Documento de Identidad", en_US: "Identity Document" },
+                    company: { es_PE: null, en_US: null },
+                    product: { es_PE: null, en_US: null }
+                }
+            },
+            {
+                namespace: "form_registration",
+                key: "plh_document_id",
+                type: "PLACEHOLDER",
+                params: "",
+                desc: "Texto interno sugerido del campo documento.",
+                translations: {
+                    tenant: { es_PE: "Ingrese su documento", en_US: "Enter your document" },
+                    company: { es_PE: "Ingrese documento de Subway", en_US: "Enter Subway document ID" },
+                    product: { es_PE: null, en_US: null }
+                }
+            },
+            {
+                namespace: "form_registration",
+                key: "val_email_invalid",
+                type: "VALIDATION",
+                params: "",
+                desc: "Mensaje de validación para formato erróneo de email.",
+                translations: {
+                    tenant: { es_PE: "Formato de correo incorrecto", en_US: "Invalid email formatting" },
+                    company: { es_PE: null, en_US: null },
+                    product: { es_PE: "Correo inválido para Banca Móvil", en_US: "Invalid Mobile Banking email address" }
+                }
+            },
+            {
+                namespace: "form_registration",
+                key: "val_min_chars",
+                type: "VALIDATION",
+                params: "{min}",
+                desc: "Error arrojado por campo que no cumple longitud mínima.",
+                translations: {
+                    tenant: { es_PE: "El campo debe tener al menos {min} caracteres", en_US: "The input must have at least {min} characters" },
+                    company: { es_PE: null, en_US: null },
+                    product: { es_PE: null, en_US: null }
+                }
+            },
+            {
+                namespace: "common",
+                key: "btn_accept",
+                type: "LABEL",
+                params: "",
+                desc: "Botón primario genérico de confirmación.",
+                translations: {
+                    tenant: { es_PE: "Aceptar", en_US: "Accept" },
+                    company: { es_PE: "Aceptar Subway", en_US: "Accept Subway" },
+                    product: { es_PE: null, en_US: null }
+                }
+            }
+        ];
+
+        let keys = [...initialKeys];
+        let currentNamespace = "form_registration";
+        let activeFilter = "all";
+        let selectedKey = null;
+
+        // Contextos de Resolución
+        let currentTenant = "corp_acme";
+        let currentCompany = "none";
+        let currentProduct = "none";
+
+        // --- MANEJO DOM & RENDER ---
+        document.addEventListener("DOMContentLoaded", () => {
+            renderNamespaces();
+            renderKeys();
+            setupContextChange();
+            setupTheme();
+        });
+
+        function renderNamespaces() {
+            const list = document.getElementById("namespacesList");
+            list.innerHTML = "";
+            namespaces.forEach(ns => {
+                const isActive = ns.id === currentNamespace;
+                const isFormReg = ns.id === "form_registration";
+                
+                const item = document.createElement("div");
+                item.className = `flex justify-between items-center p-md cursor-pointer transition-all rounded-lg border ${
+                    isActive 
+                        ? "bg-primary/10 border-primary/20 text-primary dark:bg-slate-800 dark:border-slate-700 dark:text-primary-fixed-dim" 
+                        : "bg-surface-container-lowest border-outline-variant hover:bg-surface-container-low text-on-surface dark:bg-slate-900/40 dark:border-slate-800 dark:text-slate-300 dark:hover:bg-slate-800"
+                }`;
+                item.onclick = () => selectNamespace(ns.id);
+                
+                item.innerHTML = `
+                    <div class="flex flex-col gap-xs overflow-hidden">
+                        <span class="font-bold text-sm truncate flex items-center gap-xs">
+                            ${ns.id}
+                            ${isFormReg ? `<span class="w-2 h-2 rounded-full bg-red-500" title="Missing keys reported"></span>` : ''}
+                        </span>
+                        <span class="text-[10px] text-on-surface-variant dark:text-slate-400 uppercase tracking-wider">${ns.strategy}</span>
+                    </div>
+                    <div class="flex flex-col items-end gap-xs">
+                        <span class="font-code text-xs font-bold">${ns.keysCount} keys</span>
+                        <span class="text-[9px] px-1 bg-green-100 text-green-700 dark:bg-green-950/30 dark:text-green-400 rounded-full font-bold">${ns.translatedPct}% tr.</span>
+                    </div>
+                `;
+                list.appendChild(item);
+            });
+        }
+
+        function renderKeys() {
+            const tbody = document.getElementById("keysTableBody");
+            tbody.innerHTML = "";
+
+            const filteredKeys = keys.filter(k => {
+                // Filtro Namespace
+                if (k.namespace !== currentNamespace) return false;
+
+                // Filtro de Búsqueda
+                const searchVal = document.getElementById("globalSearch").value.toLowerCase();
+                const matchesSearch = k.key.toLowerCase().includes(searchVal) || 
+                                      getResolvedVal(k, "es_PE").toLowerCase().includes(searchVal) || 
+                                      getResolvedVal(k, "en_US").toLowerCase().includes(searchVal);
+                if (!matchesSearch) return false;
+
+                // Filtro Tab (RF-03)
+                if (activeFilter === "overridden") {
+                    return hasOverrides(k);
+                } else if (activeFilter === "missing") {
+                    // Simular missing si es en_US está vacío o no completado
+                    return getResolvedVal(k, "en_US") === "" || getResolvedVal(k, "es_PE") === "";
+                }
+                return true;
+            });
+
+            document.getElementById("keysCount").innerText = `Total: ${filteredKeys.length} claves`;
+
+            if (filteredKeys.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="4" class="p-lg text-center text-on-surface-variant dark:text-slate-500 italic">No se encontraron claves para el filtro/búsqueda activo.</td>
+                    </tr>
+                `;
+                return;
+            }
+
+            filteredKeys.forEach(k => {
+                const isSelected = selectedKey && selectedKey.key === k.key;
+                const isOverridden = hasOverrides(k);
+                
+                const row = document.createElement("tr");
+                row.className = `cursor-pointer transition-colors border-b border-outline-variant dark:border-slate-800 ${
+                    isSelected 
+                        ? "bg-primary-container/10 dark:bg-slate-900" 
+                        : "hover:bg-surface-container-low dark:hover:bg-slate-900/40"
+                }`;
+                row.onclick = () => selectKey(k);
+
+                // Determinar el tag de estado a pintar en la derecha (RF-05)
+                let statusBadge = `<span class="px-2 py-0.5 bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400 rounded-full text-[9px] font-bold uppercase">Heredado</span>`;
+                if (currentProduct !== "none" && k.translations.product.es_PE !== null) {
+                    statusBadge = `<span class="px-2 py-0.5 bg-green-100 text-green-700 dark:bg-green-950/30 dark:text-green-400 rounded-full text-[9px] font-bold uppercase">Product Override</span>`;
+                } else if (currentCompany !== "none" && k.translations.company.es_PE !== null) {
+                    statusBadge = `<span class="px-2 py-0.5 bg-blue-100 text-blue-700 dark:bg-blue-950/30 dark:text-blue-400 rounded-full text-[9px] font-bold uppercase">Company Override</span>`;
+                }
+
+                row.innerHTML = `
+                    <td class="px-md py-3 font-code font-bold text-sm text-on-surface dark:text-slate-200">
+                        <div class="flex items-center gap-xs">
+                            ${k.key}
+                            ${k.params ? `<span class="px-1.5 py-0.2 bg-amber-100 text-amber-800 dark:bg-amber-950/20 dark:text-amber-400 rounded text-[9px] font-bold" title="Variables: ${k.params}">${k.params}</span>` : ''}
+                        </div>
+                    </td>
+                    <td class="px-md py-3 text-xs text-on-surface-variant dark:text-slate-400 truncate max-w-[150px]" title="${getResolvedVal(k, "es_PE")}">${getResolvedVal(k, "es_PE") || `<span class="text-red-500 font-bold italic">Missing</span>`}</td>
+                    <td class="px-md py-3 text-xs text-on-surface-variant dark:text-slate-400 truncate max-w-[150px]" title="${getResolvedVal(k, "en_US")}">${getResolvedVal(k, "en_US") || `<span class="text-red-500 font-bold italic">Missing</span>`}</td>
+                    <td class="px-md py-3 text-right">${statusBadge}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Retorna el valor en cascada jerárquica
+        function getResolvedVal(k, locale) {
+            // Nivel 3: Product Override
+            if (currentProduct !== "none" && k.translations.product[locale] !== null) {
+                return k.translations.product[locale];
+            }
+            // Nivel 2: Company Override
+            if (currentCompany !== "none" && k.translations.company[locale] !== null) {
+                return k.translations.company[locale];
+            }
+            // Nivel 1: Tenant Base
+            return k.translations.tenant[locale] || "";
+        }
+
+        function hasOverrides(k) {
+            return k.translations.product.es_PE !== null || k.translations.company.es_PE !== null;
+        }
+
+        // --- SELECCIONES E INTERACCIONES ---
+        function selectNamespace(nsId) {
+            currentNamespace = nsId;
+            const nsObj = namespaces.find(n => n.id === nsId);
+            document.getElementById("activeNamespaceTitle").innerText = nsObj.id;
+            document.getElementById("activeNamespaceBadge").innerText = nsObj.strategy;
+            document.getElementById("activeNamespaceDesc").innerText = nsObj.desc;
+            selectedKey = null;
+            updateDrawer();
+            renderNamespaces();
+            renderKeys();
+        }
+
+        function selectKey(k) {
+            selectedKey = k;
+            updateDrawer();
+            renderKeys();
+        }
+
+        function updateDrawer() {
+            const form = document.getElementById("drawerEditForm");
+            const empty = document.getElementById("drawerEmptyState");
+
+            if (!selectedKey) {
+                form.classList.add("hidden");
+                empty.classList.remove("hidden");
+                return;
+            }
+
+            form.classList.remove("hidden");
+            empty.classList.add("hidden");
+
+            // Metadatos
+            document.getElementById("drawerKeyTitle").innerText = selectedKey.key;
+            document.getElementById("drawerKeyComponent").innerText = selectedKey.type;
+            document.getElementById("drawerKeyDesc").innerText = selectedKey.desc;
+
+            // Parámetros
+            const paramsBox = document.getElementById("drawerKeyParamsContainer");
+            if (selectedKey.params) {
+                paramsBox.classList.remove("hidden");
+                document.getElementById("drawerKeyParams").innerText = selectedKey.params;
+            } else {
+                paramsBox.classList.add("hidden");
+            }
+
+            // Valores en textarea (cargar el valor correspondiente al contexto actual)
+            // Para permitir saber si está editando override o base, visualizaremos badges
+            const esVal = getResolvedVal(selectedKey, "es_PE");
+            const enVal = getResolvedVal(selectedKey, "en_US");
+
+            document.getElementById("inputEsPE").value = esVal;
+            document.getElementById("inputEnUS").value = enVal;
+
+            // Badges del nivel de traducción en los campos (RF-05)
+            const esBadge = document.getElementById("esBadge");
+            const enBadge = document.getElementById("enBadge");
+
+            if (currentProduct !== "none" && selectedKey.translations.product.es_PE !== null) {
+                esBadge.className = "text-[10px] text-green-600 dark:text-green-400 font-bold uppercase";
+                esBadge.innerText = "Override Product";
+                enBadge.className = "text-[10px] text-green-600 dark:text-green-400 font-bold uppercase";
+                enBadge.innerText = "Override Product";
+            } else if (currentCompany !== "none" && selectedKey.translations.company.es_PE !== null) {
+                esBadge.className = "text-[10px] text-blue-600 dark:text-blue-400 font-bold uppercase";
+                esBadge.innerText = "Override Company";
+                enBadge.className = "text-[10px] text-blue-600 dark:text-blue-400 font-bold uppercase";
+                enBadge.innerText = "Override Company";
+            } else {
+                esBadge.className = "text-[10px] text-slate-500 font-bold uppercase";
+                esBadge.innerText = "Heredado de Tenant";
+                enBadge.className = "text-[10px] text-slate-500 font-bold uppercase";
+                enBadge.innerText = "Heredado de Tenant";
+            }
+
+            // Árbol de resolución valores text
+            document.getElementById("resolValTenant").innerText = selectedKey.translations.tenant.es_PE || "[Vacío]";
+            
+            const resolCompanyBadge = document.getElementById("resolCompanyBadge");
+            const resolProductBadge = document.getElementById("resolProductBadge");
+
+            // Nivel Company
+            if (currentCompany !== "none") {
+                resolCompanyBadge.innerText = currentCompany;
+                resolCompanyBadge.className = "text-[9px] bg-blue-100 text-blue-700 rounded px-xs font-bold";
+                document.getElementById("resolValCompany").innerText = selectedKey.translations.company.es_PE || "Hereda del Tenant";
+            } else {
+                resolCompanyBadge.innerText = "No select";
+                resolCompanyBadge.className = "text-[9px] bg-slate-100 text-slate-500 rounded px-xs";
+                document.getElementById("resolValCompany").innerText = "Hereda de Tenant (Nivel superior)";
+            }
+
+            // Nivel Product
+            if (currentProduct !== "none") {
+                resolProductBadge.innerText = currentProduct;
+                resolProductBadge.className = "text-[9px] bg-green-100 text-green-700 rounded px-xs font-bold";
+                document.getElementById("resolValProduct").innerText = selectedKey.translations.product.es_PE || "Hereda de Company / Tenant";
+            } else {
+                resolProductBadge.innerText = "No select";
+                resolProductBadge.className = "text-[9px] bg-slate-100 text-slate-500 rounded px-xs";
+                document.getElementById("resolValProduct").innerText = "Hereda de Company / Tenant (Nivel superior)";
+            }
+
+            // Botón Restore habilitado solo si hay overrides
+            const restoreBtn = document.getElementById("restoreBtn");
+            if (hasOverrides(selectedKey)) {
+                restoreBtn.classList.remove("opacity-50");
+                restoreBtn.disabled = false;
+            } else {
+                restoreBtn.classList.add("opacity-50");
+                restoreBtn.disabled = true;
+            }
+        }
+
+        function saveKeyChanges() {
+            if (!selectedKey) return;
+            const newEs = document.getElementById("inputEsPE").value;
+            const newEn = document.getElementById("inputEnUS").value;
+
+            // Validar que los parámetros se incluyan (RF-04)
+            if (selectedKey.params) {
+                const param = selectedKey.params;
+                if (!newEs.includes(param) || !newEn.includes(param)) {
+                    showToast(`Error: Falta la variable ${param} en alguna traducción`, "error");
+                    return;
+                }
+            }
+
+            // Guardar según contexto activo
+            if (currentProduct !== "none") {
+                selectedKey.translations.product.es_PE = newEs;
+                selectedKey.translations.product.en_US = newEn;
+            } else if (currentCompany !== "none") {
+                selectedKey.translations.company.es_PE = newEs;
+                selectedKey.translations.company.en_US = newEn;
+            } else {
+                selectedKey.translations.tenant.es_PE = newEs;
+                selectedKey.translations.tenant.en_US = newEn;
+            }
+
+            // Simular WebSocket invalidation & updates
+            showToast(`Caché invalidada para namespace: ${selectedKey.namespace}. Actualizando clientes...`);
+            
+            renderKeys();
+            updateDrawer();
+        }
+
+        function restoreInheritedValue() {
+            if (!selectedKey) return;
+            // Remover overrides según el contexto o remover todos
+            if (currentProduct !== "none") {
+                selectedKey.translations.product.es_PE = null;
+                selectedKey.translations.product.en_US = null;
+                showToast("Override de Producto removido. Volviendo a herencia.");
+            } else if (currentCompany !== "none") {
+                selectedKey.translations.company.es_PE = null;
+                selectedKey.translations.company.en_US = null;
+                showToast("Override de Compañía removido. Volviendo a herencia.");
+            } else {
+                showToast("Para eliminar claves del Tenant use el botón de eliminación.");
+                return;
+            }
+            renderKeys();
+            updateDrawer();
+        }
+
+        function deleteKey() {
+            if (!selectedKey) return;
+            if (confirm(`¿Estás seguro de que deseas eliminar permanentemente la clave '${selectedKey.key}' de '${selectedKey.namespace}'?`)) {
+                keys = keys.filter(k => k.key !== selectedKey.key);
+                showToast(`Clave ${selectedKey.key} eliminada.`);
+                selectedKey = null;
+                updateDrawer();
+                renderKeys();
+            }
+        }
+
+        // --- CONTEXT SELECT CHANGE ---
+        function setupContextChange() {
+            const tenant = document.getElementById("tenantSelect");
+            const company = document.getElementById("companySelect");
+            const product = document.getElementById("productSelect");
+
+            tenant.addEventListener("change", (e) => {
+                currentTenant = e.target.value;
+                showToast(`Cargando perfiles para tenant: ${currentTenant}`);
+                renderKeys();
+                updateDrawer();
+            });
+
+            company.addEventListener("change", (e) => {
+                currentCompany = e.target.value;
+                showToast(`Contexto de Compañía cambiado a: ${currentCompany}`);
+                renderKeys();
+                updateDrawer();
+            });
+
+            product.addEventListener("change", (e) => {
+                currentProduct = e.target.value;
+                showToast(`Contexto de Producto cambiado a: ${currentProduct}`);
+                renderKeys();
+                updateDrawer();
+            });
+
+            // Input Global Search
+            document.getElementById("globalSearch").addEventListener("input", () => {
+                renderKeys();
+            });
+        }
+
+        // Filtro Tabs
+        function setFilter(filterType) {
+            activeFilter = filterType;
+            document.querySelectorAll(".filter-tab").forEach(btn => {
+                if (btn.getAttribute("data-filter") === filterType) {
+                    btn.className = "filter-tab px-sm py-1 bg-surface dark:bg-slate-800 border border-outline-variant dark:border-slate-700 text-primary dark:text-primary-fixed-dim rounded font-title-md text-xs shadow-sm";
+                } else {
+                    btn.className = "filter-tab px-sm py-1 bg-transparent text-on-surface-variant dark:text-slate-400 hover:text-on-surface rounded font-title-md text-xs";
+                }
+            });
+            renderKeys();
+        }
+
+        // --- MODALS ACTIONS ---
+        function openModal(id) {
+            const modal = document.getElementById(id);
+            const content = modal.querySelector(".modal-content");
+            const backdrop = modal.querySelector(".absolute");
+            modal.classList.remove("invisible");
+            setTimeout(() => {
+                content.classList.remove("scale-95", "opacity-0");
+                backdrop.classList.remove("opacity-0");
+            }, 10);
+        }
+
+        function closeModal(id) {
+            const modal = document.getElementById(id);
+            const content = modal.querySelector(".modal-content");
+            const backdrop = modal.querySelector(".absolute");
+            content.classList.add("scale-95", "opacity-0");
+            backdrop.classList.add("opacity-0");
+            setTimeout(() => {
+                modal.classList.add("invisible");
+            }, 200);
+        }
+
+        // Add Namespace
+        function openAddNamespaceModal() {
+            openModal("addNamespaceModal");
+        }
+
+        function saveNamespace() {
+            const id = document.getElementById("nsIdInput").value;
+            const strategy = document.getElementById("nsStrategyInput").value;
+            const desc = document.getElementById("nsDescInput").value;
+
+            if (!id) {
+                showToast("Por favor ingresa un identificador", "error");
+                return;
+            }
+
+            namespaces.push({ id, strategy, desc, keysCount: 0, translatedPct: 0 });
+            showToast(`Namespace '${id}' creado con éxito.`);
+            closeModal("addNamespaceModal");
+            renderNamespaces();
+            
+            // Limpiar
+            document.getElementById("nsIdInput").value = "";
+            document.getElementById("nsDescInput").value = "";
+        }
+
+        // Add Key
+        function openAddKeyModal() {
+            openModal("addKeyModal");
+        }
+
+        function saveKey() {
+            const name = document.getElementById("keyNameInput").value;
+            const type = document.getElementById("keyTypeInput").value;
+            const params = document.getElementById("keyParamsInput").value;
+            const desc = document.getElementById("keyDescInput").value;
+            const esVal = document.getElementById("keyEsInput").value;
+            const enVal = document.getElementById("keyEnInput").value;
+
+            if (!name) {
+                showToast("Por favor ingresa el nombre de la clave", "error");
+                return;
+            }
+
+            const newKey = {
+                namespace: currentNamespace,
+                key: name,
+                type: type,
+                params: params,
+                desc: desc,
+                translations: {
+                    tenant: { es_PE: esVal, en_US: enVal },
+                    company: { es_PE: null, en_US: null },
+                    product: { es_PE: null, en_US: null }
+                }
+            };
+
+            keys.push(newKey);
+            showToast(`Clave '${name}' agregada al namespace ${currentNamespace}`);
+            closeModal("addKeyModal");
+            renderKeys();
+
+            // Actualizar contador del namespace
+            const ns = namespaces.find(n => n.id === currentNamespace);
+            if (ns) {
+                ns.keysCount++;
+                renderNamespaces();
+            }
+
+            // Limpiar inputs
+            document.getElementById("keyNameInput").value = "";
+            document.getElementById("keyParamsInput").value = "";
+            document.getElementById("keyDescInput").value = "";
+            document.getElementById("keyEsInput").value = "";
+            document.getElementById("keyEnInput").value = "";
+        }
+
+        // Import / Export
+        function openImportExportModal() {
+            openModal("importExportModal");
+        }
+
+        let ieMode = "import";
+        function switchIE(mode) {
+            ieMode = mode;
+            const btnImport = document.getElementById("btnTabImport");
+            const btnExport = document.getElementById("btnTabExport");
+            const importContent = document.getElementById("ieImportContent");
+            const exportContent = document.getElementById("ieExportContent");
+            const actionBtn = document.getElementById("btnActionIE");
+
+            if (mode === "import") {
+                btnImport.className = "flex-1 py-2 font-title-md border-b-2 border-primary text-primary";
+                btnExport.className = "flex-1 py-2 font-title-md text-on-surface-variant dark:text-slate-400 hover:text-on-surface";
+                importContent.classList.remove("hidden");
+                exportContent.classList.add("hidden");
+                actionBtn.innerText = "Analizar Archivo";
+            } else {
+                btnExport.className = "flex-1 py-2 font-title-md border-b-2 border-primary text-primary";
+                btnImport.className = "flex-1 py-2 font-title-md text-on-surface-variant dark:text-slate-400 hover:text-on-surface";
+                importContent.classList.add("hidden");
+                exportContent.classList.remove("hidden");
+                actionBtn.innerText = "Descargar Pack";
+            }
+        }
+
+        function triggerImport() {
+            if (ieMode === "import") {
+                showToast("Simulación: Archivo analizado. 4 traducciones inyectadas.");
+                closeModal("importExportModal");
+            } else {
+                showToast("Simulación: Descargando pack de traducción...");
+                closeModal("importExportModal");
+            }
+        }
+
+        // Diagnostics
+        function openDiagnosticsModal() {
+            openModal("diagnosticsModal");
+        }
+
+        function quickCreateMissing(namespaceId, keyName) {
+            closeModal("diagnosticsModal");
+            selectNamespace(namespaceId);
+            openAddKeyModal();
+            document.getElementById("keyNameInput").value = keyName;
+            showToast(`Pre-llenando clave faltante: ${keyName}`);
+        }
+
+        // --- SYSTEM UTILS ---
+        function showToast(message, type = "success") {
+            const toast = document.getElementById("toast");
+            const text = document.getElementById("toastMessage");
+            const icon = document.getElementById("toastIcon");
+
+            text.innerText = message;
+            if (type === "success") {
+                icon.innerText = "check_circle";
+                icon.className = "material-symbols-outlined text-green-500";
+            } else {
+                icon.innerText = "error";
+                icon.className = "material-symbols-outlined text-red-500";
+            }
+
+            toast.classList.remove("translate-y-20", "opacity-0");
+            setTimeout(() => {
+                toast.classList.add("translate-y-20", "opacity-0");
+            }, 3000);
+        }
+
+        function setupTheme() {
+            const btn = document.getElementById("themeToggleBtn");
+            btn.addEventListener("click", () => {
+                const html = document.documentElement;
+                if (html.classList.contains("light")) {
+                    html.classList.remove("light");
+                    html.classList.add("dark");
+                    btn.innerHTML = '<span class="material-symbols-outlined">light_mode</span>';
+                    showToast("Modo Oscuro Activado");
+                } else {
+                    html.classList.remove("dark");
+                    html.classList.add("light");
+                    btn.innerHTML = '<span class="material-symbols-outlined">dark_mode</span>';
+                    showToast("Modo Claro Activado");
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>

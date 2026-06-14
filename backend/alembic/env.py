@@ -13,6 +13,7 @@ from app.domains.users.models import UserEvent  # noqa: F401 — registers with 
 from app.domains.feature_flags.models import FeatureFlag, Segment, FlagSegment  # noqa: F401
 from app.domains.products.models import Product, TenantSubscription, FlagProduct  # noqa: F401
 from app.domains.companies.models import Company  # noqa: F401
+from app.domains.labels.models import Namespace, LocalizedLabel, MissingLabelReport  # noqa: F401
 target_metadata = Base.metadata
 
 config = context.config

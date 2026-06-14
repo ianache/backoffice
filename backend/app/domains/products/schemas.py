@@ -50,11 +50,19 @@ class ProductResponse(BaseModel):
             elif v is None:
                 values['labels'] = []
             return values
-        # Handle ORM object
+        # Handle ORM object without in-place mutation of session attached state
         obj = values
         labels_raw = getattr(obj, 'labels', None)
-        obj.labels = json.loads(labels_raw) if labels_raw else []
-        return obj
+        labels = json.loads(labels_raw) if isinstance(labels_raw, str) and labels_raw else (labels_raw if isinstance(labels_raw, list) else [])
+        return {
+            "id": obj.id,
+            "name": obj.name,
+            "description": obj.description,
+            "status": obj.status,
+            "labels": labels,
+            "created_at": obj.created_at,
+            "updated_at": obj.updated_at,
+        }
 
 
 class TenantSubscriptionResponse(BaseModel):

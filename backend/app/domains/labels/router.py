@@ -111,6 +111,10 @@ async def update_namespace(
     existing = await service.get_namespace(db, namespace_id)
     if not existing:
         raise HTTPException(status_code=404, detail="Namespace not found")
+    if payload.id and payload.id != namespace_id:
+        duplicate = await service.get_namespace(db, payload.id)
+        if duplicate:
+            raise HTTPException(status_code=409, detail=f"Namespace '{payload.id}' already exists")
     payload_before = NamespaceResponse.model_validate(existing).model_dump(mode='json')
     updated = await service.update_namespace(db, namespace_id, payload)
     client_ip, user_agent = _audit_request_meta(request)

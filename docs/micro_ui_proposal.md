@@ -153,8 +153,8 @@ export default defineConfig({
       name: 'portal-shell',
       remotes: {
         'mui_security': 'http://localhost:5174/assets/remoteEntry.js',
-        'mui_tenants': 'http://localhost:5175/assets/remoteEntry.js',
-        'mui_feature_flags': 'http://localhost:5176/assets/remoteEntry.js',
+          'mui_tenants': 'http://localhost:5176/assets/remoteEntry.js',
+          'mui_feature_flags': 'http://localhost:5178/assets/remoteEntry.js',
       },
       shared: ['vue', 'vue-router', 'pinia', 'axios']
     })

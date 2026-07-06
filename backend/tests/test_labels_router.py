@@ -129,6 +129,35 @@ async def test_namespace_crud_requires_admin_role(db_session, client):
         assert resp.status_code == 201, f"{role} should be able to create namespaces: {resp.text}"
 
 
+@pytest.mark.asyncio
+async def test_update_namespace_renames_id_and_rejects_duplicate(db_session, client):
+    await _add_namespace(db_session, "old_ns", strategy="lazy")
+    await _add_namespace(db_session, "taken_ns", strategy="lazy")
+
+    headers = {**INTERNAL_HEADERS, "X-User-Roles": "PlatformAdmin", "X-User-Sub": "u1", "X-User-Email": "admin@example.com"}
+
+    conflict = client.patch(
+        "/api/v1/labels/namespaces/old_ns",
+        json={"id": "taken_ns", "strategy": "eager"},
+        headers=headers,
+    )
+    assert conflict.status_code == 409
+
+    resp = client.patch(
+        "/api/v1/labels/namespaces/old_ns",
+        json={"id": "new_ns", "tenant_id": "T", "company_id": "C", "product_id": "P", "strategy": "eager"},
+        headers=headers,
+    )
+
+    assert resp.status_code == 200
+    body = resp.json()
+    assert body["id"] == "new_ns"
+    assert body["tenant_id"] == "T"
+    assert body["company_id"] == "C"
+    assert body["product_id"] == "P"
+    assert body["strategy"] == "eager"
+
+
 # ---------------------------------------------------------------------------
 # Test 2: create_label writes audit log
 # ---------------------------------------------------------------------------

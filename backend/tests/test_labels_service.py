@@ -8,6 +8,7 @@ and hit-counting, and missing-report auto-cleanup on create_label().
 import pytest
 import pytest_asyncio
 from fastapi import HTTPException
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 
 from app.database import Base
@@ -85,9 +86,20 @@ async def _add_label(
 @pytest.mark.asyncio
 async def test_namespace_crud(db_session: AsyncSession):
     created = await service.create_namespace(
-        db_session, NamespaceCreate(id="common", strategy="lazy", description="Common labels")
+        db_session,
+        NamespaceCreate(
+            id="common",
+            tenant_id="T",
+            company_id="C",
+            product_id="P",
+            strategy="lazy",
+            description="Common labels",
+        ),
     )
     assert created.id == "common"
+    assert created.tenant_id == "T"
+    assert created.company_id == "C"
+    assert created.product_id == "P"
     assert created.strategy == "lazy"
     assert created.description == "Common labels"
 
@@ -95,9 +107,14 @@ async def test_namespace_crud(db_session: AsyncSession):
     assert any(ns.id == "common" for ns in namespaces)
 
     updated = await service.update_namespace(
-        db_session, "common", NamespaceUpdate(strategy="eager", description="Updated description")
+        db_session,
+        "common",
+        NamespaceUpdate(tenant_id="T2", company_id=None, product_id="P2", strategy="eager", description="Updated description"),
     )
     assert updated is not None
+    assert updated.tenant_id == "T2"
+    assert updated.company_id is None
+    assert updated.product_id == "P2"
     assert updated.strategy == "eager"
     assert updated.description == "Updated description"
 
@@ -106,6 +123,46 @@ async def test_namespace_crud(db_session: AsyncSession):
 
     namespaces_after = await service.list_namespaces(db_session)
     assert all(ns.id != "common" for ns in namespaces_after)
+
+
+@pytest.mark.asyncio
+async def test_update_namespace_renames_referenced_labels_and_missing_reports(db_session: AsyncSession):
+    await service.create_namespace(db_session, NamespaceCreate(id="old_ns", strategy="lazy"))
+    await _add_label(
+        db_session,
+        tenant_id="T",
+        product_id="backoffice",
+        namespace="old_ns",
+        locale="es_PE",
+        label_key="title",
+        label_value="Titulo",
+    )
+    db_session.add(MissingLabelReport(
+        tenant_id="T",
+        product_id="backoffice",
+        namespace="old_ns",
+        label_key="subtitle",
+        locale="es_PE",
+        hits=1,
+    ))
+    await db_session.commit()
+
+    updated = await service.update_namespace(
+        db_session,
+        "old_ns",
+        NamespaceUpdate(id="new_ns", strategy="eager", description="Renamed"),
+    )
+
+    assert updated is not None
+    assert updated.id == "new_ns"
+    assert updated.strategy == "eager"
+    assert updated.description == "Renamed"
+    assert await service.get_namespace(db_session, "old_ns") is None
+
+    labels = (await db_session.execute(select(LocalizedLabel))).scalars().all()
+    reports = (await db_session.execute(select(MissingLabelReport))).scalars().all()
+    assert {label.namespace for label in labels} == {"new_ns"}
+    assert {report.namespace for report in reports} == {"new_ns"}
 
 
 # ---------------------------------------------------------------------------

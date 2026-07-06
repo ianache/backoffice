@@ -22,7 +22,6 @@ interface RemoteManifest {
 }
 
 const REMOTE_MANIFEST: RemoteManifest[] = [
-  { name: 'mui-stub', envVar: 'VITE_REMOTE_STUB', displayName: 'Stub Domain', pathPrefix: 'stub' },
   { name: 'mui-security', envVar: 'VITE_REMOTE_SECURITY', displayName: 'Access Management', pathPrefix: 'users' },
   { name: 'mui-tenants', envVar: 'VITE_REMOTE_TENANTS', displayName: 'Tenant Management', pathPrefix: 'tenants' },
   { name: 'mui-feature-flags', envVar: 'VITE_REMOTE_FEATURE_FLAGS', displayName: 'Feature Flags', pathPrefix: 'flags' },
@@ -58,9 +57,6 @@ export async function loadMicroUIRoutes() {
   
   const importRemote = (name: string) => {
     switch (name) {
-      case 'mui-stub': 
-        // @ts-ignore - Module Federation remote
-        return import('mui-stub/routes');
       case 'mui-security':
         // @ts-ignore - Module Federation remote
         return import('mui-security/routes');

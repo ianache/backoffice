@@ -2,6 +2,9 @@ import api from 'shell/api'
 
 export interface Namespace {
   id: string
+  tenant_id: string | null
+  company_id: string | null
+  product_id: string | null
   strategy: 'eager' | 'lazy'
   description: string | null
   created_at: string
@@ -10,6 +13,9 @@ export interface Namespace {
 
 export interface NamespacePayload {
   id: string
+  tenant_id?: string | null
+  company_id?: string | null
+  product_id?: string | null
   strategy?: 'eager' | 'lazy'
   description?: string
 }

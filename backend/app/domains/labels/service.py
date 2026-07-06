@@ -3,7 +3,7 @@ import io
 import json
 from datetime import datetime
 from typing import Optional
-from sqlalchemy import select, delete as sa_delete
+from sqlalchemy import select, delete as sa_delete, update as sa_update
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import HTTPException
 
@@ -33,7 +33,7 @@ async def _fetch_labels(db: AsyncSession, tenant_id: str, company_id: Optional[s
         LocalizedLabel.product_id == product_id,
         LocalizedLabel.namespace == namespace,
         LocalizedLabel.locale == locale,
-    )
+    ).order_by(LocalizedLabel.id)
     result = await db.execute(stmt)
     rows = result.scalars().all()
     return {row.label_key: row.label_value for row in rows}
@@ -86,7 +86,14 @@ async def get_namespace(db: AsyncSession, namespace_id: str) -> Optional[Namespa
 
 
 async def create_namespace(db: AsyncSession, payload: NamespaceCreate) -> Namespace:
-    ns = Namespace(id=payload.id, strategy=payload.strategy, description=payload.description)
+    ns = Namespace(
+        id=payload.id,
+        tenant_id=payload.tenant_id,
+        company_id=payload.company_id,
+        product_id=payload.product_id,
+        strategy=payload.strategy,
+        description=payload.description,
+    )
     db.add(ns)
     await db.commit()
     await db.refresh(ns)
@@ -98,10 +105,27 @@ async def update_namespace(db: AsyncSession, namespace_id: str, payload: Namespa
     if ns is None:
         return None
     update_data = payload.model_dump(exclude_unset=True)
+    new_namespace_id = update_data.pop("id", None)
+
+    if new_namespace_id and new_namespace_id != namespace_id:
+        await db.execute(
+            sa_update(LocalizedLabel)
+            .where(LocalizedLabel.namespace == namespace_id)
+            .values(namespace=new_namespace_id)
+        )
+        await db.execute(
+            sa_update(MissingLabelReport)
+            .where(MissingLabelReport.namespace == namespace_id)
+            .values(namespace=new_namespace_id)
+        )
+        ns.id = new_namespace_id
+
     for field, value in update_data.items():
         setattr(ns, field, value)
     await db.commit()
     await db.refresh(ns)
+    if new_namespace_id and new_namespace_id != namespace_id:
+        clear_cache()
     return ns
 
 
@@ -301,13 +325,43 @@ async def delete_label_override(db: AsyncSession, *, tenant_id: str, company_id:
 # Missing label reports (RF-06 diagnostics)
 # ---------------------------------------------------------------------------
 
-async def report_missing_label(db: AsyncSession, payload: MissingLabelReportCreate) -> MissingLabelReport:
+def _canonical_missing_label_key(namespace: str, label_key: str) -> str:
+    prefix = f"{namespace}."
+    if label_key.startswith(prefix):
+        return label_key[len(prefix):]
+    return label_key
+
+
+async def report_missing_label(db: AsyncSession, payload: MissingLabelReportCreate) -> Optional[MissingLabelReport]:
     """Dedup via SELECT-then-UPDATE/INSERT on (tenant_id, namespace, label_key, locale).
     Increments hits and last_reported_at on repeat reports (Open Question 2)."""
+    label_key = _canonical_missing_label_key(payload.namespace, payload.label_key)
+    resolved = await resolve_labels(
+        db,
+        tenant_id=payload.tenant_id,
+        company_id=payload.company_id,
+        product_id=payload.product_id,
+        namespace=payload.namespace,
+        locale=payload.locale,
+    )
+    if label_key in resolved:
+        await db.execute(sa_delete(MissingLabelReport).where(
+            MissingLabelReport.tenant_id == payload.tenant_id,
+            MissingLabelReport.company_id == payload.company_id,
+            MissingLabelReport.product_id == payload.product_id,
+            MissingLabelReport.namespace == payload.namespace,
+            MissingLabelReport.label_key.in_([payload.label_key, label_key]),
+            MissingLabelReport.locale == payload.locale,
+        ))
+        await db.commit()
+        return None
+
     stmt = select(MissingLabelReport).where(
         MissingLabelReport.tenant_id == payload.tenant_id,
+        MissingLabelReport.company_id == payload.company_id,
+        MissingLabelReport.product_id == payload.product_id,
         MissingLabelReport.namespace == payload.namespace,
-        MissingLabelReport.label_key == payload.label_key,
+        MissingLabelReport.label_key == label_key,
         MissingLabelReport.locale == payload.locale,
     )
     result = await db.execute(stmt)
@@ -318,7 +372,7 @@ async def report_missing_label(db: AsyncSession, payload: MissingLabelReportCrea
             company_id=payload.company_id,
             product_id=payload.product_id,
             namespace=payload.namespace,
-            label_key=payload.label_key,
+            label_key=label_key,
             locale=payload.locale,
             hits=1,
         )
@@ -334,7 +388,30 @@ async def report_missing_label(db: AsyncSession, payload: MissingLabelReportCrea
 async def list_missing_label_reports(db: AsyncSession, *, tenant_id: str) -> list[MissingLabelReport]:
     stmt = select(MissingLabelReport).where(MissingLabelReport.tenant_id == tenant_id).order_by(MissingLabelReport.hits.desc())
     result = await db.execute(stmt)
-    return list(result.scalars().all())
+    rows = list(result.scalars().all())
+    visible: list[MissingLabelReport] = []
+    stale: list[MissingLabelReport] = []
+
+    for row in rows:
+        resolved = await resolve_labels(
+            db,
+            tenant_id=row.tenant_id,
+            company_id=row.company_id,
+            product_id=row.product_id,
+            namespace=row.namespace,
+            locale=row.locale,
+        )
+        if _canonical_missing_label_key(row.namespace, row.label_key) in resolved:
+            stale.append(row)
+        else:
+            visible.append(row)
+
+    for row in stale:
+        await db.delete(row)
+    if stale:
+        await db.commit()
+
+    return visible
 
 
 # ---------------------------------------------------------------------------

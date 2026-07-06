@@ -231,7 +231,7 @@ async function handleLocalLogin() {
   error.value = ''
   try {
     await authStore.loginWithCredentials(email.value, password.value)
-    const redirect = typeof route.query.redirect === 'string' ? route.query.redirect : '/stub'
+      const redirect = typeof route.query.redirect === 'string' ? route.query.redirect : '/tenants'
     router.push(redirect)
   } catch (e: any) {
     const code = e.message

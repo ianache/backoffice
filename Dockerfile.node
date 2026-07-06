@@ -1,0 +1,50 @@
+# Generic build for any pnpm-workspace package (bff, portal, microuis/*).
+# Build context must be the monorepo root. Select the package via --build-arg APP_DIR
+# and the container entrypoint via --build-arg START_CMD.
+
+FROM node:20-alpine AS deps
+WORKDIR /app
+COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
+COPY bff/package.json bff/package.json
+COPY portal/package.json portal/package.json
+COPY sdk/sdk-js/package.json sdk/sdk-js/package.json
+COPY microuis/mui-security/package.json microuis/mui-security/package.json
+COPY microuis/mui-tenants/package.json microuis/mui-tenants/package.json
+COPY microuis/mui-feature-flags/package.json microuis/mui-feature-flags/package.json
+COPY microuis/mui-labeling/package.json microuis/mui-labeling/package.json
+COPY microuis/mui-observability/package.json microuis/mui-observability/package.json
+RUN npm install -g pnpm@9 && pnpm install --frozen-lockfile
+
+FROM deps AS build
+ARG APP_DIR
+ARG VITE_KEYCLOAK_URL
+ARG VITE_KEYCLOAK_REALM
+ARG VITE_KEYCLOAK_CLIENT_ID
+ARG VITE_BFF_URL
+ARG VITE_BO_TENANT_ID
+ARG VITE_BO_SDK_KEY
+ARG VITE_REMOTE_SECURITY
+ARG VITE_REMOTE_TENANTS
+ARG VITE_REMOTE_FEATURE_FLAGS
+ARG VITE_REMOTE_LABELING
+ENV VITE_KEYCLOAK_URL=${VITE_KEYCLOAK_URL}
+ENV VITE_KEYCLOAK_REALM=${VITE_KEYCLOAK_REALM}
+ENV VITE_KEYCLOAK_CLIENT_ID=${VITE_KEYCLOAK_CLIENT_ID}
+ENV VITE_BFF_URL=${VITE_BFF_URL}
+ENV VITE_BO_TENANT_ID=${VITE_BO_TENANT_ID}
+ENV VITE_BO_SDK_KEY=${VITE_BO_SDK_KEY}
+ENV VITE_REMOTE_SECURITY=${VITE_REMOTE_SECURITY}
+ENV VITE_REMOTE_TENANTS=${VITE_REMOTE_TENANTS}
+ENV VITE_REMOTE_FEATURE_FLAGS=${VITE_REMOTE_FEATURE_FLAGS}
+ENV VITE_REMOTE_LABELING=${VITE_REMOTE_LABELING}
+COPY . .
+RUN pnpm --filter "./${APP_DIR}..." --if-present run build
+
+FROM node:20-alpine AS runtime
+ARG APP_DIR
+ARG START_CMD
+ENV START_CMD=${START_CMD}
+WORKDIR /app
+COPY --from=build /app ./
+WORKDIR /app/${APP_DIR}
+CMD ["sh", "-c", "$START_CMD"]

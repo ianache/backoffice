@@ -22,7 +22,7 @@
           <a
             href="#"
             class="flex items-center hover:text-primary transition-colors"
-            @click.prevent="router.push('/stub')"
+            @click.prevent="router.push('/')"
           >
             <span class="material-symbols-outlined text-[20px]">home</span>
           </a>
@@ -111,24 +111,6 @@
           <span class="text-sm">{{ $t('main_menu.mm_tenants') }}</span>
         </button>
 
-        <!-- Stub Domain — Testing for Phase 9 -->
-        <button
-          v-if="authStore.hasRole('PlatformAdmin')"
-          @click="router.push('/stub')"
-          :class="[
-            'w-full flex items-center gap-4 px-4 py-2 rounded-lg transition-all duration-200 text-left',
-            remoteStatuses['mui-stub'] === 'error' ? 'opacity-50 cursor-not-allowed' : '',
-            isActive('/stub')
-              ? 'bg-primary text-on-primary font-semibold'
-              : 'text-on-surface-variant hover:bg-surface-container-high'
-          ]"
-          :disabled="remoteStatuses['mui-stub'] === 'error'"
-          title="Stub Domain"
-        >
-          <span class="material-symbols-outlined text-[22px]">widgets</span>
-          <span class="text-sm">Stub Domain</span>
-        </button>
-
         <!-- Products (served by mui-tenants remote) -->
         <button
           @click="router.push('/products')"
@@ -202,7 +184,6 @@
 
         <!-- Feature Flags (gated by bo.feature dogfooding flag) -->
         <button
-          v-if="boFeature"
           @click="router.push('/flags')"
           :class="[
             'w-full flex items-center gap-4 px-4 py-2 rounded-lg transition-all duration-200 text-left',
@@ -220,7 +201,6 @@
 
         <!-- Segments (gated by bo.feature — part of Feature Flags domain) -->
         <button
-          v-if="boFeature"
           @click="router.push('/segments')"
           :class="[
             'w-full flex items-center gap-4 px-4 py-2 rounded-lg transition-all duration-200 text-left',
@@ -304,7 +284,6 @@ const { boFeature } = useBoFlags()
 const breadcrumbLabel = computed(() => {
   const segment = route.path.split('/').filter(Boolean)[0]
   if (!segment || segment === 'dashboard') return 'Dashboard'
-  if (segment === 'stub') return 'Stub Domain'
   if (segment === 'tenants') return 'Tenants'
   if (segment === 'users') return 'Access Management'
   if (segment === 'flags') return 'Feature Flags'
@@ -314,6 +293,6 @@ const breadcrumbLabel = computed(() => {
 })
 
 function isActive(path: string): boolean {
-  return route.path.startsWith(path) || (path === '/tenants' && route.path === '/') || (path === '/users' && route.path === '/') || (path === '/stub' && route.path === '/')
+  return route.path.startsWith(path) || (path === '/tenants' && route.path === '/') || (path === '/users' && route.path === '/')
 }
 </script>

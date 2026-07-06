@@ -9,10 +9,6 @@ export default defineConfig(({ mode }) => {
   const remotes: Record<string, string> = {}
   
   // Remote Discovery
-  remotes['mui-stub'] = env.VITE_REMOTE_STUB 
-    ? `${env.VITE_REMOTE_STUB}/assets/remoteEntry.js` 
-    : 'http://localhost:5175/assets/remoteEntry.js'
-
   remotes['mui-security'] = env.VITE_REMOTE_SECURITY
     ? `${env.VITE_REMOTE_SECURITY}/assets/remoteEntry.js`
     : 'http://localhost:5174/assets/remoteEntry.js'

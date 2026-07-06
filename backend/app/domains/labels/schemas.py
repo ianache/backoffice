@@ -11,6 +11,9 @@ VALID_LABEL_TYPES = ('LABEL', 'PLACEHOLDER', 'VALIDATION', 'TOOLTIP')
 
 class NamespaceCreate(BaseModel):
     id: str
+    tenant_id: Optional[str] = None
+    company_id: Optional[str] = None
+    product_id: Optional[str] = None
     strategy: str = 'lazy'  # 'eager' | 'lazy'
     description: Optional[str] = None
 
@@ -30,8 +33,19 @@ class NamespaceCreate(BaseModel):
 
 
 class NamespaceUpdate(BaseModel):
+    id: Optional[str] = None
+    tenant_id: Optional[str] = None
+    company_id: Optional[str] = None
+    product_id: Optional[str] = None
     strategy: Optional[str] = None
     description: Optional[str] = None
+
+    @field_validator('id')
+    @classmethod
+    def validate_id(cls, v: Optional[str]) -> Optional[str]:
+        if v is not None and not re.match(r'^[a-z0-9_]{1,100}$', v):
+            raise ValueError("Namespace id must match ^[a-z0-9_]{1,100}$")
+        return v
 
     @field_validator('strategy')
     @classmethod
@@ -43,6 +57,9 @@ class NamespaceUpdate(BaseModel):
 
 class NamespaceResponse(BaseModel):
     id: str
+    tenant_id: Optional[str] = None
+    company_id: Optional[str] = None
+    product_id: Optional[str] = None
     strategy: str
     description: Optional[str] = None
     created_at: datetime

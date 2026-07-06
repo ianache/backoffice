@@ -188,6 +188,32 @@ async def test_labels_prefetch_returns_requested_namespaces(db_session, client):
     assert body["namespaces"]["page_settings"] == {}
 
 
+@pytest.mark.asyncio
+async def test_labels_prefetch_returns_main_menu_namespace(db_session, client):
+    await _add_namespace(db_session, "main_menu", strategy="lazy")
+    await _add_label(
+        db_session, tenant_id="5", namespace="main_menu", locale="es_PE",
+        label_key="mm_tenants", label_value="Tenants",
+    )
+    await _add_label(
+        db_session, tenant_id="5", namespace="main_menu", locale="es_PE",
+        label_key="mm_users", label_value="Usuarios",
+    )
+
+    resp = client.get(
+        "/api/v1/sdk/labels/prefetch",
+        params={"tenant_id": "5", "locale": "es_PE", "product_id": "backoffice", "namespaces": "main_menu"},
+        headers=SDK_HEADERS,
+    )
+
+    assert resp.status_code == 200
+    body = resp.json()
+    assert body["namespaces"]["main_menu"] == {
+        "mm_tenants": "Tenants",
+        "mm_users": "Usuarios",
+    }
+
+
 # ---------------------------------------------------------------------------
 # Test 4: POST /labels/missing — creates dedup'd, hit-counted report
 # ---------------------------------------------------------------------------
@@ -366,4 +392,66 @@ async def test_labels_bootstrap_returns_login_namespace(db_session, client):
     assert body["locale"] == "en_US"
     assert "login" in body["namespaces"]
     assert body["namespaces"]["login"]["welcome_title"] == "Welcome back"
+
+
+@pytest.mark.asyncio
+async def test_labels_missing_endpoint_ignores_existing_resolved_label(db_session, client):
+    await _add_namespace(db_session, "main_menu", strategy="lazy")
+    await _add_label(
+        db_session,
+        tenant_id="T",
+        product_id="backoffice",
+        namespace="main_menu",
+        locale="es_PE",
+        label_key="mm_users",
+        label_value="Usuarios",
+    )
+
+    resp = client.post(
+        "/api/v1/sdk/labels/missing",
+        json={
+            "tenant_id": "T",
+            "company_id": None,
+            "product_id": "backoffice",
+            "namespace": "main_menu",
+            "label_key": "mm_users",
+            "locale": "es_PE",
+        },
+        headers=SDK_HEADERS,
+    )
+
+    assert resp.status_code == 204
+    reports = await labels_service.list_missing_label_reports(db_session, tenant_id="T")
+    assert reports == []
+
+
+@pytest.mark.asyncio
+async def test_labels_missing_endpoint_ignores_existing_namespace_prefixed_label(db_session, client):
+    await _add_namespace(db_session, "main_menu", strategy="lazy")
+    await _add_label(
+        db_session,
+        tenant_id="T",
+        product_id="backoffice",
+        namespace="main_menu",
+        locale="es_PE",
+        label_key="mm_users",
+        label_value="Usuarios",
+    )
+
+    resp = client.post(
+        "/api/v1/sdk/labels/missing",
+        json={
+            "tenant_id": "T",
+            "company_id": None,
+            "product_id": "backoffice",
+            "namespace": "main_menu",
+            "label_key": "main_menu.mm_users",
+            "locale": "es_PE",
+        },
+        headers=SDK_HEADERS,
+    )
+
+    assert resp.status_code == 204
+    reports = await labels_service.list_missing_label_reports(db_session, tenant_id="T")
+    assert reports == []
 

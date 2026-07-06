@@ -10,3 +10,4 @@ test-results/
 venv/
 .claude/
 .planning/
+.tokensave/

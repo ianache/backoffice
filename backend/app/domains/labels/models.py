@@ -9,6 +9,9 @@ class Namespace(Base):
     __tablename__ = "namespaces"
 
     id: Mapped[str] = mapped_column(String(100), primary_key=True)  # user-defined slug, e.g. "common", "page_dashboard"
+    tenant_id: Mapped[Optional[str]] = mapped_column(String(100), nullable=True, index=True)
+    company_id: Mapped[Optional[str]] = mapped_column(String(50), nullable=True, index=True)
+    product_id: Mapped[Optional[str]] = mapped_column(String(50), nullable=True, index=True)
     strategy: Mapped[str] = mapped_column(String(10), server_default='lazy', nullable=False)  # 'eager' | 'lazy'
     description: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
     created_at: Mapped[datetime] = mapped_column(server_default=func.now(), nullable=False)
